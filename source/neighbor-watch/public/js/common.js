@@ -483,6 +483,8 @@
     const setText = (id, value) => { const node = el(id); if (node) node.textContent = String(value); };
     setText('result-title', result.title || '勤務結果');
     setText('result-rank', result.rank || '—');
+    const rankNode = el('result-rank');
+    if (rankNode) rankNode.className = `result-rank${['S','A','B','C','D','F'].includes(result.rank) ? ' rank-' + result.rank : ''}`;
     setText('result-message', result.message || '今日の勤務が終了しました。');
     setText('result-captures', result.captures || 0);
     setText('result-kills', result.kills || 0);
