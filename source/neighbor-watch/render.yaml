@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: neighbor-watch
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install --omit=dev && npm test
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.1
+      - key: DATABASE_URL
+        sync: false

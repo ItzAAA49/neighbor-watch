@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#211d19"><meta name="description" content="1955年、D.D.D.の門番として来訪者の身元を確認するレトロ・ホラー審査ゲーム。">
+  <title>NEIGHBOR WATCH — D.D.D. 入居審査室</title><link rel="icon" href="/assets/mark.svg" type="image/svg+xml"><link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="home-body">
+  <div class="grain"></div><header class="site-header"><a class="brand" href="/" aria-label="ホーム"><span class="brand-mark">D</span><span>D.D.D. <small>NEIGHBOR WATCH</small></span></a><nav><a href="/how-to">遊び方</a><a href="/records">記録</a></nav></header>
+  <main class="home-shell">
+    <div class="home-aside">
+    <section class="title-block">
+      <div class="classified">DOPPELGÄNGER DETECTION DEPARTMENT / INTERNAL USE ONLY</div>
+      <h1 class="game-title">NEIGHBOR<br><em>WATCH</em></h1>
+      <p class="title-sub">1955年 2月 — 入居審査室</p>
+      <div class="stamp">職務命令<br><b>確認せよ。</b></div>
+    </section>
+    <section class="auth-panel panel">
+      <div class="panel-top"><span>個人記録の同期</span><span class="mono">OPTIONAL</span></div>
+      <p class="small-note">アカウントを作成すると、PostgreSQL対応サーバー上で進行状況を同期できます。ゲストはこのブラウザに保存されます。</p>
+      <div class="auth-fields"><input id="auth-user" autocomplete="username" maxlength="24" placeholder="ユーザー名"><input id="auth-pass" autocomplete="current-password" type="password" placeholder="パスワード（8文字以上）"></div>
+      <div class="auth-actions"><button class="button" id="signup-button">アカウント作成</button><button class="button button-dark" id="login-button">ログイン</button><button class="text-button" id="logout-button" hidden>ログアウト</button></div><p id="auth-status" class="status-line">ゲストとしてプレイ中</p>
+    </section>
+    </div>
+
+    <section class="home-panel">
+      <div class="panel-top"><span>勤務開始前の確認事項</span><span class="mono">FORM 02-55</span></div>
+      <p class="intro">あなたはアパートの門番です。書類、顔写真、住人名簿、電話。<br>すべてを照合し、本物の住人だけを通してください。</p>
+      <div class="menu-section-heading">
+        <span>SELECT YOUR SHIFT</span>
+        <b>勤務モードを選ぶ</b>
+        <small>プレイスタイルに合わせて勤務を選択してください。</small>
+      </div>
+      <div class="mode-grid">
+        <button class="mode-card primary" data-mode="campaign"><span class="mode-no">01</span><b>キャンペーン</b><small>5日間の勤務記録</small></button>
+        <button class="mode-card" data-mode="tutorial"><span class="mode-no">02</span><b>チュートリアル</b><small>Agent #1314 の研修</small></button>
+        <button class="mode-card" data-mode="arcade"><span class="mode-no">03</span><b>アーケード</b><small>1日限りの審査</small></button>
+        <button class="mode-card" data-mode="nightmare"><span class="mode-no">04</span><b>ナイトメア</b><small>異常な住人たち</small><i id="nightmare-lock">キャンペーンクリアで解放</i></button>
+        <button class="mode-card" data-mode="custom"><span class="mode-no">05</span><b>カスタム</b><small>住民を作成して検証</small></button>
+        <button class="mode-card" data-mode="cards"><span class="mode-no">06</span><b>カードゲーム</b><small>クラウンと3本勝負</small></button>
+      </div>
+      <div class="continue-row"><button id="continue-button" class="button button-dark" disabled>続きから遊ぶ</button><span id="continue-note">進行中の勤務記録はありません</span></div>
+      <div class="home-links"><a href="/how-to">審査マニュアル</a><a href="/records">勤務記録・実績</a></div>
+    </section>
+
+    <footer class="home-footer"><span>本作は『That's Not My Neighbor』のファンによる非公式リメイクです。原作：Nacho Sama</span><span>フィクション作品 / D.D.D. 1955</span></footer>
+    <div class="content-warning">注意：不気味な人物表現・ホラー演出・緊張感のある音響を含みます。露骨な描写は控えめです。</div>
+  </main>
+  <script src="/js/common.js"></script><script>
+    document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>Neighbor.startMode(btn.dataset.mode)));
+    document.getElementById('continue-button').addEventListener('click',()=>Neighbor.continueGame());
+    Neighbor.initHome();
+    document.getElementById('signup-button').addEventListener('click',()=>Neighbor.auth('signup'));
+    document.getElementById('login-button').addEventListener('click',()=>Neighbor.auth('login'));
+    document.getElementById('logout-button').addEventListener('click',()=>Neighbor.logout());
+  </script>
+</body></html>
