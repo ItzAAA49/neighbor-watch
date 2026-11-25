@@ -1,0 +1,40 @@
+name: Expose canonical Neighbor Watch source
+
+on:
+  push:
+    paths:
+      - '.github/workflows/expose-source.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: neighbor-watch-source-exposure
+  cancel-in-progress: false
+
+jobs:
+  expose-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Extract canonical source from verified package
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/nw-source
+          mkdir -p /tmp/nw-source
+          unzip -q neighbor-watch.zip -d /tmp/nw-source
+          test -f /tmp/nw-source/neighbor-watch/package.json
+          test -f /tmp/nw-source/neighbor-watch/public/js/game.js
+          rm -rf source/neighbor-watch
+          mkdir -p source
+          cp -a /tmp/nw-source/neighbor-watch source/neighbor-watch
+          git add source/neighbor-watch
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Expose canonical Neighbor Watch source for maintenance"
+          git push origin HEAD:main
