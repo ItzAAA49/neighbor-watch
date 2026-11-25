@@ -37,7 +37,7 @@ jobs:
 
           # Recreate the small pause-screen hotfix that was already present
           # in the baseline used to generate this patch.
-          printf '\n/* Keep the pause screen hidden until the player explicitly pauses. */\n.pause-overlay[hidden]{display:none!important}\n' >> neighbor-watch/public/css/style.css
+          printf '/* Keep the pause screen hidden until the player explicitly pauses. */\n.pause-overlay[hidden]{display:none!important}\n' >> neighbor-watch/public/css/style.css
           node <<'NODE'
           const fs = require('node:fs');
           const path = require('node:path');
