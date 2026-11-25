@@ -325,9 +325,13 @@
   }
   function finishShift(forcedDeath=false){
     if(g.finished)return;
-    const elapsed=Date.now()-(g.startedAt||Date.now());
-    const limit=g.timeLimit||visitorsTarget()*60000;
-    if(g.mode==='arcade'&&!forcedDeath&&!g.fatalAdmission&&!g.entityDeath&&elapsed<limit&&!g.timeBonusAwarded){g.score+=Math.floor(Math.max(0,limit-elapsed)/60000)*10;g.timeBonusAwarded=true;}
+    const elapsed=Math.max(0,Date.now()-(g.startedAt||Date.now()));
+    const arcadeBonusReference=10*60*1000;
+    if(g.mode==='arcade'&&!forcedDeath&&!g.fatalAdmission&&!g.entityDeath&&!g.timeBonusAwarded){
+      // Score-only reference: up to 100 points, falling by one point every six seconds. There is no failure timer.
+      g.score+=Math.max(0,Math.floor((arcadeBonusReference-elapsed)/6000));
+      g.timeBonusAwarded=true;
+    }
     g.finished=true;
     if(clockInterval)clearInterval(clockInterval);
     clockInterval=null;
