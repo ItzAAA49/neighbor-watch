@@ -33,6 +33,8 @@ assert.equal(data.posterNames.length, 32, 'poster collection contains 32 entries
 assert.equal(data.quiz.length, 5, 'Chester has five quiz answers');
 assert.equal(new Set(data.normal.map(person => person.expiry)).size, 20, 'resident ID expiration dates are fixed and distinct');
 assert.ok(data.normal.every(person => person.reason), 'every resident has an authored return reason');
+assert.equal(data.normal.find(person => person.name === 'Elenois Sverchzt').id, '965521458563', 'Elenois ID matches the supplied resident table');
+assert.equal(data.normal.find(person => person.name === 'Elenois Sverchzt').job, '主婦', 'Elenois occupation matches the supplied resident table');
 assert.equal(data.normal.find(person => person.name === 'Nacha Mikaelys').id, '789653665418', 'Nacha has the ID number given in the correction prompt');
 assert.ok(data.normal.find(person => person.name === 'Mclooy Rudboys').tags.includes('smoking'), 'Mclooy keeps his cigarette feature');
 assert.match(playHtml, /id="pause-overlay" hidden/, 'pause overlay starts hidden');
