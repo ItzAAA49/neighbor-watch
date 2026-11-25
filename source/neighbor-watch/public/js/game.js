@@ -102,7 +102,7 @@
       if(defects.includes('id')||defects.includes('combined')){const mode=Math.floor(rand()*4);if(mode===0)visitor.idData.id=visitor.idData.id.slice(0,11)+'8';if(mode===1)visitor.idData.name=visitor.idData.name.replace('a','e');if(mode===2)visitor.idData.expiry='01/54';if(mode===3)visitor.idData.stamp=false;}
       if(defects.includes('form')||defects.includes('combined')){const mode=Math.floor(rand()*4);if(mode===0)visitor.formData.room='F04-09';if(mode===1)visitor.formData.job='星の管理人';if(mode===2)visitor.formData.reason='I return because yesterday future.';if(mode===3)visitor.formData.approved=false;}
       if(truth&&rand()<.035){visitor.idMissing=true;visitor.idIssue=true;}if(truth&&rand()<.025){visitor.formMissing=true;visitor.formIssue=true;}
-      if(vip==='42'){visitor.person={...p,name:'42',id:'424242424242',job:'42',features:'顔に巨大な42の渦',tags:['42Face'],room:p.room,phone:p.phone,roommate:p.roommate};visitor.residentName='42';visitor.truth=false;visitor.listed=false;visitor.faceTags=['42Face'];visitor.idData={...visitor.person,id:'424242424242',stamp:true};visitor.formData={...visitor.person,job:'42',reason:'42'};visitor.appearanceIssue=true;visitor.idIssue=true;visitor.formIssue=true;}
+      if(vip==='42'){visitor.person={...p,name:'42',id:'424242424242',job:'42',features:'顔に巨大な42の渦',tags:['42Face'],room:'F03-02',phone:'4122',roommate:'Francis Mossesの同居人'};visitor.residentName='42';visitor.truth=false;visitor.listed=false;visitor.faceTags=['42Face'];visitor.idData={...visitor.person,id:'424242424242',stamp:true};visitor.formData={...visitor.person,job:'42',reason:'42'};visitor.appearanceIssue=true;visitor.idIssue=true;visitor.formIssue=true;}
       if(vip==='Peach'){visitor.person={...p,name:'Peach',job:'—',features:'大きく開いた口、出っ歯、斜めの充血した目',tags:['bigSmile','bigTeeth','redEyes']};visitor.faceTags=visitor.person.tags;visitor.appearanceIssue=true;visitor.idIssue=true;visitor.formIssue=true;visitor.idData={...p,name:'Peach'};visitor.formData={...p,name:'Peach'};}
       if(vip==='Nurse'){visitor.person={...p,name:'Xuchilbara Lobsel Vith',job:'特別来訪者',features:'包帯を巻いた静かな人物',tags:['longHair','tiredEyes']};visitor.faceTags=visitor.person.tags;visitor.idData={...p,name:visitor.person.name};visitor.formData={...p,name:visitor.person.name};}
       list.push(visitor);
@@ -150,7 +150,7 @@
     if(current.vip==='42')$('visitor-line').textContent='42';else if(current.vip==='Peach')$('visitor-line').textContent='……';
     sound('ring');
   }
-  function resetView(){current=null;$('visitor-empty').hidden=false;$('visitor-display').hidden=true;$('visitor-line').textContent='次の来訪者をお待ちください。';$('visitor-kind').textContent='NO VISITOR';$('window-status').textContent='待機中';$('id-document').disabled=true;$('form-document').disabled=true;$('ask-button').disabled=true;$('next-line').disabled=true;['admit-button','reject-button','report-button'].forEach(id=>$(id).disabled=true);$('decision-panel').classList.remove('ready');$('check-count').textContent='0 / 4 完了';$('check-progress-bar').style.width='0%';$('checklist-items').querySelectorAll('button').forEach(b=>b.classList.remove('selected','yes','no'));}
+  function resetView(){current=null;$('visitor-empty').hidden=false;$('visitor-display').hidden=true;$('window-room-label').textContent='ROOM ??';$('visitor-line').textContent='次の来訪者をお待ちください。';$('visitor-kind').textContent='NO VISITOR';$('window-status').textContent='待機中';$('id-document').disabled=true;$('form-document').disabled=true;$('ask-button').disabled=true;$('next-line').disabled=true;['admit-button','reject-button','report-button'].forEach(id=>$(id).disabled=true);$('decision-panel').classList.remove('ready');$('check-count').textContent='0 / 4 完了';$('check-progress-bar').style.width='0%';$('checklist-items').querySelectorAll('button').forEach(b=>b.classList.remove('selected','yes','no'));}
   function showDocument(which){if(!current)return;const d=which==='id'?current.idData:current.formData;const missing=which==='id'?current.idMissing:current.formMissing;const title=which==='id'?'IDカード / IDENTIFICATION':'入居申請書 / RESIDENCE APPLICATION';const stamp=which==='id'?(d.stamp===false?'印章なし':'D.D.D. APPROVED'):(d.approved===false?'承認印なし':'APPROVED / D.D.D.');let fields=which==='id'?[['氏名',d.name],['ID番号',d.id],['有効期限',d.expiry||'08/57'],['写真',d.name+' の白黒写真'],['ロゴ・スタンプ',stamp]]:[['氏名',d.name],['部屋番号',d.room],['職業',d.job],['帰宅理由',d.reason||'仕事から帰宅しました。'],['写真',d.name+' の白黒写真'],['承認',stamp]];
     showModal(`<h2 class="modal-title">${title}</h2>${missing?'<p class="modal-note">この書類は提出されていません。</p>':''}<div class="document-preview"><div class="classified">DOPPELGÄNGER DETECTION DEPARTMENT</div><div class="doc-face">${NW_FACE.portrait({...current.person,tags:current.faceTags||current.person.tags},{})}</div><div class="doc-grid">${fields.map(([k,v])=>`<div class="doc-field"><small>${k}</small><b>${esc(v)}</b></div>`).join('')}</div></div><p class="modal-note">名簿フォルダーの正しい情報と照合してください。書類の体裁だけで真偽を判断しないこと。</p><div class="modal-actions"><button class="button" id="doc-close">閉じる</button></div>`);$('doc-close').onclick=closeModal;}
   function openFolder(){const pool=people().slice().sort((a,b)=>String(a.room||'').localeCompare(String(b.room||''))||String(a.name||'').localeCompare(String(b.name||'')));if(!pool.length)return;residentPage=((residentPage%pool.length)+pool.length)%pool.length;renderFolder();}
@@ -395,14 +395,14 @@
     $('chester-skip').onclick=()=>{g.chesterDone=true;store();closeModal();startClock();};
     $('chester-submit').onclick=()=>{
       const correct=Number($('chester-answer').value)===answer;
-      if(correct){g.chesterCorrect=(g.chesterCorrect||0)+1;const save=Neighbor.getSave();if(g.chesterCorrect>=5){save.chesterBadge=true;if(!save.achievements.includes('chester'))save.achievements.push('chester');Neighbor.setSave(save);$('chester-badge').hidden=false;} }
+      if(correct){g.chesterCorrect=(g.chesterCorrect||0)+1;const save=Neighbor.getSave();save.campaign.chesterCorrect=Math.max(Number(save.campaign.chesterCorrect)||0,g.chesterCorrect);if(g.chesterCorrect>=5){save.chesterBadge=true;if(!save.achievements.includes('chester'))save.achievements.push('chester');$('chester-badge').hidden=false;}Neighbor.setSave(save);}
       g.chesterDone=true;store();closeModal();
       showModal('<h2 class="modal-title">'+(correct?'正解です':'違うようです')+'</h2><p class="modal-note">'+(correct?'チェスターが満足そうにうなずきました。':'正解は '+answer+' でした。誤答によるペナルティはありません。')+'</p><p class="modal-note">5問すべて正解すると金のチェスターバッジを獲得できます。</p><div class="modal-actions"><button class="button" id="chester-feedback-close">勤務へ戻る</button></div>');
       $('chester-feedback-close').onclick=()=>{closeModal();startClock();};
     };
     return true;
   }
-  function showClown(){if(g.mode!=='campaign'||g.clownSeen||g.clownCheckedDay===g.day)return;g.clownCheckedDay=g.day;const appears=g.day>=5||randChance(.45);store();if(!appears)return;g.clownSeen=true;$('clown-flyer').hidden=false;store();notify('ピエロの男が「UNLIKELY」と書かれたチラシを机に置きました。');}
+  function showClown(){if(g.mode!=='campaign'||g.clownSeen||g.clownCheckedDay===g.day)return;g.clownCheckedDay=g.day;const appears=g.day>=5||randChance(.45);store();if(!appears)return;g.clownSeen=true;$('clown-flyer').hidden=false;const save=Neighbor.getSave();save.campaign.clownSeen=true;Neighbor.setSave(save);store();notify('ピエロの男が「UNLIKELY」と書かれたチラシを机に置きました。');}
   function randChance(n){return rand()<n;}
   function startCards(){
     const values=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
@@ -488,6 +488,7 @@
     renderVisitor();
     if(g.finished)return;
     $('chester-badge').hidden=!Neighbor.getSave().chesterBadge;
+    $('clown-flyer').hidden=!g.clownSeen;
     if(isNight())$('booth-scene').classList.add('nightmare-scene');
     if(g.paused){pausedAt=Number(g.pausedAt)||Date.now();$('pause-overlay').hidden=false;return;}
     $('pause-overlay').hidden=true;
