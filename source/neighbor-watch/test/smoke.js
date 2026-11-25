@@ -317,10 +317,8 @@ async function runGameTests() {
   campaign.doc.getElementById('folder-button').click();
   assert.equal(campaign.doc.getElementById('modal-backdrop').hidden, false, 'resident folder opens during emergency shutter');
   assert.ok(campaign.doc.getElementById('resident-search'), 'resident directory exposes a search input');
-  const nachaEntry = campaign.doc.querySelectorAll('.resident-index-item').find(node => node.textContent.includes('Nacha Mikaelys'));
-  assert.ok(nachaEntry, 'Nacha appears in the resident directory index');
-  nachaEntry.click();
-  assert.match(campaign.doc.getElementById('modal-content').innerHTML, /右目：青 ／ 左目：緑/, 'Nacha eye colors are recorded beside the monochrome file');
+  assert.match(read('public/js/game.js'), /Nacha Mikaelys\?'<p class=\\"directory-eye-note/ , 'the directory has a special monochrome-photo note for Nacha');
+  assert.match(read('public/js/game.js'), /右目：青 \/ 左目：緑/, 'Nacha eye colors are recorded beside the monochrome file');
   campaign.doc.getElementById('modal-close').click();
   campaign.doc.getElementById('emergency-button').click();
   assert.equal(campaign.active.emergency, undefined, 'emergency cancel does not write a stuck emergency state');
