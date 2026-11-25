@@ -38,13 +38,15 @@
         <button class="mode-card" data-mode="nightmare"><span class="mode-no">04</span><b>ナイトメア</b><small>異常な住人たち</small><i id="nightmare-lock">キャンペーンクリアで解放</i></button>
         <button class="mode-card" data-mode="custom"><span class="mode-no">05</span><b>カスタム</b><small>住民を作成して検証</small></button>
         <button class="mode-card" data-mode="cards"><span class="mode-no">06</span><b>カードゲーム</b><small>クラウンと3本勝負</small></button>
+        <button class="mode-card coming-soon" type="button" disabled><span class="mode-no">07</span><b>エンドレス</b><small>近日公開</small><i>現在は選択できません</i></button>
+        <button class="mode-card coming-soon" type="button" disabled><span class="mode-no">08</span><b>デイリー</b><small>近日公開</small><i>現在は選択できません</i></button>
       </div>
       <div class="continue-row"><button id="continue-button" class="button button-dark" disabled>続きから遊ぶ</button><span id="continue-note">進行中の勤務記録はありません</span></div>
       <div class="home-links"><a href="/how-to">審査マニュアル</a><a href="/records">勤務記録・実績</a></div>
     </section>
 
     <footer class="home-footer"><span>本作は『That's Not My Neighbor』のファンによる非公式リメイクです。原作：Nacho Sama</span><span>フィクション作品 / D.D.D. 1955</span></footer>
-    <div class="content-warning">注意：不気味な人物表現・ホラー演出・緊張感のある音響を含みます。露骨な描写は控えめです。</div>
+    <div class="content-warning">注意：本作は子ども向けではありません。ホラー演出、ボディホラー、血の表現、緊張感のある音響を含みます。</div>
   </main>
   <script src="/js/common.js"></script><script>
     document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>Neighbor.startMode(btn.dataset.mode)));
