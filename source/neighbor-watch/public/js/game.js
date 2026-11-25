@@ -7,7 +7,7 @@
   const requestedMode = qs.get('mode');
   if (requestedMode && !Object.prototype.hasOwnProperty.call(labels, requestedMode)) { location.replace('/'); return; }
   if (requestedMode && g && g.mode !== requestedMode) g = null;
-  if (!g) { g={mode:requestedMode||'campaign',day:1,dead:[],createdAt:Date.now(),updatedAt:Date.now(),seed:Date.now()>>>0,visitorIndex:0,visitors:[],todayList:[],checklist:{},actions:[],score:0,captures:0,kills:0,admitted:0,minorMistakes:0,errors:0,reportErrors:0,chesterDone:false,campaignStats:{admittedNames:[],reportedNames:[],visitorCount:0,doppelVisitors:0,admittedVisitors:0,admittedDoppels:0,capturedDoppels:0,rejectedResidents:0,humanKilled:0,seenNames:[]}}; Neighbor.writeActive(g); }
+  if (!g) { g={mode:requestedMode||'campaign',day:1,dead:[],createdAt:Date.now(),updatedAt:Date.now(),seed:Date.now()>>>0,visitorIndex:0,visitors:[],todayList:[],checklist:{},actions:[],invadedApartments:[],retrySnapshot:null,score:0,captures:0,kills:0,admitted:0,minorMistakes:0,errors:0,reportErrors:0,chesterDone:false,campaignStats:{admittedNames:[],reportedNames:[],visitorCount:0,doppelVisitors:0,admittedVisitors:0,admittedDoppels:0,capturedDoppels:0,rejectedResidents:0,humanKilled:0,cleanedApartments:0,seenNames:[]}}; Neighbor.writeActive(g); }
   if (!labels[g.mode]) { location.replace('/'); return; }
   if (g.finished) { location.replace('/result'); return; }
   if (g.mode === 'nightmare' && !Neighbor.getSave().campaign.unlockedNightmare) { Neighbor.toast('ナイトメアはキャンペーンをクリアすると解放されます。'); Neighbor.writeActive(null); location.replace('/'); return; }
@@ -41,6 +41,8 @@
   g.todayList = Array.isArray(g.todayList) ? g.todayList.filter(v => isRecord(v) && typeof v.name === 'string' && typeof v.room === 'string').slice(0, 20) : [];
   g.checklist = isRecord(g.checklist) ? Object.fromEntries(Object.entries(g.checklist).filter(([key, value]) => ['appearance','id','form','list'].includes(key) && ['yes','no'].includes(value))) : {};
   g.actions = Array.isArray(g.actions) ? g.actions.filter(v => isRecord(v)).slice(-200) : [];
+  g.invadedApartments = Array.isArray(g.invadedApartments) ? g.invadedApartments.filter(v => isRecord(v) && typeof v.room === 'string').slice(0, 30) : [];
+  g.retrySnapshot = isRecord(g.retrySnapshot) ? g.retrySnapshot : null;
   g.phoneLog = Array.isArray(g.phoneLog) ? g.phoneLog.filter(v => isRecord(v)).slice(-100) : [];
   g.customResidents = Array.isArray(g.customResidents) ? g.customResidents.filter(v => isRecord(v) && typeof v.name === 'string' && /^F0[1-3]-0[1-4]$/.test(v.room || '') && /^\d{4}$/.test(v.phone || '') && /^\d{12}$/.test(v.id || '')).slice(0, 12) : [];
   g.paused = Boolean(g.paused);
@@ -49,11 +51,11 @@
   g.timeLimit = Math.max(0, finiteNumber(g.timeLimit));
   g.finished = Boolean(g.finished);
   g.seed = finiteNumber(g.seed, Date.now()) >>> 0;
-  const campaignDefaults = {admittedNames:[],reportedNames:[],visitorCount:0,doppelVisitors:0,admittedVisitors:0,admittedDoppels:0,capturedDoppels:0,rejectedResidents:0,humanKilled:0,seenNames:[]};
+  const campaignDefaults = {admittedNames:[],reportedNames:[],visitorCount:0,doppelVisitors:0,admittedVisitors:0,admittedDoppels:0,capturedDoppels:0,rejectedResidents:0,humanKilled:0,cleanedApartments:0,seenNames:[]};
   const campaignSource = isRecord(g.campaignStats) ? g.campaignStats : {};
   g.campaignStats = { ...campaignDefaults, ...campaignSource };
   for (const key of ['admittedNames','reportedNames','seenNames']) g.campaignStats[key] = Array.isArray(g.campaignStats[key]) ? [...new Set(g.campaignStats[key].filter(value => typeof value === 'string'))] : [];
-  for (const key of ['visitorCount','doppelVisitors','admittedVisitors','admittedDoppels','capturedDoppels','rejectedResidents','humanKilled']) g.campaignStats[key] = Math.max(0, Math.floor(finiteNumber(g.campaignStats[key])));
+  for (const key of ['visitorCount','doppelVisitors','admittedVisitors','admittedDoppels','capturedDoppels','rejectedResidents','humanKilled','cleanedApartments']) g.campaignStats[key] = Math.max(0, Math.floor(finiteNumber(g.campaignStats[key])));
   g.score = Math.max(-1_000_000, Math.min(1_000_000, finiteNumber(g.score)));
   for (const key of ['captures','kills','admitted','minorMistakes','errors','reportErrors','chesterCorrect']) g[key] = Math.max(0, finiteNumber(g[key]));
   let current=null, phone='----', emergency=false, residentPage=0, soundContext=null, quizAsked=false, clockInterval=null, pausedAt=g.paused ? (Number(g.pausedAt)||Date.now()) : null, decisionBusy=false;
@@ -61,6 +63,7 @@
   const pick=arr=>arr[Math.floor(rand()*arr.length)];
   const esc=s=>NW_FACE.esc(s);
   const isCampaign=()=>g.mode==='campaign';
+  const isArcade=()=>g.mode==='arcade';
   const isNight=()=>g.mode==='nightmare';
   const isTutorial=()=>g.mode==='tutorial';
   const visitorsTarget=()=>g.mode==='campaign'?[6,8,10,11,12][Math.max(0,Math.min(4,(g.day||1)-1))]:(g.mode==='tutorial'?4:10);
@@ -73,6 +76,16 @@
   function closeModal(){$('modal-backdrop').hidden=true;$('modal-content').innerHTML='';}
   $('modal-close').addEventListener('click',closeModal);$('modal-backdrop').addEventListener('click',e=>{if(e.target===$('modal-backdrop'))closeModal();});
   function buildFaceTags(person,defect){let tags=[...(person.tags||[])];if(defect==='appearance'){const swaps=[['moleLeft','moleRight'],['hat'],['mustache'],['glasses'],['bigBrow'],['longNeck'],['freckles'],['pointNose'],['curlLeft','curlRight']];const choose=pick(swaps);for(const t of choose){if(tags.includes(t))tags=tags.filter(x=>x!==t);else tags.push(t);} }return tags;}
+  function nextPosterIndex(){
+    const save=Neighbor.getSave();const owned=new Set(Array.isArray(save.posters)?save.posters:[]);const cursor=((Number(save.posterCursor)||0)%32+32)%32;
+    for(let step=0;step<32;step++){const candidate=(cursor+step)%32;if(!owned.has(candidate)){save.posterCursor=(candidate+1)%32;Neighbor.setSave(save);return candidate;}}
+    return Math.floor(rand()*32);
+  }
+  function markDoppel(visitor){
+    visitor.truth=false;const profiles=NW_DATA.personalities||{};const expected=visitor.personalityKey||visitor.person?.personalityKey||visitor.person?.name;
+    const choices=Object.keys(profiles).filter(key=>key!==expected);visitor.voiceKey=choices.length?pick(choices):expected;visitor.personalityMismatch=visitor.voiceKey!==expected;
+    visitor.dialog=profiles[visitor.voiceKey]?.greeting||'こんばんは。戻ってきました。';
+  }
   function buildVisitors(){
     g.startedAt=0;g.timeLimit=visitorsTarget()*60000;g.timeBonusAwarded=false;g.paused=false;g.pausedAt=0;pausedAt=null;
     const pool=people().filter(p=>!g.dead.includes(p.name));
@@ -95,7 +108,12 @@
       if(isTutorial()&&i===2)defects=['appearance'];
       const listed=rand()<.73;
       const doc=p;
-      let visitor={person:p,residentName:p.name,truth,defects,listed,faceTags:buildFaceTags(p,defects.includes('appearance')?'appearance':null),vip,redHanded:!truth&&['Albertsky Peachman','Alf Cappuccin','Dr. W. Afton','Elenois Sverchzt','Francis Mosses','Izaack Gauss','Lois Stilnsky','Margarette Bubbles','Mia Stone','Rafttellyn Cappuccin','Robertsky Peachman','Roman Stilnsky','Selenne Sverchzt','Steven Rudboys'].includes(p.name),appearanceIssue:defects.includes('appearance'),idIssue:defects.includes('id')||defects.includes('combined'),formIssue:defects.includes('form')||defects.includes('combined'),idData:{...doc},formData:{...doc},idMissing:false,formMissing:false,dialog:'こんにちは。戻ってきました。'};
+      const personalityKey=p.personalityKey||p.name;
+      const profileKeys=Object.keys(NW_DATA.personalities||{});
+      const voiceOptions=profileKeys.filter(key=>key!==personalityKey);
+      const voiceKey=!truth&&voiceOptions.length?pick(voiceOptions):personalityKey;
+      const voice=NW_DATA.personalities?.[voiceKey];
+      let visitor={person:p,residentName:p.name,truth,defects,listed,faceTags:buildFaceTags(p,defects.includes('appearance')?'appearance':null),vip,personalityKey,voiceKey,personalityMismatch:!truth&&voiceKey!==personalityKey,redHanded:!truth&&['Albertsky Peachman','Alf Cappuccin','Dr. W. Afton','Elenois Sverchzt','Francis Mosses','Izaack Gauss','Lois Stilnsky','Margarette Bubbles','Mia Stone','Rafttellyn Cappuccin','Robertsky Peachman','Roman Stilnsky','Selenne Sverchzt','Steven Rudboys'].includes(p.name),appearanceIssue:defects.includes('appearance'),idIssue:defects.includes('id')||defects.includes('combined'),formIssue:defects.includes('form')||defects.includes('combined'),idData:{...doc},formData:{...doc},idMissing:false,formMissing:false,dialog:voice?.greeting||'こんにちは。戻ってきました。'};
       if(defects.includes('id')||defects.includes('combined')){const mode=Math.floor(rand()*4);if(mode===0)visitor.idData.id=visitor.idData.id.slice(0,11)+'8';if(mode===1)visitor.idData.name=visitor.idData.name.replace('a','e');if(mode===2)visitor.idData.expiry='01/54';if(mode===3)visitor.idData.stamp=false;}
       if(defects.includes('form')||defects.includes('combined')){const mode=Math.floor(rand()*4);if(mode===0)visitor.formData.room='F04-09';if(mode===1)visitor.formData.job='星の管理人';if(mode===2)visitor.formData.reason='I return because yesterday future.';if(mode===3)visitor.formData.approved=false;}
       if(vip==='42'){visitor.person={...p,name:'42',id:'424242424242',job:'42',features:'顔に巨大な42の渦',tags:['42Face'],room:'F03-02',phone:'4122',roommate:'Francis Mossesの同居人'};visitor.residentName='42';visitor.truth=false;visitor.listed=false;visitor.faceTags=['42Face'];visitor.idData={...visitor.person,id:'424242424242',stamp:true};visitor.formData={...visitor.person,job:'42',reason:'42'};visitor.appearanceIssue=true;visitor.idIssue=true;visitor.formIssue=true;}
@@ -108,19 +126,19 @@
       g.campaignStats.visitorCount=(g.campaignStats.visitorCount||0)+list.length;
       g.campaignStats.doppelVisitors=(g.campaignStats.doppelVisitors||0)+list.filter(v=>!v.truth).length;
     }
-    // Each campaign day includes visual, document, and phone-verifiable evidence; one visitor may carry multiple layers on low-population days.
-    if(isCampaign()&&list.length){
-      let visualTarget=list.find(v=>!v.truth&&!v.vip);
-      if(!visualTarget)visualTarget=list.find(v=>!v.vip);
-      if(visualTarget&&visualTarget.truth){visualTarget.truth=false;g.campaignStats.doppelVisitors=(g.campaignStats.doppelVisitors||0)+1;}
-      if(visualTarget){visualTarget.defects=[...new Set([...(visualTarget.defects||[]),'appearance'])];visualTarget.appearanceIssue=true;visualTarget.faceTags=[...(visualTarget.faceTags||[]),'extraEyes'];visualTarget.posterIndex=Math.floor(rand()*NW_DATA.posterNames.length);visualTarget.poster=true;}
-      const impostors=list.filter(v=>!v.truth&&!v.vip);
-      const documentTarget=impostors[1]||impostors[0];
-      if(documentTarget){documentTarget.defects=[...new Set([...(documentTarget.defects||[]),'id'])];documentTarget.idIssue=true;documentTarget.idData.expiry='01/54';}
-      let phoneTarget=impostors.find(v=>phoneNames.has(v.person.name))||list.find(v=>!v.vip&&phoneNames.has(v.person.name));
-      if(phoneTarget){if(phoneTarget.truth){phoneTarget.truth=false;g.campaignStats.doppelVisitors=(g.campaignStats.doppelVisitors||0)+1;}phoneTarget.redHanded=true;phoneTarget.appearanceIssue=true;phoneTarget.defects=[...new Set([...(phoneTarget.defects||[]),'appearance'])];phoneTarget.faceTags=[...new Set([...(phoneTarget.faceTags||[]),'extraEyes'])];}
-    }
-    g.visitors=list;g.visitorIndex=0;g.checklist={};g.actions=[];g.currentEvent=null;store();
+    // Guarantee a wanted-poster Doppel in Campaign and Arcade shifts.
+    if((isCampaign()||isArcade())&&list.length){
+      let visualTarget=list.find(v=>!v.truth&&!v.vip);if(!visualTarget)visualTarget=list.find(v=>!v.vip);
+      if(visualTarget&&visualTarget.truth){markDoppel(visualTarget);if(isCampaign())g.campaignStats.doppelVisitors=(g.campaignStats.doppelVisitors||0)+1;}
+      if(visualTarget){visualTarget.defects=[...new Set([...(visualTarget.defects||[]),'appearance'])];visualTarget.appearanceIssue=true;visualTarget.faceTags=[...(visualTarget.faceTags||[]),'extraEyes'];visualTarget.posterIndex=nextPosterIndex();visualTarget.poster=true;}
+      if(isCampaign()){
+        const impostors=list.filter(v=>!v.truth&&!v.vip);const documentTarget=impostors[1]||impostors[0];
+        if(documentTarget){documentTarget.defects=[...new Set([...(documentTarget.defects||[]),'id'])];documentTarget.idIssue=true;documentTarget.idData.expiry='01/54';}
+        const redHandedNames=['Albertsky Peachman','Alf Cappuccin','Dr. W. Afton','Elenois Sverchzt','Francis Mosses','Izaack Gauss','Lois Stilnsky','Margarette Bubbles','Mia Stone','Rafttellyn Cappuccin','Robertsky Peachman','Roman Stilnsky','Selenne Sverchzt'];
+        const phoneTarget=impostors.find(v=>redHandedNames.includes(v.person.name))||list.find(v=>!v.vip&&redHandedNames.includes(v.person.name));
+        if(phoneTarget){if(phoneTarget.truth){markDoppel(phoneTarget);g.campaignStats.doppelVisitors=(g.campaignStats.doppelVisitors||0)+1;}phoneTarget.redHanded=true;phoneTarget.appearanceIssue=true;phoneTarget.defects=[...new Set([...(phoneTarget.defects||[]),'appearance'])];phoneTarget.faceTags=[...new Set([...(phoneTarget.faceTags||[]),'extraEyes'])];}
+      }
+    }    g.visitors=list;g.visitorIndex=0;g.checklist={};g.actions=[];g.currentEvent=null;store();
     const candidateNames=list.filter(v=>!v.vip).map(v=>v.residentName);
     const scheduleCount=candidateNames.length?Math.min(candidateNames.length,Math.max(4,Math.min(9,Math.floor(4+rand()*6)))):0;
     for(let i=candidateNames.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[candidateNames[i],candidateNames[j]]=[candidateNames[j],candidateNames[i]];}
@@ -207,7 +225,7 @@
   function campaignStats(){
     if(!isCampaign())return null;
     g.campaignStats=g.campaignStats||{};
-    const defaults={admittedNames:[],reportedNames:[],visitorCount:0,doppelVisitors:0,admittedVisitors:0,admittedDoppels:0,capturedDoppels:0,rejectedResidents:0,humanKilled:0,seenNames:[]};
+    const defaults={admittedNames:[],reportedNames:[],visitorCount:0,doppelVisitors:0,admittedVisitors:0,admittedDoppels:0,capturedDoppels:0,rejectedResidents:0,humanKilled:0,cleanedApartments:0,seenNames:[]};
     for(const [key,value] of Object.entries(defaults))if(g.campaignStats[key]===undefined)g.campaignStats[key]=value;
     for(const key of ['admittedNames','reportedNames','seenNames'])if(!Array.isArray(g.campaignStats[key]))g.campaignStats[key]=[];
     return g.campaignStats;
