@@ -502,6 +502,7 @@ async function runGameTests() {
   assert.equal(fatalResult.retryDay, 2, 'the failed day is recorded as the retry checkpoint');
   assert.equal(fatalCampaign.save.campaign.day, 2, 'campaign progress stays on the failed day');
   assert.equal(fatalCampaign.save.campaign.retryDay, 2, 'same-day retry marker is persisted');
+  assert.equal(fatalCampaign.save.campaign.runStats.doppelVisitors, 1, 'campaign totals are saved alongside the retry point');
   assert.equal(fatalCampaign.active, null, 'fatal shift state is closed before retry');
   // A nightmare VIP is safe to admit even though its appearance is not human.
   const vip42 = asVisitor(nightRoster[4], {
