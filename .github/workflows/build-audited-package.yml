@@ -1,0 +1,103 @@
+name: Build audited Neighbor Watch package
+
+on:
+  push:
+    paths:
+      - 'audit-patch/**'
+      - '.github/workflows/build-audited-package.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: neighbor-watch-audit-package
+  cancel-in-progress: false
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.1'
+
+      - name: Reconstruct audit patch and validate it
+        shell: bash
+        run: |
+          set -euo pipefail
+          unzip -q neighbor-watch.zip -d .
+
+          # Recreate the small pause-screen hotfix that was already present
+          # in the baseline used to generate this patch.
+          printf '\n/* Keep the pause screen hidden until the player explicitly pauses. */\n.pause-overlay[hidden]{display:none!important}\n' >> neighbor-watch/public/css/style.css
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const file = 'neighbor-watch/test/smoke.js';
+          let source = fs.readFileSync(file, 'utf8');
+          const marker = 'const face = dataContext.window.NW_FACE;';
+          if (!source.includes(marker)) throw new Error('Audit baseline mismatch: smoke test marker not found');
+          const additions = [
+            "const playHtml = fs.readFileSync(path.join(root, 'public/play.html'), 'utf8');",
+            "const stylesheet = fs.readFileSync(path.join(root, 'public/css/style.css'), 'utf8');",
+            "assert.match(playHtml, /id=\"pause-overlay\" hidden/, 'pause overlay starts hidden');",
+            "assert.match(stylesheet, /\\.pause-overlay\\[hidden\\]\\s*\\{\\s*display:\\s*none\\s*!important\\s*;?\\s*\\}/, 'hidden pause overlay is not displayed by CSS');"
+          ].join('\n');
+          source = source.replace(marker, marker + '\n' + additions);
+          fs.writeFileSync(file, source);
+          NODE
+
+          cat audit-patch/part-*.b64 > /tmp/nw-audit.patch.br.b64
+          test "$(wc -c < /tmp/nw-audit.patch.br.b64 | tr -d ' ')" = "60932"
+          node <<'NODE'
+          const fs = require('node:fs');
+          const zlib = require('node:zlib');
+          const encoded = fs.readFileSync('/tmp/nw-audit.patch.br.b64', 'utf8').trim();
+          const patch = zlib.brotliDecompressSync(Buffer.from(encoded, 'base64'));
+          fs.writeFileSync('/tmp/nw-audit.patch', patch);
+          console.log('Decoded audit patch bytes:', patch.length);
+          NODE
+          patch --dry-run -p1 -d neighbor-watch < /tmp/nw-audit.patch
+
+      - name: Apply audited source
+        shell: bash
+        run: |
+          set -euo pipefail
+          patch -p1 -d neighbor-watch < /tmp/nw-audit.patch
+
+      - name: Install dependencies and run full test suite
+        working-directory: neighbor-watch
+        run: |
+          npm install --omit=dev --no-audit --no-fund
+          npm test
+
+      - name: Package audited source for Render
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f neighbor-watch.zip
+          zip -qr -9 neighbor-watch.zip neighbor-watch
+          unzip -t neighbor-watch.zip
+          sha256sum neighbor-watch.zip
+
+      - name: Publish audited package to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add neighbor-watch.zip
+          if git diff --cached --quiet; then
+            echo "Audited package is already up to date."
+          else
+            git commit -m "Build audited Neighbor Watch v1.2.0 package"
+            git push origin HEAD:main
+          fi
