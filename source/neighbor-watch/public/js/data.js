@@ -50,3 +50,28 @@ window.NW_DATA = {
     ['first-shift','初出勤','初めての勤務を終える'],['clean-day','完璧な一日','Sランクを獲得する'],['overtime','OVERTIME','アーケードで1000点以上を獲得する'],['five-days','勤務完了','キャンペーン5日間を生き延びる'],['night-shift','夜勤','ナイトメアモードを解放する'],['chester','チェスター博士？','クイズ5問に全問正解する'],['collector','収集家','指名手配ポスターを10枚集める'],['all-posters','完全収集','ポスター32枚をすべて集める'],['false-alarm','誤報','DDDへ誤通報する'],['double-check','慎重派','電話を使って真偽確認する']
   ]
 };
+
+
+/* Original NEIGHBOR WATCH dialogue profiles; written for this fan remake. */
+window.NW_DATA.personalities = {
+  'Roman Stilnsky': { label:'几帳面な現実主義者', summary:'手順と数字を重んじ、曖昧な答えを好まない。', greeting:'こんばんは。必要な確認をお願いします。', answers:{face:'顔に問題があるようには思いませんが。',papers:'書類はいつも同じ場所に入れています。',list:'予定表は朝に確認しました。',reason:'帳簿の仕事を終えて帰ってきました。',personality:'無駄話は苦手です。要点だけお願いします。'} },
+  'Lois Stilnsky': { label:'世話好きな社交家', summary:'近所の出来事によく気づき、相手を気遣う。', greeting:'こんばんは。今日は少し冷えますね。', answers:{face:'まあ、何か付いていますか？教えてください。',papers:'買い物の帰りに、忘れず持ってきましたよ。',list:'予定表？もちろん見ています。',reason:'食料品を買ってから戻りました。',personality:'ご近所のことは気になります。困っている人はいませんか？'} },
+  'Robertsky Peachman': { label:'寡黙な職人気質', summary:'必要なことだけ短く話し、仕事道具を大切にする。', greeting:'……戻りました。', answers:{face:'問題ありません。',papers:'確認してください。',list:'見ました。',reason:'靴の修理をしていました。',personality:'仕事以外の話はあまりしません。'} },
+  'Albertsky Peachman': { label:'負けず嫌いな話し好き', summary:'兄弟や仕事の話になると説明が長くなる。', greeting:'やあ。今日も仕事は順調でしたよ。', answers:{face:'顔ですか？兄と似ていると言われますね。',papers:'ほら、きちんと揃っています。',list:'兄の分も確認しておきました。',reason:'工房で靴を直していました。',personality:'競争するのは好きですが、手は抜きません。'} },
+  'Angus Ciprianni': { label:'自信家の実業家', summary:'自分の判断に自信があり、少し大げさに話す。', greeting:'こんばんは。話は手短に頼みます。', answers:{face:'この顔は私の看板のようなものです。',papers:'必要な書類はすべて揃えました。',list:'予定は秘書にも確認させています。',reason:'商談を終えたところです。',personality:'私は自分の時間を大切にしています。'} },
+  'Elenois Sverchzt': { label:'静かで観察力が高い', summary:'落ち着いた口調で、細かな違いをよく覚えている。', greeting:'こんばんは。お疲れさまです。', answers:{face:'いつもと同じだと思います。',papers:'丁寧に確認していただいて大丈夫です。',list:'今日の予定は覚えています。',reason:'家の用事を済ませていました。',personality:'静かな時間が好きです。人の変化にはよく気づきます。'} },
+  'Selenne Sverchzt': { label:'明るい表現者', summary:'感情を表に出し、身振りを交えて話す。', greeting:'こんばんは！撮影が長引いてしまって。', answers:{face:'メイクはいつもと同じですよ。変ですか？',papers:'はい、忘れず持ってきました！',list:'もちろんです。予定は大切ですから。',reason:'撮影の仕事から戻りました。',personality:'人と話すのは好きです。退屈は苦手ですね。'} },
+  'Arnold Schmicht': { label:'物語好きの夢想家', summary:'身の回りの出来事を物語のように語る。', greeting:'やあ。今日は妙な話を聞きましてね。', answers:{face:'小説の登場人物のような顔でしょう？',papers:'書類にも物語はありますが、これは本物です。',list:'予定は章立てのように覚えています。',reason:'原稿を書き終えて戻ったところです。',personality:'何事にも物語があると思っています。'} },
+  'Gloria Schmicht': { label:'慎重な聞き役', summary:'相手の話をよく聞き、落ち着いて返答する。', greeting:'こんばんは。確認を始めてください。', answers:{face:'何か気になるところがありましたか？',papers:'どうぞ。ゆっくり確認してください。',list:'今日は予定どおりでした。',reason:'銀行の仕事を終えて帰宅しました。',personality:'まず相手の話を聞くようにしています。'} },
+  'Izaack Gauss': { label:'好奇心旺盛な記者', summary:'質問を返すことが多く、新しい情報に敏感。', greeting:'こんばんは。何か事件でもありましたか？', answers:{face:'どう見えます？記事にできる変化でしょうか。',papers:'細かいところまで調べるんですね。',list:'予定の変更があれば取材しています。',reason:'取材先から戻ってきました。',personality:'知らないことを調べるのが好きです。'} },
+  'Margarette Bubbles': { label:'陽気な職人肌', summary:'冗談を交えながら、布や服の話をする。', greeting:'こんばんは。今日は良い布が手に入りましたよ。', answers:{face:'顔より服の仕立てを見てくださいな。',papers:'折り目がつかないようにしまっていました。',list:'仕事の予定は手帳に書いています。',reason:'仕立ての仕事を終えました。',personality:'手を動かして何かを作るのが好きです。'} },
+  'Nacha Mikaelys': { label:'面倒見のよい料理人', summary:'家族と食事の話題をよく出し、実用的に話す。', greeting:'こんばんは。夕食の支度がまだ残っていて。', answers:{face:'厨房の煙で少し疲れているだけですよ。',papers:'汚れないように包んで持ってきました。',list:'家族の予定も一緒に確認しました。',reason:'厨房の仕事を終えて戻りました。',personality:'食事はみんなで取るのが一番です。'} },
+  'Anastacha Mikaelys': { label:'気まぐれな学生', summary:'短い返事が多く、興味のない話は流しがち。', greeting:'mmm……帰ってきたよ。', answers:{face:'whatever。別に変じゃないと思うけど。',papers:'持ってるよ。ほら。',list:'見たと思う。たぶん。',reason:'学校から帰ってきたところ。',personality:'長い話は苦手。聞きたいことだけ聞いて。'} },
+  'Mia Stone': { label:'親切な教育者', summary:'相手に分かるように説明し、丁寧な言葉を使う。', greeting:'こんばんは。必要なら説明しますね。', answers:{face:'気になる点があれば、一つずつ教えてください。',papers:'読みやすいように整えてあります。',list:'授業の予定と合わせて確認しました。',reason:'授業を終えて帰宅しました。',personality:'相手が理解できるように話すことを心がけています。'} },
+  'Dr. W. Afton': { label:'理屈を重んじる研究者', summary:'理由や根拠を尋ね、技術的な言い回しをする。', greeting:'こんばんは。確認の根拠を聞かせてください。', answers:{face:'観察結果だけで結論を出すのは早計です。',papers:'記載事項の整合性を確認してください。',list:'予定は記録と照合すれば分かります。',reason:'研究室で作業を続けていました。',personality:'結論には根拠が必要です。推測だけでは不十分でしょう。'} },
+  'Francis Mosses': { label:'穏やかな働き者', summary:'控えめで、相手に負担をかけないようにする。', greeting:'こんばんは。遅くなってすみません。', answers:{face:'仕事で少し疲れているだけです。',papers:'こちらで合っていますか？',list:'予定は確認してあります。',reason:'配達を終えて戻ったところです。',personality:'特別なことはありません。毎日を静かに過ごしています。'} },
+  'Steven Rudboys': { label:'活動的でせっかちな人', summary:'移動や予定の話をよくし、テンポよく答える。', greeting:'こんばんは。フライトから戻りました！', answers:{face:'大丈夫です。急いでいるので先に進めてください。',papers:'全部あります。確認してください。',list:'次の予定も頭に入っています。',reason:'飛行の仕事を終えました。',personality:'じっとしているより動いている方が好きです。'} },
+  'Mclooy Rudboys': { label:'昔気質の愛煙家', summary:'ぶっきらぼうだが、家族のことは気にかける。', greeting:'……おう。戻ったぞ。', answers:{face:'帽子も顔も、いつもどおりだ。',papers:'ほらよ。なくすなよ。',list:'息子の予定なら知っている。',reason:'散歩してきただけだ。',personality:'昔のやり方が一番だ。余計なことは聞くな。'} },
+  'Alf Cappuccin': { label:'誇り高い法律家', summary:'言葉を選び、規則や権利の話を好む。', greeting:'こんばんは。手続きに従いましょう。', answers:{face:'外見だけで判断することは避けるべきです。',papers:'書類の形式に問題はないはずです。',list:'記録を確認する権利は双方にあります。',reason:'法律事務所で仕事をしていました。',personality:'規則は公平に適用されるべきだと考えます。'} },
+  'Rafttellyn Cappuccin': { label:'穏やかな家庭派', summary:'買い物や家のことを中心に、柔らかい口調で話す。', greeting:'こんばんは。買い物袋を置いてもいいかしら。', answers:{face:'今日は風が強かったので髪が乱れたかも。',papers:'バッグの内ポケットに入れていました。',list:'夫の予定も一緒に見ています。',reason:'買い物を済ませて戻りました。',personality:'家で落ち着いて過ごす時間が好きです。'} }
+};
