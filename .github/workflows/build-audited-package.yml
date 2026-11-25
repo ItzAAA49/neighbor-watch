@@ -29,13 +29,15 @@ jobs:
         with:
           node-version: '20.18.1'
 
-      - name: Build the readable main menu
+      - name: Build package from maintained source
         shell: bash
         run: |
           set -euo pipefail
-          unzip -q neighbor-watch.zip -d .
+          test -f source/neighbor-watch/package.json
+          rm -rf neighbor-watch
+          cp -a source/neighbor-watch neighbor-watch
           node scripts/rebuild-readable-menu.js neighbor-watch
-          node -e "const p=require('./neighbor-watch/package.json'); if(p.version !== '1.4.0') process.exit(1); console.log('Verified package:',p.version)"
+          node -e "const p=require('./neighbor-watch/package.json'); if(p.version !== '1.4.0') throw new Error('Unexpected package version '+p.version); console.log('Verified package:',p.version)"
 
       - name: Install dependencies and run all tests
         working-directory: neighbor-watch
@@ -55,7 +57,7 @@ jobs:
             exit 1
           fi
           sha256sum neighbor-watch.zip
-          stat -c 'Readable menu deploy ZIP size: %s bytes' neighbor-watch.zip
+          stat -c 'Audited deploy ZIP size: %s bytes' neighbor-watch.zip
 
       - name: Publish verified package to main
         shell: bash
@@ -67,6 +69,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "Verified package is already up to date."
           else
-            git commit -m "Publish Neighbor Watch v1.4.0 readable menu"
+            git commit -m "Publish tested Neighbor Watch maintenance build"
             git push origin HEAD:main
           fi
