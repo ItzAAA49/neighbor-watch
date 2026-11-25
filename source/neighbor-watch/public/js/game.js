@@ -365,9 +365,13 @@
     let ending=null,next=false,nextLabel='次の日へ進む';
     if(isCampaign()){
       save.campaign.dead=[...new Set([...(save.campaign.dead||[]),...(g.dead||[])])];
-      if(!dead&&g.day<5){save.campaign.day=g.day;save.campaign.retryDay=0;next=true;}
-      else if(!dead&&g.day===5){save.campaign.completed=true;save.campaign.unlockedNightmare=true;save.campaign.day=1;save.campaign.retryDay=0;save.campaign.dead=[];ending=campaignEnding();earn('five-days');earn('night-shift');}
-      else{save.campaign.day=g.day;save.campaign.retryDay=g.day;save.campaign.completed=false;}
+      if(!dead&&g.day<5){
+        save.campaign.day=g.day;save.campaign.retryDay=0;save.campaign.runStats=g.campaignStats;next=true;
+      }else if(!dead&&g.day===5){
+        save.campaign.completed=true;save.campaign.unlockedNightmare=true;save.campaign.day=1;save.campaign.retryDay=0;save.campaign.dead=[];ending=campaignEnding();earn('five-days');earn('night-shift');save.campaign.runStats=null;
+      }else{
+        save.campaign.day=g.day;save.campaign.retryDay=g.day;save.campaign.completed=false;save.campaign.runStats=g.campaignStats;
+      }
     }
     if(isTutorial())next=false;
     if(isTutorial())earn('first-shift');
