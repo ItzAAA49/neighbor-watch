@@ -124,7 +124,7 @@ function buildMenu() {
   ].join('\n');
 
   const oldCss = fs.readFileSync(cssPath, 'utf8');
-  if (!oldCss.includes('Main menu readability — version 1.4.0')) {
+  if (!oldCss.includes('Main menu readability pass — version 1.4.0')) {
     fs.writeFileSync(cssPath, oldCss + menuCss);
   }
 
