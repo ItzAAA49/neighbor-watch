@@ -660,3 +660,8 @@
 .tutorial-steps li:last-child{border-bottom:0}
 .tutorial-steps b{color:#302719}
 @media(max-width:440px){.tutorial-steps{font-size:11px;line-height:1.75;padding-left:19px}}
+
+
+.directory-eye-note{margin:8px 0 0;padding:8px 9px;border-left:3px solid #8c7650;background:#f4ead6;color:#34291b;font-size:12px;line-height:1.6;font-weight:700}
+.directory-eye-note small{display:block;color:#65543a;font-size:9px;font-weight:400;margin-bottom:2px}
+.tutorial-steps{color:#342a1d}
