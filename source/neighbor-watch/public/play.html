@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#211d19"><title>審査室 — NEIGHBOR WATCH</title><link rel="icon" href="/assets/mark.svg" type="image/svg+xml"><link rel="stylesheet" href="/css/style.css"></head>
 <body class="play-body"><div class="grain"></div>
-<header class="play-header"><a class="brand" href="/"><span class="brand-mark">D</span><span>D.D.D. <small>NEIGHBOR WATCH</small></span></a><div class="shift-meta"><span id="mode-label">キャンペーン</span><b id="day-label">1955年 2月 1日</b><span id="visitor-counter">来訪者 1 / 6</span><span id="time-label" class="time-label">残り 06:00</span></div><button class="button button-dark small" id="pause-button">一時停止</button></header>
+<header class="play-header"><a class="brand" href="/"><span class="brand-mark">D</span><span>D.D.D. <small>NEIGHBOR WATCH</small></span></a><div class="shift-meta"><span id="mode-label">キャンペーン</span><b id="day-label">1955年 2月 1日</b><span id="visitor-counter">来訪者 1 / 6</span><span id="time-label" class="time-label">時間制限なし</span></div><button class="button button-dark small" id="pause-button">一時停止</button></header>
 <main class="booth-wrap">
   <div class="booth-scene" id="booth-scene">
     <section class="left-wall">
       <div class="wall-heading">本日の予定表 <small>TODAY'S LIST</small></div><div class="today-board" id="today-list"></div>
-      <div class="alarm-unit"><div class="alarm-lamp" id="alarm-lamp"></div><button id="emergency-button" class="emergency-button" title="緊急通報">D.D.D.<small>緊急</small></button><div class="alarm-label">緊急時のみ使用</div></div>
+      <div class="alarm-unit"><div class="alarm-lamp" id="alarm-lamp"></div><button id="emergency-button" class="emergency-button" title="緊急通報">D.D.D.<small>緊急</small></button><div class="alarm-label" id="alarm-label">緊急時のみ使用</div></div>
       <div class="phone" id="phone">
         <div class="phone-label">AUTOMATIC TELEPHONE</div><div class="phone-number" id="phone-number">----</div>
         <div class="phone-face"><div class="phone-hole-ring" id="phone-dial">
@@ -18,7 +18,7 @@
     <section class="window-section" id="window-section">
       <div class="window-frame" id="window-frame"><span class="crt-bolt bolt-tl" aria-hidden="true"></span><span class="crt-bolt bolt-tr" aria-hidden="true"></span><span class="crt-bolt bolt-bl" aria-hidden="true"></span><span class="crt-bolt bolt-br" aria-hidden="true"></span><div class="window-top"><span>VISITOR INSPECTION WINDOW</span><span class="window-status" id="window-status">待機中</span></div>
         <div class="window-glass" id="visitor-window"><div class="window-reflection"></div><div class="visitor-empty" id="visitor-empty"><span>窓口</span><b>来訪者をお待ちください</b><small>次のベルが鳴るまでお待ちください</small></div><div id="visitor-display" hidden><div id="visitor-face" class="visitor-face"></div><div class="visitor-caption"><b id="visitor-name">—</b><span id="visitor-role">—</span></div></div></div>
-        <div class="window-sill"><span>ROOM 00 / FRONT DESK</span><span id="visitor-kind">NO VISITOR</span></div>
+        <div class="window-sill"><span id="window-room-label">ROOM ??</span><span id="visitor-kind">NO VISITOR</span></div>
       </div>
       <div class="visitor-dialog" id="visitor-dialog"><span class="dialog-mark">“</span><p id="visitor-line">始業ベルが鳴るのを待ってください。</p><div class="dialog-actions"><button id="ask-button" class="text-button" disabled>質問する</button><button id="next-line" class="text-button" disabled>次のセリフ ▸</button></div></div>
       <div class="hatch-area"><div class="hatch-title">受け渡し口 <small>DOCUMENT HATCH</small></div><div class="hatch-slot"><button id="id-document" class="document-card id-card" disabled><span class="doc-stamp">D.D.D.</span><small>IDENTIFICATION</small><b>ID CARD</b><span id="id-doc-name">—</span><i>開いて確認 ↗</i></button><button id="form-document" class="document-card form-card" disabled><span class="doc-stamp">APPROVED</span><small>RESIDENCE APPLICATION</small><b>入居申請書</b><span id="form-doc-name">—</span><i>開いて確認 ↗</i></button></div><div class="hatch-rail"></div></div>
@@ -32,7 +32,7 @@
     <section class="decision-panel" id="decision-panel" aria-label="判定ボタン"><div class="decision-copy"><b>審査結果</b><small>チェックリストを完了すると判定できます</small></div><button id="admit-button" class="decision-button admit" disabled><span>✓</span>入室許可</button><button id="reject-button" class="decision-button reject" disabled><span>×</span>入室拒否</button><button id="report-button" class="decision-button report" disabled><span>!</span>D.D.D.通報</button></section>
   </div>
 </main>
-<div class="toast" id="toast" role="status"></div>
+<div class="toast" id="toast" role="status"></div><div id="fatal-fade" class="fatal-fade" hidden aria-hidden="true"></div>
 <div class="modal-backdrop" id="modal-backdrop" hidden><section class="modal-window" id="modal-window" role="dialog" aria-modal="true"><button class="modal-close" id="modal-close">×</button><div id="modal-content"></div></section></div>
 <div class="pause-overlay" id="pause-overlay" hidden><section class="pause-card"><div class="classified">D.D.D. PERSONNEL</div><h2>勤務一時停止</h2><p>窓口の状況はそのまま保存されます。</p><button id="resume-button" class="button">勤務に戻る</button><a href="/" class="text-button">メインメニューへ</a></section></div>
 <script src="/js/data.js"></script><script src="/js/face.js"></script><script src="/js/common.js"></script><script src="/js/game.js"></script></body></html>
