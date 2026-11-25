@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/build-audited-package.yml'
       - 'scripts/rebuild-readable-menu.js'
+      - 'source/neighbor-watch/**'
   workflow_dispatch:
 
 permissions:
