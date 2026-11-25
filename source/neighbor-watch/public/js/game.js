@@ -83,7 +83,7 @@
     for(let i=0;i<count;i++){
       const unused=pool.filter(person=>!used.includes(person.name));
       const unseen=isCampaign()?unused.filter(person=>!seenCampaign.has(person.name)):unused;
-      const requiredPhoneCandidate=isCampaign()&&i===0?unseen.filter(person=>phoneNames.has(person.name)):[];
+      const requiredPhoneCandidate=isCampaign()&&i===0?unused.filter(person=>phoneNames.has(person.name)).sort((a,b)=>Number(seenCampaign.has(a.name))-Number(seenCampaign.has(b.name))):[];
       const p=pick(requiredPhoneCandidate.length?requiredPhoneCandidate:(unseen.length?unseen:(unused.length?unused:pool)));if(!p)break;used.push(p.name);if(isCampaign())seenCampaign.add(p.name);
       let truth=isTutorial()?i!==2:rand()>=doppelRate();
       let vip=null;
