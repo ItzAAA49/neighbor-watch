@@ -33,7 +33,7 @@
     svg+=eye(103,t.has('crossEyeLeft')?6:0,leftIris)+eye(157,0,rightIris);
     if(t.has('tiredEyes')) svg+=`<path d="M85 151 Q103 160 121 151 M139 151 Q158 160 175 151" fill="none" stroke="#79615b" stroke-width="3"/>`;
     if(t.has('glasses')) svg+=`<g fill="none" stroke="#29251f" stroke-width="4"><circle cx="103" cy="137" r="23"/><circle cx="157" cy="137" r="23"/><path d="M126 137 H134 M80 133 L67 128 M180 133 L193 128"/></g>`;
-    if(t.has('monocle')) svg+=`<circle cx="157" cy="137" r="26" fill="none" stroke="#6a5132" stroke-width="5"/><path d="M177 155 Q198 192 191 224" fill="none" stroke="#6a5132" stroke-width="2"/>`;
+    if(t.has('monocle')) svg+=`<circle cx="103" cy="137" r="26" fill="none" stroke="#6a5132" stroke-width="5"/><path d="M83 155 Q62 192 69 224" fill="none" stroke="#6a5132" stroke-width="2"/>`;
     if(t.has('extraEyes')) svg+=`<g>${eye(130,0,night?'#b7a3b3':'#4b382b').replaceAll(String(eyeY),String(90))}</g>`;
     if(t.has('eyes6')){[[83,85],[130,76],[177,85],[91,174]].forEach(([x,y])=>{const e=eye(x,0,night?'#b7a3b3':'#4b382b').replaceAll(String(eyeY),String(y));svg+=e;});}
     if(t.has('eyes9')){[[75,92],[103,78],[130,72],[157,78],[185,92],[88,169],[112,178]].forEach(([x,y])=>{svg+=eye(x,0,night?'#b7a3b3':'#4b382b').replaceAll(String(eyeY),String(y));});}
