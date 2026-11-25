@@ -142,9 +142,9 @@
       campaign: {
         ...older.campaign,
         ...newer.campaign,
-        dead: [...new Set([...local.campaign.dead, ...remote.campaign.dead])],
+        dead: [...new Set(newer.campaign.dead)],
         unlockedNightmare: local.campaign.unlockedNightmare || remote.campaign.unlockedNightmare,
-        completed: local.campaign.completed || remote.campaign.completed,
+        completed: Boolean(newer.campaign.completed),
         retryDay: Math.max(0, Math.min(5, Math.floor(Number(newer.campaign.retryDay) || 0)))
       },
       stats: {
@@ -350,10 +350,13 @@
     navigationPending = true;
     if (mode === 'campaign' && save.campaign.retryDay) { save.campaign.retryDay = 0; setSave(save); }
     if (mode === 'campaign' && save.campaign.completed) {
+      save.campaign.completed = false;
+      save.campaign.dead = [];
       save.campaign.clownSeen = false;
       save.campaign.chesterCorrect = 0;
       save.campaign.runStats = null;
       save.campaign.retryDay = 0;
+      save.campaign.day = 1;
       setSave(save);
     }
     const game = {
