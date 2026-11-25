@@ -28,6 +28,8 @@ assert.deepEqual(unsupportedTags, [], `all resident appearance tags have a rende
 
 // 1. Static data and illustration invariants.
 assert.equal(data.normal.length, 20, 'normal roster contains 20 residents');
+assert.equal(Object.keys(data.personalities || {}).length, 20, 'every standard resident has a personality profile');
+assert.ok(data.normal.every(person => data.personalities[person.name]), 'each normal resident has a dialogue profile');
 assert.equal(data.nightmare.length, 20, 'nightmare roster contains 20 residents');
 assert.equal(data.posterNames.length, 32, 'poster collection contains 32 entries');
 assert.equal(data.quiz.length, 5, 'Chester has five quiz answers');
@@ -302,6 +304,7 @@ async function runGameTests() {
   const scheduledNames = new Set(campaign.active.visitors.filter(visitor => !visitor.vip).map(visitor => visitor.residentName));
   assert.ok(campaign.active.todayList.every(item => scheduledNames.has(item.name)), 'today list contains only people actually scheduled to arrive');
   assert.ok(campaign.active.todayList.length >= 4 && campaign.active.todayList.length <= 6, 'day-one schedule contains four to six real visitors');
+  assert.ok(campaign.active.visitors.some(visitor => visitor.poster && Number.isInteger(visitor.posterIndex)), 'Campaign guarantees a poster-bearing Doppel');
   assert.ok(!campaign.active.todayList.some(item => item.name === '42'), '42 is never listed as a resident');
   assert.ok(campaign.active.visitors.filter(visitor => visitor.vip).every(visitor => !visitor.listed), 'special visitors are not on the ordinary schedule');
   assert.equal(campaign.doc.getElementById('modal-backdrop').hidden, false, 'campaign briefing is displayed');
@@ -317,7 +320,11 @@ async function runGameTests() {
   campaign.doc.getElementById('folder-button').click();
   assert.equal(campaign.doc.getElementById('modal-backdrop').hidden, false, 'resident folder opens during emergency shutter');
   assert.ok(campaign.doc.getElementById('resident-search'), 'resident directory exposes a search input');
-  assert.ok(read('public/js/game.js').includes("p.name==='Nacha Mikaelys'?'<p class=\"directory-eye-note\""), 'the directory has a special monochrome-photo note for Nacha');
+  assert.ok(campaign.doc.getElementById('resident-note'), 'resident directory exposes a personal note field');
+  campaign.doc.getElementById('resident-note').value = '次回は話し方を確認する';
+  campaign.doc.getElementById('resident-note-save').click();
+  assert.equal(Object.values(campaign.Neighbor.getSave().residentNotes)[0], '次回は話し方を確認する', 'resident notes are saved per resident');
+  assert.ok(read('public/js/game.js').includes("p?.name==='Nacha Mikaelys'?'<p class=\"directory-eye-note\""), 'the directory has a special monochrome-photo note for Nacha');
   assert.ok(read('public/js/game.js').includes('右目：青 ／ 左目：緑'), 'Nacha eye colors are recorded beside the monochrome file');
   campaign.doc.getElementById('modal-close').click();
   campaign.doc.getElementById('emergency-button').click();
@@ -344,6 +351,40 @@ async function runGameTests() {
   assert.equal(campaign.doc.getElementById('check-count').textContent, '0 / 4 完了', 'checklist UI resets for the next visitor');
   assert.ok(campaign.active.startedAt > 0, 'the actual clock start timestamp is stored with the game state');
 
+
+  // Campaign room invasion can be repaired by an independent 3312 call.
+  const cleanupVisitor = (person, truth) => ({
+    person: { ...person }, residentName: person.name, truth, listed: true, vip: null,
+    faceTags: [...(person.tags || [])], idData: { ...person }, formData: { ...person },
+    idMissing: false, formMissing: false, appearanceIssue: !truth, idIssue: false, formIssue: false,
+    redHanded: false, personalityKey: person.name, voiceKey: person.name,
+    personalityMismatch: false, dialog: 'こんばんは。'
+  });
+  const cleanupRoster = data.normal;
+  const cleanupGame = await createGameHarness('campaign', {
+    mode: 'campaign', day: 1, dead: [], visitors: [cleanupVisitor(cleanupRoster[0], false), cleanupVisitor(cleanupRoster[1], true)],
+    visitorIndex: 0, todayList: [], checklist: {}, actions: [], phoneLog: [], invadedApartments: [],
+    campaignStats: { admittedNames: [], reportedNames: [], seenNames: [], visitorCount: 2, doppelVisitors: 1, admittedVisitors: 0, admittedDoppels: 0, capturedDoppels: 0, rejectedResidents: 0, humanKilled: 0, cleanedApartments: 0 },
+    score: 0, captures: 0, kills: 0, admitted: 0, minorMistakes: 0, errors: 0, reportErrors: 0,
+    startedAt: Date.now(), seed: 77, briefingSeenDay: 1, chesterDone: true, clownSeen: true
+  });
+  assert.equal(cleanupGame.doc.getElementById('admit-button').disabled, false, 'normal campaign decisions are available before checklist completion');
+  cleanupGame.doc.getElementById('admit-button').click();
+  assert.equal(cleanupGame.active.visitorIndex, 1, 'the Campaign continues after a Doppel admission');
+  assert.equal(cleanupGame.active.invadedApartments[0].room, cleanupRoster[0].room, 'the invaded room is recorded');
+  for (const digit of '3312') cleanupGame.doc.querySelectorAll('button').find(button => button.dataset.digit === digit).click();
+  cleanupGame.doc.getElementById('dial-call').click();
+  assert.equal(cleanupGame.doc.getElementById('modal-backdrop').hidden, false, '3312 opens the independent room cleanup selector');
+  const roomButton = cleanupGame.doc.querySelectorAll('button').find(button => button.dataset.cleanRoom === cleanupRoster[0].room);
+  assert.ok(roomButton, 'the room selector includes the invaded apartment');
+  roomButton.click();
+  assert.equal(cleanupGame.active.invadedApartments[0].cleared, true, 'the invaded room is marked clean');
+  cleanupGame.doc.getElementById('admit-button').click();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(cleanupGame.location.href, '/result', 'the campaign shift completes after cleanup');
+  const cleanupResult = JSON.parse(cleanupGame.storage[cleanupGame.Neighbor.RESULT]);
+  assert.notEqual(cleanupResult.rank, 'F', 'a cleaned apartment does not trigger the campaign failure condition');
+
   // The negative score must survive a reload and should not be clamped to zero.
   const negative = await createGameHarness('arcade', { mode: 'arcade', day: 1, visitors: [], visitorIndex: 0, score: -75, seed: 11, dead: [] });
   assert.equal(negative.active.score, -75, 'negative score survives active-game normalization');
@@ -351,6 +392,7 @@ async function runGameTests() {
   // Complete a full arcade shift using accurate checklist values and the intended action for each visitor.
   const fullArcade = await createGameHarness('arcade');
   const fullArcadeCount = fullArcade.active.visitors.length;
+  assert.ok(fullArcade.active.visitors.some(visitor => visitor.poster && Number.isInteger(visitor.posterIndex)), 'Arcade guarantees a poster-bearing Doppel');
   for (let index = 0; index < fullArcadeCount; index++) {
     const visitor = fullArcade.active.visitors[index];
     setCorrectChecklist(fullArcade, visitor);
