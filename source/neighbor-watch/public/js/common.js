@@ -12,8 +12,10 @@
   const emptySave = () => ({
     records: [],
     posters: [],
+    posterCursor: 0,
+    residentNotes: {},
     achievements: [],
-    campaign: { unlockedNightmare: false, completed: false, day: 1, retryDay: 0, dead: [], runStats: null, chesterCorrect: 0, clownSeen: false },
+    campaign: { unlockedNightmare: false, completed: false, day: 1, retryDay: 0, retrySnapshot: null, dead: [], runStats: null, chesterCorrect: 0, clownSeen: false },
     chesterBadge: false,
     stats: { captures: 0, kills: 0, admitted: 0, shifts: 0, highScore: 0, highRank: '—' },
     updatedAt: 0
@@ -40,6 +42,7 @@
     const defaults = emptySave();
     const campaignSource = isObject(source.campaign) ? source.campaign : {};
     const statsSource = isObject(source.stats) ? source.stats : {};
+    const notesSource = isObject(source.residentNotes) ? source.residentNotes : {};
     const day = Number(campaignSource.day);
     const numeric = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
     return {
@@ -47,12 +50,26 @@
       ...source,
       records: Array.isArray(source.records) ? source.records.filter(isObject).slice(-500) : [],
       posters: Array.isArray(source.posters) ? [...new Set(source.posters.map(Number).filter(n => Number.isInteger(n) && n >= 0 && n < 32))] : [],
+      posterCursor: Math.max(0, Math.min(31, Math.floor(numeric(source.posterCursor)))),
+      residentNotes: Object.fromEntries(Object.entries(notesSource).filter(([name, note]) => typeof name === 'string' && name.length > 0 && name.length <= 80 && typeof note === 'string').slice(0, 100).map(([name, note]) => [name, note.slice(0, 500)])),
       achievements: Array.isArray(source.achievements) ? [...new Set(source.achievements.filter(v => typeof v === 'string').slice(0, 200))] : [],
       campaign: {
         ...defaults.campaign,
         ...campaignSource,
         day: Math.max(1, Math.min(5, Number.isInteger(day) ? day : 1)),
         retryDay: Math.max(0, Math.min(5, Math.floor(numeric(campaignSource.retryDay)))),
+        retrySnapshot: isObject(campaignSource.retrySnapshot) ? {
+          day: Math.max(1, Math.min(5, Math.floor(numeric(campaignSource.retrySnapshot.day, 1)))),
+          dead: Array.isArray(campaignSource.retrySnapshot.dead) ? [...new Set(campaignSource.retrySnapshot.dead.filter(v => typeof v === 'string').slice(0, 100))] : [],
+          campaignStats: isObject(campaignSource.retrySnapshot.campaignStats) ? { ...campaignSource.retrySnapshot.campaignStats,
+            admittedNames: Array.isArray(campaignSource.retrySnapshot.campaignStats.admittedNames) ? campaignSource.retrySnapshot.campaignStats.admittedNames.filter(v => typeof v === 'string').slice(0, 100) : [],
+            reportedNames: Array.isArray(campaignSource.retrySnapshot.campaignStats.reportedNames) ? campaignSource.retrySnapshot.campaignStats.reportedNames.filter(v => typeof v === 'string').slice(0, 100) : [],
+            seenNames: Array.isArray(campaignSource.retrySnapshot.campaignStats.seenNames) ? campaignSource.retrySnapshot.campaignStats.seenNames.filter(v => typeof v === 'string').slice(0, 100) : [],
+            cleanedApartments: numeric(campaignSource.retrySnapshot.campaignStats.cleanedApartments)
+          } : null,
+          chesterCorrect: Math.max(0, Math.min(5, Math.floor(numeric(campaignSource.retrySnapshot.chesterCorrect)))),
+          clownSeen: Boolean(campaignSource.retrySnapshot.clownSeen)
+        } : null,
         chesterCorrect: Math.max(0, Math.min(5, Math.floor(numeric(campaignSource.chesterCorrect)))),
         clownSeen: Boolean(campaignSource.clownSeen),
         runStats: isObject(campaignSource.runStats) ? {
@@ -65,6 +82,7 @@
           capturedDoppels: numeric(campaignSource.runStats.capturedDoppels),
           rejectedResidents: numeric(campaignSource.runStats.rejectedResidents),
           humanKilled: numeric(campaignSource.runStats.humanKilled),
+          cleanedApartments: numeric(campaignSource.runStats.cleanedApartments),
           seenNames: Array.isArray(campaignSource.runStats.seenNames) ? campaignSource.runStats.seenNames.filter(v => typeof v === 'string').slice(0, 100) : []
         } : null,
         unlockedNightmare: Boolean(campaignSource.unlockedNightmare),
@@ -138,6 +156,8 @@
       ...newer,
       records: [...records.values()].sort((a, b) => String(a.createdAt || '').localeCompare(String(b.createdAt || ''))).slice(-500),
       posters: [...new Set([...local.posters, ...remote.posters])],
+      posterCursor: newer.posterCursor,
+      residentNotes: { ...older.residentNotes, ...newer.residentNotes },
       achievements: [...new Set([...local.achievements, ...remote.achievements])],
       campaign: {
         ...older.campaign,
@@ -339,60 +359,42 @@
     if (button) button.hidden = true;
   }
 
-  function startMode(mode) {
+  function startMode(mode, options = {}) {
     if (navigationPending) return;
     if (!MODES.has(mode)) { toast('選択できないゲームモードです。'); return; }
     const save = getSave();
-    if (mode === 'nightmare' && !save.campaign.unlockedNightmare) {
-      toast('ナイトメアはキャンペーンをクリアすると解放されます。');
-      return;
-    }
+    if (mode === 'nightmare' && !save.campaign.unlockedNightmare) { toast('ナイトメアはキャンペーンをクリアすると解放されます。'); return; }
     navigationPending = true;
-    if (mode === 'campaign' && save.campaign.retryDay) { save.campaign.retryDay = 0; setSave(save); }
-    if (mode === 'campaign' && save.campaign.completed) {
+    let snapshot = mode === 'campaign' && isObject(options.retrySnapshot) ? JSON.parse(JSON.stringify(options.retrySnapshot)) : null;
+    if (mode === 'campaign' && !snapshot && save.campaign.retryDay > 0 && isObject(save.campaign.retrySnapshot)) snapshot = JSON.parse(JSON.stringify(save.campaign.retrySnapshot));
+    if (mode === 'campaign' && snapshot) {
       save.campaign.completed = false;
-      save.campaign.dead = [];
-      save.campaign.clownSeen = false;
-      save.campaign.chesterCorrect = 0;
-      save.campaign.runStats = null;
-      save.campaign.retryDay = 0;
-      save.campaign.day = 1;
-      setSave(save);
+      save.campaign.day = Math.max(1, Math.min(5, Number(options.retryDay) || Number(snapshot.day) || 1));
+      save.campaign.dead = Array.isArray(snapshot.dead) ? [...snapshot.dead] : [];
+      save.campaign.runStats = isObject(snapshot.campaignStats) ? JSON.parse(JSON.stringify(snapshot.campaignStats)) : null;
+      save.campaign.chesterCorrect = Number(snapshot.chesterCorrect) || 0;
+      save.campaign.clownSeen = Boolean(snapshot.clownSeen);
+      save.campaign.retryDay = 0; save.campaign.retrySnapshot = null;
+    } else if (mode === 'campaign' && save.campaign.completed) {
+      save.campaign.completed = false; save.campaign.dead = []; save.campaign.clownSeen = false;
+      save.campaign.chesterCorrect = 0; save.campaign.runStats = null; save.campaign.retryDay = 0;
+      save.campaign.retrySnapshot = null; save.campaign.day = 1;
     }
-    const game = {
-      mode,
-      day: mode === 'campaign' && !save.campaign.completed ? Math.max(1, save.campaign.retryDay || save.campaign.day || 1) : 1,
-      dead: mode === 'campaign' && !save.campaign.completed ? [...save.campaign.dead] : [],
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-      seed: Math.floor(Math.random() * 0xFFFFFFFF),
-      visitorIndex: 0,
-      visitors: [],
-      todayList: [],
-      checklist: {},
-      actions: [],
-      score: 0,
-      captures: 0,
-      kills: 0,
-      admitted: 0,
-      minorMistakes: 0,
-      errors: 0,
-      reportErrors: 0,
-      chesterDone: false,
-      chesterCorrect: mode === 'campaign' ? Number(save.campaign.chesterCorrect || 0) : 0,
-      clownSeen: mode === 'campaign' && Boolean(save.campaign.clownSeen),
-      campaignStats: mode === 'campaign' && save.campaign.runStats ? {
-        ...save.campaign.runStats,
-        admittedNames: [...(save.campaign.runStats.admittedNames || [])],
-        reportedNames: [...(save.campaign.runStats.reportedNames || [])],
-        seenNames: [...(save.campaign.runStats.seenNames || [])]
-      } : { admittedNames: [], reportedNames: [], visitorCount: 0, doppelVisitors: 0, admittedVisitors: 0, admittedDoppels: 0, capturedDoppels: 0, rejectedResidents: 0, humanKilled: 0, seenNames: [] }
-    };
-    writeActive(game);
-    syncSave({ keepalive: true }).catch(() => {});
-    location.href = `/play?mode=${encodeURIComponent(mode)}`;
+    const day = mode === 'campaign' ? Math.max(1, Math.min(5, Number(save.campaign.day) || 1)) : 1;
+    const dead = mode === 'campaign' ? [...(save.campaign.dead || [])] : [];
+    const cloneStats = value => isObject(value) ? { ...value, admittedNames: [...(value.admittedNames || [])], reportedNames: [...(value.reportedNames || [])], seenNames: [...(value.seenNames || [])] } : { admittedNames: [], reportedNames: [], visitorCount: 0, doppelVisitors: 0, admittedVisitors: 0, admittedDoppels: 0, capturedDoppels: 0, rejectedResidents: 0, humanKilled: 0, cleanedApartments: 0, seenNames: [] };
+    const campaignStats = mode === 'campaign' ? cloneStats(save.campaign.runStats) : cloneStats(null);
+    const chesterCorrect = mode === 'campaign' ? Number(save.campaign.chesterCorrect || 0) : 0;
+    const clownSeen = mode === 'campaign' && Boolean(save.campaign.clownSeen);
+    const retrySnapshot = mode === 'campaign' ? { day, dead: [...dead], campaignStats: cloneStats(campaignStats), chesterCorrect, clownSeen } : null;
+    if (mode === 'campaign') { save.campaign.day = day; save.campaign.retryDay = 0; save.campaign.retrySnapshot = retrySnapshot; setSave(save); }
+    const game = { mode, day, dead, createdAt: Date.now(), updatedAt: Date.now(), seed: Math.floor(Math.random() * 0xFFFFFFFF),
+      visitorIndex: 0, visitors: [], todayList: [], checklist: {}, actions: [], invadedApartments: [], retrySnapshot,
+      score: 0, captures: 0, kills: 0, admitted: 0, minorMistakes: 0, errors: 0, reportErrors: 0,
+      chesterDone: false, chesterCorrect, clownSeen, campaignStats };
+    writeActive(game); syncSave({ keepalive: true }).catch(() => {});
+    location.href = '/play?mode=' + encodeURIComponent(mode);
   }
-
   function continueGame() {
     if (navigationPending) return;
     if (!active() && (Number(getSave().campaign.retryDay) || 0) > 0) { startMode('campaign'); return; }
@@ -574,6 +576,8 @@
           next.disabled = true;
           if (result.id) game.lastAdvancedResultId = result.id;
           game.day += 1;
+          game.retrySnapshot = { day: game.day, dead: [...(game.dead || [])], campaignStats: JSON.parse(JSON.stringify(game.campaignStats || {})), chesterCorrect: Number(game.chesterCorrect || 0), clownSeen: Boolean(game.clownSeen) };
+          game.invadedApartments = [];
           game.finished = false;
           game.visitorIndex = 0;
           game.visitors = [];
@@ -603,6 +607,7 @@
           const save = getSave();
           save.campaign.day = game.day;
           save.campaign.retryDay = 0;
+          save.campaign.retrySnapshot = game.retrySnapshot;
           setSave(save);
           writeActive(game);
           syncSave({ keepalive: true }).catch(() => {});
@@ -617,24 +622,15 @@
 
     const retry = el('retry-day-button');
     if (retry) {
-      const save = getSave();
-      const retryAvailable = result.mode === 'campaign' && Number(result.retryDay) === Number(result.day) &&
-        Number(save.campaign.retryDay) === Number(result.day);
-      retry.hidden = !retryAvailable;
-      retry.disabled = !retryAvailable;
+      const retrySnapshot = isObject(result.retrySnapshot) ? result.retrySnapshot : null;
+      const retryAvailable = result.mode === 'campaign' && Number(result.day) >= 1 && Number(result.day) <= 5 && Boolean(retrySnapshot);
+      retry.hidden = !retryAvailable; retry.disabled = !retryAvailable; retry.textContent = 'この日をやり直す';
       retry.onclick = () => {
-        const latest = getSave();
-        if (!retryAvailable || Number(latest.campaign.retryDay) !== Number(result.day)) {
-          retry.disabled = true;
-          retry.hidden = true;
-          toast('この日の再挑戦はすでに終了しています。');
-          return;
-        }
-        startMode('campaign');
+        if (!retryAvailable) { retry.disabled = true; retry.hidden = true; toast('この日の再挑戦データがありません。'); return; }
+        startMode('campaign', { retryDay: Number(result.day), retrySnapshot });
       };
     }
   }
-
   function flushPendingSave() {
     if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; }
     // Send a keepalive snapshot even if a debounced request has already started.
