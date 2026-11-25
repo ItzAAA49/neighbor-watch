@@ -13,7 +13,7 @@
     records: [],
     posters: [],
     achievements: [],
-    campaign: { unlockedNightmare: false, completed: false, day: 1, retryDay: 0, dead: [] },
+    campaign: { unlockedNightmare: false, completed: false, day: 1, retryDay: 0, dead: [], runStats: null },
     chesterBadge: false,
     stats: { captures: 0, kills: 0, admitted: 0, shifts: 0, highScore: 0, highRank: '—' },
     updatedAt: 0
@@ -53,6 +53,18 @@
         ...campaignSource,
         day: Math.max(1, Math.min(5, Number.isInteger(day) ? day : 1)),
         retryDay: Math.max(0, Math.min(5, Math.floor(numeric(campaignSource.retryDay)))),
+        runStats: isObject(campaignSource.runStats) ? {
+          admittedNames: Array.isArray(campaignSource.runStats.admittedNames) ? campaignSource.runStats.admittedNames.filter(v => typeof v === 'string').slice(0, 100) : [],
+          reportedNames: Array.isArray(campaignSource.runStats.reportedNames) ? campaignSource.runStats.reportedNames.filter(v => typeof v === 'string').slice(0, 100) : [],
+          visitorCount: numeric(campaignSource.runStats.visitorCount),
+          doppelVisitors: numeric(campaignSource.runStats.doppelVisitors),
+          admittedVisitors: numeric(campaignSource.runStats.admittedVisitors),
+          admittedDoppels: numeric(campaignSource.runStats.admittedDoppels),
+          capturedDoppels: numeric(campaignSource.runStats.capturedDoppels),
+          rejectedResidents: numeric(campaignSource.runStats.rejectedResidents),
+          humanKilled: numeric(campaignSource.runStats.humanKilled),
+          seenNames: Array.isArray(campaignSource.runStats.seenNames) ? campaignSource.runStats.seenNames.filter(v => typeof v === 'string').slice(0, 100) : []
+        } : null,
         unlockedNightmare: Boolean(campaignSource.unlockedNightmare),
         completed: Boolean(campaignSource.completed),
         dead: Array.isArray(campaignSource.dead) ? [...new Set(campaignSource.dead.filter(v => typeof v === 'string'))] : []
