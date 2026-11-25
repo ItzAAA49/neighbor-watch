@@ -13,7 +13,7 @@
     records: [],
     posters: [],
     achievements: [],
-    campaign: { unlockedNightmare: false, completed: false, day: 1, dead: [] },
+    campaign: { unlockedNightmare: false, completed: false, day: 1, retryDay: 0, dead: [] },
     chesterBadge: false,
     stats: { captures: 0, kills: 0, admitted: 0, shifts: 0, highScore: 0, highRank: '—' },
     updatedAt: 0
@@ -52,6 +52,7 @@
         ...defaults.campaign,
         ...campaignSource,
         day: Math.max(1, Math.min(5, Number.isInteger(day) ? day : 1)),
+        retryDay: Math.max(0, Math.min(5, Math.floor(numeric(campaignSource.retryDay)))),
         unlockedNightmare: Boolean(campaignSource.unlockedNightmare),
         completed: Boolean(campaignSource.completed),
         dead: Array.isArray(campaignSource.dead) ? [...new Set(campaignSource.dead.filter(v => typeof v === 'string'))] : []
@@ -129,7 +130,8 @@
         ...newer.campaign,
         dead: [...new Set([...local.campaign.dead, ...remote.campaign.dead])],
         unlockedNightmare: local.campaign.unlockedNightmare || remote.campaign.unlockedNightmare,
-        completed: local.campaign.completed || remote.campaign.completed
+        completed: local.campaign.completed || remote.campaign.completed,
+        retryDay: Math.max(0, Math.min(5, Math.floor(Number(newer.campaign.retryDay) || 0)))
       },
       stats: {
         captures: Math.max(localStats.captures, remoteStats.captures),
@@ -252,13 +254,16 @@
 
   function refreshHome() {
     const activeGame = active();
+    const save = getSave();
+    const retryDay = Number(save.campaign.retryDay) || 0;
     const continueButton = document.getElementById('continue-button');
     const continueNote = document.getElementById('continue-note');
-    if (continueButton) continueButton.disabled = !activeGame;
-    if (continueNote) continueNote.textContent = activeGame ? `${activeGame.day || 1}日目の勤務が保存されています` : '進行中の勤務記録はありません';
-    const save = getSave();
+    if (continueButton) continueButton.disabled = !activeGame && !retryDay;
+    if (continueNote) continueNote.textContent = activeGame ? `${activeGame.day || 1}日目の勤務が保存されています` : retryDay ? `${retryDay}日目の再挑戦が保存されています` : '進行中の勤務記録はありません';
     const nightmareLock = document.getElementById('nightmare-lock');
     if (nightmareLock) nightmareLock.textContent = save.campaign.unlockedNightmare ? '解放済み' : 'キャンペーンクリアで解放';
+    const nightmareButton = document.querySelector('[data-mode="nightmare"]');
+    if (nightmareButton) nightmareButton.disabled = !save.campaign.unlockedNightmare;
     const username = readStorage(USER);
     if (username) setStatus(`${username} としてログイン中`);
     const logoutButton = document.getElementById('logout-button');
@@ -274,7 +279,8 @@
       await restoreRemote();
     } finally {
       refreshHome();
-      launchButtons.forEach(button => { button.disabled = false; });
+      const latestSave = getSave();
+      launchButtons.forEach(button => { button.disabled = button.dataset?.mode === 'nightmare' && !latestSave.campaign.unlockedNightmare; });
       navigationPending = false;
     }
   }
@@ -328,9 +334,10 @@
       return;
     }
     navigationPending = true;
+    if (mode === 'campaign' && save.campaign.retryDay) { save.campaign.retryDay = 0; setSave(save); }
     const game = {
       mode,
-      day: mode === 'campaign' && !save.campaign.completed ? Math.max(1, save.campaign.day || 1) : 1,
+      day: mode === 'campaign' && !save.campaign.completed ? Math.max(1, save.campaign.retryDay || save.campaign.day || 1) : 1,
       dead: mode === 'campaign' && !save.campaign.completed && save.campaign.day > 1 ? [...save.campaign.dead] : [],
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -357,6 +364,7 @@
 
   function continueGame() {
     if (navigationPending) return;
+    if (!active() && (Number(getSave().campaign.retryDay) || 0) > 0) { startMode('campaign'); return; }
     if (active()) {
       navigationPending = true;
       syncSave({ keepalive: true }).catch(() => {});
@@ -451,6 +459,8 @@
     setText('result-captures', result.captures || 0);
     setText('result-kills', result.kills || 0);
     setText('result-admitted', result.admitted || 0);
+    setText('result-misadmitted', result.misadmitted || 0);
+    setText('result-minor-mistakes', result.minorMistakes || 0);
     setText('result-score', Number(result.score || 0).toLocaleString());
 
     const details = el('result-details');
@@ -559,6 +569,7 @@
           game.seed = Math.floor(Math.random() * 0xFFFFFFFF);
           const save = getSave();
           save.campaign.day = game.day;
+          save.campaign.retryDay = 0;
           setSave(save);
           writeActive(game);
           syncSave({ keepalive: true }).catch(() => {});
@@ -569,6 +580,25 @@
         next.disabled = true;
         next.onclick = null;
       }
+    }
+
+    const retry = el('retry-day-button');
+    if (retry) {
+      const save = getSave();
+      const retryAvailable = result.mode === 'campaign' && Number(result.retryDay) === Number(result.day) &&
+        Number(save.campaign.retryDay) === Number(result.day);
+      retry.hidden = !retryAvailable;
+      retry.disabled = !retryAvailable;
+      retry.onclick = () => {
+        const latest = getSave();
+        if (!retryAvailable || Number(latest.campaign.retryDay) !== Number(result.day)) {
+          retry.disabled = true;
+          retry.hidden = true;
+          toast('この日の再挑戦はすでに終了しています。');
+          return;
+        }
+        startMode('campaign');
+      };
     }
   }
 
