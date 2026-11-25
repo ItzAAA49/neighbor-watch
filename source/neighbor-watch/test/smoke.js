@@ -377,6 +377,9 @@ async function runGameTests() {
   const tutorial = await createGameHarness('tutorial');
   assert.equal(tutorial.active.visitors.length, 4, 'tutorial has four guided visitors');
   assert.equal(tutorial.active.startedAt, 0, 'tutorial briefing does not consume time');
+  assert.match(tutorial.doc.getElementById('modal-content').innerHTML, /住人名簿/);
+  assert.match(tutorial.doc.getElementById('modal-content').innerHTML, /4桁/);
+  assert.match(tutorial.doc.getElementById('modal-content').innerHTML, /3312/);
   tutorial.doc.getElementById('tut-begin').click();
   assert.ok(tutorial.active.startedAt > 0, 'tutorial timer starts when the agent begins training');
   assert.equal(tutorial.doc.getElementById('admit-button').disabled, true, 'decisions remain disabled until all checks are recorded');
