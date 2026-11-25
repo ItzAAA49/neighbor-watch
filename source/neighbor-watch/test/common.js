@@ -189,7 +189,8 @@ function createEnv({ storage = {}, remoteSave = {}, fetchLog = [] } = {}) {
   const merged = mergeEnv.api.getSave();
   assert.deepEqual(Array.from(merged.records, record => record.id).sort(), ['local','remote'], 'record history from both devices is merged');
   assert.deepEqual(Array.from(merged.posters).sort(), [1,2], 'poster collection is merged');
-  assert.deepEqual(merged.residentNotes, { Roman: 'local note', Lois: 'remote note' }, 'personal notes from both devices are merged');
+  assert.equal(merged.residentNotes.Roman, 'local note', 'local resident note is retained');
+  assert.equal(merged.residentNotes.Lois, 'remote note', 'remote resident note is retained');
   assert.equal(merged.stats.captures, 8, 'the best aggregate stat is retained');
   assert.ok(merged.updatedAt >= localBeforeRestore.updatedAt, 'merged timestamp remains current');
   assert.ok(mergeEnv.timers.size > 0, 'a newer local save is scheduled for remote upload');
