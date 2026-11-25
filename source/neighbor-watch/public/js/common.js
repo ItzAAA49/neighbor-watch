@@ -350,7 +350,7 @@
     const game = {
       mode,
       day: mode === 'campaign' && !save.campaign.completed ? Math.max(1, save.campaign.retryDay || save.campaign.day || 1) : 1,
-      dead: mode === 'campaign' && !save.campaign.completed && save.campaign.day > 1 ? [...save.campaign.dead] : [],
+      dead: mode === 'campaign' && !save.campaign.completed ? [...save.campaign.dead] : [],
       createdAt: Date.now(),
       updatedAt: Date.now(),
       seed: Math.floor(Math.random() * 0xFFFFFFFF),
@@ -367,7 +367,12 @@
       errors: 0,
       reportErrors: 0,
       chesterDone: false,
-      campaignStats: { admittedNames: [], reportedNames: [], visitorCount: 0, doppelVisitors: 0, admittedVisitors: 0, admittedDoppels: 0, capturedDoppels: 0, rejectedResidents: 0, humanKilled: 0, seenNames: [] }
+      campaignStats: mode === 'campaign' && save.campaign.runStats ? {
+        ...save.campaign.runStats,
+        admittedNames: [...(save.campaign.runStats.admittedNames || [])],
+        reportedNames: [...(save.campaign.runStats.reportedNames || [])],
+        seenNames: [...(save.campaign.runStats.seenNames || [])]
+      } : { admittedNames: [], reportedNames: [], visitorCount: 0, doppelVisitors: 0, admittedVisitors: 0, admittedDoppels: 0, capturedDoppels: 0, rejectedResidents: 0, humanKilled: 0, seenNames: [] }
     };
     writeActive(game);
     syncSave({ keepalive: true }).catch(() => {});
