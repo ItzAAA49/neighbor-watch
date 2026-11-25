@@ -6,7 +6,7 @@
   <div class="booth-scene" id="booth-scene">
     <section class="left-wall">
       <div class="wall-heading">本日の予定表 <small>TODAY'S LIST</small></div><div class="today-board" id="today-list"></div>
-      <div class="alarm-unit"><div class="alarm-lamp" id="alarm-lamp"></div><button id="emergency-button" class="emergency-button" title="緊急通報">D.D.D.<small>緊急</small></button><div class="alarm-label" id="alarm-label">緊急時のみ使用</div></div>
+      <div class="alarm-unit"><div class="alarm-lamp" id="alarm-lamp"></div><button id="emergency-button" class="emergency-button" title="緊急回線を待機">D.D.D.<small>緊急回線</small></button><div class="alarm-label" id="alarm-label">緊急時のみ使用</div></div>
       <div class="phone" id="phone">
         <div class="phone-label">AUTOMATIC TELEPHONE</div><div class="phone-number" id="phone-number">----</div>
         <div class="phone-face"><div class="phone-hole-ring" id="phone-dial">
@@ -25,11 +25,11 @@
     </section>
     <section class="right-wall">
       <div class="calendar"><div class="calendar-head">FEBRUARY <b>1955</b></div><div class="calendar-grid"><span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span><i></i><i></i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i><i>10</i><i>11</i><i>12</i><i>13</i><i>14</i><i>15</i><i>16</i><i>17</i><i>18</i><i>19</i><i>20</i><i>21</i><i>22</i><i>23</i><i>24</i><i>25</i><i>26</i><i>27</i><i>28</i></div></div>
-      <div class="checklist"><div class="wall-heading">審査チェック <small>INSPECTION</small></div><p class="check-hint">確認結果を4項目すべて記録してください。</p><div id="checklist-items"></div><div class="check-progress"><span id="check-count">0 / 4 完了</span><div class="progress-track"><i id="check-progress-bar"></i></div></div></div>
+      <div class="checklist"><div class="wall-heading">審査チェック <small>INSPECTION</small></div><p class="check-hint">通常勤務は分かった項目だけ記録できます。研修中は4項目すべて記録してください。</p><div id="checklist-items"></div><div class="check-progress"><span id="check-count">0 / 4 完了</span><div class="progress-track"><i id="check-progress-bar"></i></div></div></div>
       <button class="folder-button" id="folder-button"><span class="folder-tab">D.D.D. RESIDENTS</span><b>住人名簿</b><small>全住人・電話番号・外見の記録</small><span class="folder-open">開く ↗</span></button>
       <div class="desk-items"><span class="desk-badge" id="chester-badge" hidden>★ CHESTER</span><span class="clown-flyer" id="clown-flyer" hidden>UNLIKELY</span><span class="desk-label">PROPERTY OF D.D.D.</span></div>
     </section>
-    <section class="decision-panel" id="decision-panel" aria-label="判定ボタン"><div class="decision-copy"><b>審査結果</b><small>チェックリストを完了すると判定できます</small></div><button id="admit-button" class="decision-button admit" disabled><span>✓</span>入室許可</button><button id="reject-button" class="decision-button reject" disabled><span>×</span>入室拒否</button><button id="report-button" class="decision-button report" disabled><span>!</span>D.D.D.通報</button></section>
+    <section class="decision-panel" id="decision-panel" aria-label="判定ボタン"><div class="decision-copy"><b>審査結果</b><small>確認が終わったら、いつでも判定できます</small></div><button id="admit-button" class="decision-button admit" disabled><span>✓</span>入室許可</button><button id="reject-button" class="decision-button reject" disabled><span>×</span>入室拒否</button><button id="report-button" class="decision-button report" disabled><span>!</span>D.D.D.通報</button></section>
   </div>
 </main>
 <div class="toast" id="toast" role="status"></div><div id="fatal-fade" class="fatal-fade" hidden aria-hidden="true"></div>
