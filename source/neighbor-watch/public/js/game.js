@@ -76,13 +76,15 @@
   function buildVisitors(){
     g.startedAt=0;g.timeLimit=visitorsTarget()*60000;g.timeBonusAwarded=false;g.paused=false;g.pausedAt=0;pausedAt=null;
     const pool=people().filter(p=>!g.dead.includes(p.name));
+    const phoneNames=new Set(['Albertsky Peachman','Alf Cappuccin','Dr. W. Afton','Elenois Sverchzt','Francis Mosses','Izaack Gauss','Lois Stilnsky','Margarette Bubbles','Mia Stone','Rafttellyn Cappuccin','Robertsky Peachman','Roman Stilnsky','Selenne Sverchzt','Steven Rudboys']);
     if(isCampaign()){g.campaignStats=g.campaignStats||{};for(const [key,value] of Object.entries({admittedNames:[],reportedNames:[],visitorCount:0,doppelVisitors:0,admittedVisitors:0,admittedDoppels:0,capturedDoppels:0,rejectedResidents:0,humanKilled:0,seenNames:[]})){if(g.campaignStats[key]===undefined)g.campaignStats[key]=value;}for(const key of ['admittedNames','reportedNames','seenNames'])if(!Array.isArray(g.campaignStats[key]))g.campaignStats[key]=[];}
     const seenCampaign=new Set(g.campaignStats?.seenNames||[]);
     const count=Math.min(visitorsTarget(),pool.length);g.timeLimit=Math.max(1,count)*60000;const list=[];const used=[];
     for(let i=0;i<count;i++){
       const unused=pool.filter(person=>!used.includes(person.name));
       const unseen=isCampaign()?unused.filter(person=>!seenCampaign.has(person.name)):unused;
-      const p=pick(unseen.length?unseen:(unused.length?unused:pool));if(!p)break;used.push(p.name);if(isCampaign())seenCampaign.add(p.name);
+      const requiredPhoneCandidate=isCampaign()&&i===0?unseen.filter(person=>phoneNames.has(person.name)):[];
+      const p=pick(requiredPhoneCandidate.length?requiredPhoneCandidate:(unseen.length?unseen:(unused.length?unused:pool)));if(!p)break;used.push(p.name);if(isCampaign())seenCampaign.add(p.name);
       let truth=isTutorial()?i!==2:rand()>=doppelRate();
       let vip=null;
       if(g.mode==='campaign'&&i===count-1&&g.day===1&&rand()<.4){vip='42';truth=false;}
@@ -112,7 +114,6 @@
     }
     // Each campaign day includes visual, document, and phone-verifiable evidence; one visitor may carry multiple layers on low-population days.
     if(isCampaign()&&list.length){
-      const phoneNames=new Set(['Albertsky Peachman','Alf Cappuccin','Dr. W. Afton','Elenois Sverchzt','Francis Mosses','Izaack Gauss','Lois Stilnsky','Margarette Bubbles','Mia Stone','Rafttellyn Cappuccin','Robertsky Peachman','Roman Stilnsky','Selenne Sverchzt','Steven Rudboys']);
       let visualTarget=list.find(v=>!v.truth&&!v.vip);
       if(!visualTarget)visualTarget=list.find(v=>!v.vip);
       if(visualTarget&&visualTarget.truth){visualTarget.truth=false;g.campaignStats.doppelVisitors=(g.campaignStats.doppelVisitors||0)+1;}
@@ -151,7 +152,7 @@
   }
   function resetView(){current=null;$('visitor-empty').hidden=false;$('visitor-display').hidden=true;$('visitor-line').textContent='次の来訪者をお待ちください。';$('visitor-kind').textContent='NO VISITOR';$('window-status').textContent='待機中';$('id-document').disabled=true;$('form-document').disabled=true;$('ask-button').disabled=true;$('next-line').disabled=true;['admit-button','reject-button','report-button'].forEach(id=>$(id).disabled=true);$('decision-panel').classList.remove('ready');$('check-count').textContent='0 / 4 完了';$('check-progress-bar').style.width='0%';$('checklist-items').querySelectorAll('button').forEach(b=>b.classList.remove('selected','yes','no'));}
   function showDocument(which){if(!current)return;const d=which==='id'?current.idData:current.formData;const missing=which==='id'?current.idMissing:current.formMissing;const title=which==='id'?'IDカード / IDENTIFICATION':'入居申請書 / RESIDENCE APPLICATION';const stamp=which==='id'?(d.stamp===false?'印章なし':'D.D.D. APPROVED'):(d.approved===false?'承認印なし':'APPROVED / D.D.D.');let fields=which==='id'?[['氏名',d.name],['ID番号',d.id],['有効期限',d.expiry||'08/57'],['写真',d.name+' の白黒写真'],['ロゴ・スタンプ',stamp]]:[['氏名',d.name],['部屋番号',d.room],['職業',d.job],['帰宅理由',d.reason||'仕事から帰宅しました。'],['写真',d.name+' の白黒写真'],['承認',stamp]];
-    showModal(`<h2 class="modal-title">${title}</h2>${missing?'<p class="modal-note">この書類は提出されていません。</p>':''}<div class="document-preview"><div class="classified">DOPPELGÄNGER DETECTION DEPARTMENT</div><div class="doc-face">${NW_FACE.portrait({...current.person,tags:current.person.tags},{})}</div><div class="doc-grid">${fields.map(([k,v])=>`<div class="doc-field"><small>${k}</small><b>${esc(v)}</b></div>`).join('')}</div></div><p class="modal-note">名簿フォルダーの正しい情報と照合してください。書類の体裁だけで真偽を判断しないこと。</p><div class="modal-actions"><button class="button" id="doc-close">閉じる</button></div>`);$('doc-close').onclick=closeModal;}
+    showModal(`<h2 class="modal-title">${title}</h2>${missing?'<p class="modal-note">この書類は提出されていません。</p>':''}<div class="document-preview"><div class="classified">DOPPELGÄNGER DETECTION DEPARTMENT</div><div class="doc-face">${NW_FACE.portrait({...current.person,tags:current.faceTags||current.person.tags},{})}</div><div class="doc-grid">${fields.map(([k,v])=>`<div class="doc-field"><small>${k}</small><b>${esc(v)}</b></div>`).join('')}</div></div><p class="modal-note">名簿フォルダーの正しい情報と照合してください。書類の体裁だけで真偽を判断しないこと。</p><div class="modal-actions"><button class="button" id="doc-close">閉じる</button></div>`);$('doc-close').onclick=closeModal;}
   function openFolder(){const pool=people().slice().sort((a,b)=>String(a.room||'').localeCompare(String(b.room||''))||String(a.name||'').localeCompare(String(b.name||'')));if(!pool.length)return;residentPage=((residentPage%pool.length)+pool.length)%pool.length;renderFolder();}
   function renderFolder(){
     const pool=people().slice().sort((a,b)=>String(a.room||'').localeCompare(String(b.room||''))||String(a.name||'').localeCompare(String(b.name||'')));
