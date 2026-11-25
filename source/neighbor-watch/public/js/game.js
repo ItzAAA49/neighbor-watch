@@ -154,7 +154,17 @@
   function setUpHeader(){ $('mode-label').textContent=labels[g.mode]||'勤務';$('day-label').textContent=`1955年 2月 ${g.day||1}日`;$('visitor-counter').textContent=`来訪者 ${Math.min(g.visitorIndex+1,g.visitors.length)} / ${g.visitors.length}`;document.querySelectorAll('.calendar-grid i').forEach(n=>n.classList.toggle('active',n.textContent.trim()===String(g.day||1))); }
   function initChecklist(){const box=$('checklist-items');box.innerHTML='';[['appearance','外見'],['id','IDカード'],['form','入居申請書'],['list','今日のリスト']].forEach(([key,label])=>{let row=document.createElement('div');row.className='check-row';row.innerHTML=`<span>${label}</span><button data-key="${key}" data-val="yes">YES</button><button data-key="${key}" data-val="no">NO</button>`;row.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>setCheck(key,b.dataset.val)));box.appendChild(row);});updateChecklistUI();}
   function setCheck(key,val){if(!current||emergency||!['appearance','id','form','list'].includes(key)||!['yes','no'].includes(val))return;g.checklist[key]=val;store();updateChecklistUI();sound('click');}
-  function updateChecklistUI(){const keys=['appearance','id','form','list'];let done=keys.filter(k=>g.checklist[k]);$('check-count').textContent=`${done.length} / 4 完了`; $('check-progress-bar').style.width=(done.length/4*100)+'%';document.querySelectorAll('.check-row button').forEach(b=>{const selected=g.checklist[b.dataset.key]===b.dataset.val;b.classList.toggle('selected',selected);b.classList.toggle(b.dataset.val,selected);});const enabled=done.length===4&&!!current;$('decision-panel').classList.toggle('ready',done.length===4);$('admit-button').disabled=!enabled||emergency;$('reject-button').disabled=!enabled||emergency;$('report-button').disabled=!enabled||!emergency||phone!=='3312';}
+  function updateChecklistUI(){
+    const keys=['appearance','id','form','list'];const done=keys.filter(key=>g.checklist[key]);
+    $('check-count').textContent=`${done.length} / 4 完了`;
+    $('check-progress-bar').style.width=(done.length/4*100)+'%';
+    document.querySelectorAll('.check-row button').forEach(button=>{const selected=g.checklist[button.dataset.key]===button.dataset.val;button.classList.toggle('selected',selected);button.classList.toggle(button.dataset.val,selected);});
+    const enabled=!!current&&(!isTutorial()||done.length===4);
+    $('decision-panel').classList.toggle('ready',done.length===4);
+    $('admit-button').disabled=!enabled||emergency;
+    $('reject-button').disabled=!enabled||emergency;
+    $('report-button').disabled=!enabled||emergency;
+  }
   function renderToday(){const box=$('today-list');box.innerHTML='';(g.todayList||[]).forEach(item=>{const div=document.createElement('div');div.className='today-item';div.innerHTML='<b>'+esc(item.name)+'</b><small>'+esc(item.room)+'</small>';box.appendChild(div);});if(!box.children.length)box.innerHTML='<span class="today-item">予定は登録されていません</span>';box.setAttribute('role','button');box.setAttribute('tabindex','0');box.setAttribute('aria-label','今日の予定表を拡大表示');}
   function showTodayList(){const rows=(g.todayList||[]).map(item=>'<div class="today-expanded-row"><b>'+esc(item.name)+'</b><span>'+esc(item.room)+'</span></div>').join('');const d=current?.idData||{};const f=current?.formData||{};const docs=current?'<section class="directory-documents"><h3>来訪者の書類との照合</h3><div class="directory-doc-grid"><article><b>ID CARD</b><p>'+esc(d.name)+' / '+esc(d.id)+'</p></article><article><b>APPLICATION</b><p>'+esc(f.name)+' / '+esc(f.room)+' / '+esc(f.job)+'</p></article></div></section>':'';showModal('<h2 class="modal-title">本日の予定表 / TODAY\'S LIST</h2><p class="modal-note">予定に載っているかどうかは確認項目のひとつです。載っていないだけで偽物とは限りません。</p><div class="today-expanded-list">'+(rows||'<p>予定は登録されていません。</p>')+'</div>'+docs+'<div class="modal-actions"><button class="button" id="today-list-close">閉じる</button></div>');$('today-list-close').onclick=closeModal;}
   function renderVisitor(){current=g.visitors[g.visitorIndex]||null;setUpHeader();initChecklist();if(!current){resetView();finishShift();return;}
@@ -238,14 +248,9 @@
     };
   }
   function evaluateChecklist(){
-    const expected=expectedChecklist();
-    const keys=['appearance','id','form','list'];
-    let correct=0;
-    for(const key of keys){
-      const chosen=g.checklist?.[key];
-      if((chosen==='yes')===expected[key] && (chosen==='yes'||chosen==='no'))correct++;
-    }
-    return {expected,correct,errors:keys.length-correct};
+    const expected=expectedChecklist();const keys=['appearance','id','form','list'];let correct=0,errors=0,checked=0;
+    for(const key of keys){const chosen=g.checklist?.[key];if(chosen!=='yes'&&chosen!=='no')continue;checked++;if((chosen==='yes')===expected[key])correct++;else errors++;}
+    return {expected,correct,errors,checked};
   }
   function logAction(action,detail){
     g.actions=Array.isArray(g.actions)?g.actions:[];
@@ -271,8 +276,7 @@
     if(decisionBusy||!current||g.finished||!['admit','reject','report'].includes(type))return;
     decisionBusy=true;
     const keys=['appearance','id','form','list'];
-    if(keys.some(key=>!['yes','no'].includes(g.checklist?.[key]))){decisionBusy=false;notify('チェックリストの4項目をすべて記録してください。','wrong');return;}
-    if(type==='report'&&(!emergency||phone!=='3312')){decisionBusy=false;notify('緊急ボタンを押して3312へ発信してください。','wrong');return;}
+    if(isTutorial()&&keys.some(key=>!['yes','no'].includes(g.checklist?.[key]))){decisionBusy=false;notify('研修中はチェックリストの4項目をすべて記録してください。','wrong');return;}
 
     const check=evaluateChecklist();
     g.errors=(Number(g.errors)||0)+check.errors;
@@ -306,11 +310,18 @@
         if(stats)stats.admittedNames.push(current.person.name);
         g.errors=(Number(g.errors)||0)+1;
         if(!isTutorial()){
-          g.score=0;
-          g.fatalAdmission=true;
+          if(isCampaign()){
+            const room=current.person.room||current.formData?.room||'ROOM ??';
+            g.invadedApartments=Array.isArray(g.invadedApartments)?g.invadedApartments:[];
+            g.invadedApartments.push({room,name:current.person.name,day:g.day,cleared:false});
+            g.fatalAdmission=false;
+          }else{
+            g.score=0;
+            g.fatalAdmission=true;
+          }
         }
         detail=`${current.person.name} を誤って入室させた。`;
-        notify(isNight()?'侵入を確認。非常事態です。':'入室後に異常反応。重大なミスです。','alert');
+        notify(isNight()?'侵入を確認。非常事態です。':(isCampaign()?'入室後に異常反応。電話3312から対象の部屋を確認してください。':'入室後に異常反応。重大なミスです。'),'alert');
         if(isNight())fatalNow=true;
       }
     }else if(type==='reject'){
@@ -376,7 +387,9 @@
     if((stats.visitorCount||0)>0&&(stats.admittedVisitors||0)===(stats.visitorCount||0))return {title:'6 Feet Under',text:'来訪者をすべて入室させた結果、異常は建物から街へと広がりました。勤務記録はここで途切れています。'};
     if(reported.size>=20)return {title:'Entitled to One Call',text:'全住人に通報が行われ、アパートは空になりました。D.D.D.はあなたの判断記録を調査し、職務は終了しました。'};
     if((g.dead||[]).length===1&&g.dead.includes('Dr. W. Afton')&&(stats.humanKilled||0)===1&&(stats.admittedDoppels||0)===0&&(stats.capturedDoppels||0)===(stats.doppelVisitors||0))return {title:'Conspirator',text:'あなたはアフトンだけを通報し、他の住人を守りました。記録は封印されます。'};
-    if((stats.humanKilled||0)===0&&(stats.admittedDoppels||0)===0&&(stats.capturedDoppels||0)===(stats.doppelVisitors||0))return {title:'Employee of the Month',text:'住人をひとりも失わず、現れたドッペルゲンガーをすべて捕獲しました。ヘンリー以来の模範的な勤務です。'};
+    if((stats.humanKilled||0)===0&&(stats.admittedDoppels||0)===0&&(stats.capturedDoppels||0)===(stats.doppelVisitors||0))return {title:'Employee of the Month',text:'住人をひとりも失わず、現れたドッペルゲンガーをすべて捕獲しました。模範的な勤務です。'};
+    if((stats.admittedDoppels||0)>0&&(stats.cleanedApartments||0)>0&&(stats.cleanedApartments||0)>=(stats.admittedDoppels||0)&&(stats.humanKilled||0)===0)return {title:'Rooms Recovered',text:'侵入が確認された部屋をすべて清掃依頼し、住人を守りました。D.D.D.の記録にも完了が残ります。'};
+    if((stats.humanKilled||0)>=3)return {title:'Empty Hallway',text:'誤った通報が重なり、建物の多くの部屋が空になりました。あなたの判断は調査対象になります。'};
     return {title:'Just Like Henry',text:'いくつかの部屋は空になりました。それでも、あなたは5日間の勤務を終えました。'};
   }
   function finishShift(forcedDeath=false){
@@ -388,6 +401,9 @@
       g.score+=Math.max(0,Math.floor((arcadeBonusReference-elapsed)/6000));
       g.timeBonusAwarded=true;
     }
+    const unresolvedApartments=isCampaign()?(g.invadedApartments||[]).filter(entry=>!entry.cleared):[];
+    if(isCampaign()&&unresolvedApartments.length)g.fatalAdmission=true;
+    else if(isCampaign())g.fatalAdmission=false;
     g.finished=true;
     if(clockInterval)clearInterval(clockInterval);
     clockInterval=null;
@@ -422,18 +438,18 @@
     if(isCampaign()){
       save.campaign.dead=[...new Set([...(save.campaign.dead||[]),...(g.dead||[])])];
       if(!dead&&g.day<5){
-        save.campaign.day=g.day;save.campaign.retryDay=0;save.campaign.runStats=g.campaignStats;next=true;
+        save.campaign.day=g.day;save.campaign.retryDay=0;save.campaign.retrySnapshot=g.retrySnapshot||save.campaign.retrySnapshot;save.campaign.runStats=g.campaignStats;next=true;
       }else if(!dead&&g.day===5){
-        save.campaign.completed=true;save.campaign.unlockedNightmare=true;save.campaign.day=1;save.campaign.retryDay=0;save.campaign.dead=[];ending=campaignEnding();earn('five-days');earn('night-shift');save.campaign.runStats=null;
+        save.campaign.completed=true;save.campaign.unlockedNightmare=true;save.campaign.day=1;save.campaign.retryDay=0;save.campaign.retrySnapshot=null;save.campaign.dead=[];ending=campaignEnding();earn('five-days');earn('night-shift');save.campaign.runStats=null;
       }else{
-        save.campaign.day=g.day;save.campaign.retryDay=g.day;save.campaign.completed=false;save.campaign.runStats=g.campaignStats;
+        save.campaign.day=g.day;save.campaign.retryDay=g.day;save.campaign.retrySnapshot=g.retrySnapshot||save.campaign.retrySnapshot;save.campaign.completed=false;save.campaign.runStats=g.campaignStats;
       }
     }
     if(isTutorial())next=false;
     if(isTutorial())earn('first-shift');
     Neighbor.setSave(save);
-    const details=(g.actions||[]).map(action=>action.detail);if(g.phoneLog?.length)details.push(...g.phoneLog.map(entry=>`電話 ${entry.number}：${entry.response}`));details.push(`ランク内訳：住人の誤殺 ${g.kills||0}人 / ドッペルゲンガー誤入室 ${g.fatalAdmission?1:0}件 / 軽微なミス ${g.minorMistakes||0}件`);
-    const result={id:rec.id,title:isTutorial()?'研修修了':(dead?'勤務失敗':'勤務結果'),rank,captures:g.captures,kills:g.kills,admitted:g.admitted,misadmitted:g.fatalAdmission?1:0,minorMistakes:g.minorMistakes||0,score:g.score,message,details,next,nextLabel,ending,tutorial:isTutorial(),mode:g.mode,day:g.day,retryDay:isCampaign()&&dead?g.day:0};
+    const details=(g.actions||[]).map(action=>action.detail);if(g.phoneLog?.length)details.push(...g.phoneLog.map(entry=>'電話 '+entry.number+(entry.room?' / '+entry.room:'')+'：'+entry.response));if(unresolvedApartments.length)details.push('未清掃の部屋：'+unresolvedApartments.map(entry=>entry.room).join('、'));details.push('ランク内訳：住人の誤殺 '+(g.kills||0)+'人 / 未清掃の侵入 '+unresolvedApartments.length+'件 / 軽微なミス '+(g.minorMistakes||0)+'件');
+    const result={id:rec.id,title:isTutorial()?'研修修了':(dead?'勤務失敗':'勤務結果'),rank,captures:g.captures,kills:g.kills,admitted:g.admitted,misadmitted:g.fatalAdmission?1:0,minorMistakes:g.minorMistakes||0,score:g.score,message,details,next,nextLabel,ending,tutorial:isTutorial(),mode:g.mode,day:g.day,retryDay:isCampaign()?g.day:0,retrySnapshot:isCampaign()?(g.retrySnapshot||{day:g.day,dead:[...(g.dead||[])],campaignStats:g.campaignStats,chesterCorrect:g.chesterCorrect||0,clownSeen:Boolean(g.clownSeen)}):null};
     try{localStorage.setItem(Neighbor.RESULT,JSON.stringify(result));}catch(error){console.error('Could not store shift result:',error);}
     if(dead||!next)Neighbor.writeActive(null);else Neighbor.writeActive(g);
     Neighbor.syncSave({keepalive:true}).catch(()=>{});
@@ -441,8 +457,8 @@
   }
 
   function showEntityWarning(){showModal(`<h2 class="modal-title">異常な応答</h2><p class="modal-note">電話回線から紫色の影が窓の向こうに現れ、しばらくあなたを見つめています。回線は不安定です。これ以上の誤通報は避けてください。</p><div class="modal-actions"><button class="button" id="entity-close">確認</button></div>`);$('entity-close').onclick=closeModal;}
-  function confirmReport(){if(!current){notify('通報する来訪者がいません。');return;}if(!emergency||phone!=='3312'){notify('緊急ボタンを押して3312へ発信してください。','wrong');return;}if(['appearance','id','form','list'].some(key=>!['yes','no'].includes(g.checklist?.[key]))){notify('チェックリストを完了してください。','wrong');return;}showModal('<h2 class="modal-title">D.D.D.への通報確認</h2><p class="modal-note">本当にD.D.D.を呼びますか？間違えると本物の住人を殺してしまいます。3312への通報後は取り消せません。</p><div class="modal-actions"><button class="button button-dark" id="cancel-ddd-report">戻る</button><button class="button" id="confirm-ddd-report">D.D.D.を呼ぶ</button></div>');$('cancel-ddd-report').onclick=closeModal;$('confirm-ddd-report').onclick=()=>{closeModal();reportVisitor();};}
-  function reportVisitor(){if(!current){notify('通報する来訪者がいません。');return;}if(!emergency||phone!=='3312'){notify('緊急ボタンを押し、3312へ発信してください。','wrong');return;}if(['appearance','id','form','list'].some(key=>!['yes','no'].includes(g.checklist?.[key]))){notify('チェックリストを完了してください。','wrong');return;}decide('report');}
+  function confirmReport(){if(!current){notify('通報する来訪者がいません。');return;}if(isTutorial()&&['appearance','id','form','list'].some(key=>!['yes','no'].includes(g.checklist?.[key]))){notify('研修中はチェックリストを完了してください。','wrong');return;}showModal('<h2 class="modal-title">D.D.D.への通報確認</h2><p class="modal-note">本当にD.D.D.を呼びますか？本物の住人を誤って通報すると取り返しのつかない結果になります。</p><div class="modal-actions"><button class="button button-dark" id="cancel-ddd-report">戻る</button><button class="button" id="confirm-ddd-report">D.D.D.を呼ぶ</button></div>');$('cancel-ddd-report').onclick=closeModal;$('confirm-ddd-report').onclick=()=>{closeModal();reportVisitor();};}
+  function reportVisitor(){if(!current){notify('通報する来訪者がいません。');return;}if(isTutorial()&&['appearance','id','form','list'].some(key=>!['yes','no'].includes(g.checklist?.[key]))){notify('研修中はチェックリストを完了してください。','wrong');return;}decide('report');}
   function showChester(){
     if(quizAsked||g.mode!=='campaign'||g.chesterDone)return false;
     quizAsked=true;const index=Math.max(0,(g.day||1)-1),answer=NW_DATA.quiz[index];
