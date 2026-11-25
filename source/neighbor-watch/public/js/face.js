@@ -48,6 +48,7 @@
     else svg+=`<path d="M107 207 Q130 ${t.has('tiredEyes')?211:222} 153 207" fill="none" stroke="#563b32" stroke-width="4" stroke-linecap="round"/>`;
     if(t.has('mustache')) svg+=`<path d="M96 196 Q105 183 128 198 Q151 183 164 196 Q151 212 130 207 Q108 213 96 196Z" fill="${hair}" stroke="${ink}" stroke-width="3"/>`;
     if(t.has('goatee')) svg+=`<path d="M112 222 Q130 246 148 222 L143 253 Q130 266 117 253Z" fill="${hair}" stroke="${ink}" stroke-width="3"/>`;
+    if(t.has('smoking')) svg+=`<path d="M157 214 L191 210" stroke="#e2d8c5" stroke-width="5" stroke-linecap="round"/><path d="M186 210 L193 210" stroke="#a84c39" stroke-width="5"/><path d="M191 205 Q205 191 196 181 Q190 173 202 164" fill="none" stroke="#bdb4a3" stroke-width="3" stroke-linecap="round" opacity=".8"/>`;
     if(t.has('bigTeeth')||t.has('fangs')) svg+=`<path d="M106 206 Q130 217 154 206 L150 226 L142 219 L135 230 L127 218 L119 229 L112 219Z" fill="#f1e8d2" stroke="${ink}" stroke-width="2"/>`;
     if(t.has('stitchedMouth')) svg+=`<path d="M102 211 Q130 220 158 211" fill="none" stroke="#242026" stroke-width="7"/><path d="M107 204 L113 218 M121 206 L127 222 M137 207 L143 221 M151 204 L155 216" stroke="#c5aab0" stroke-width="3"/>`;
     // details
