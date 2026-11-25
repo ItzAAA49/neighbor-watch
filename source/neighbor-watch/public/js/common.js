@@ -13,7 +13,7 @@
     records: [],
     posters: [],
     achievements: [],
-    campaign: { unlockedNightmare: false, completed: false, day: 1, retryDay: 0, dead: [], runStats: null },
+    campaign: { unlockedNightmare: false, completed: false, day: 1, retryDay: 0, dead: [], runStats: null, chesterCorrect: 0, clownSeen: false },
     chesterBadge: false,
     stats: { captures: 0, kills: 0, admitted: 0, shifts: 0, highScore: 0, highRank: '—' },
     updatedAt: 0
@@ -53,6 +53,8 @@
         ...campaignSource,
         day: Math.max(1, Math.min(5, Number.isInteger(day) ? day : 1)),
         retryDay: Math.max(0, Math.min(5, Math.floor(numeric(campaignSource.retryDay)))),
+        chesterCorrect: Math.max(0, Math.min(5, Math.floor(numeric(campaignSource.chesterCorrect)))),
+        clownSeen: Boolean(campaignSource.clownSeen),
         runStats: isObject(campaignSource.runStats) ? {
           admittedNames: Array.isArray(campaignSource.runStats.admittedNames) ? campaignSource.runStats.admittedNames.filter(v => typeof v === 'string').slice(0, 100) : [],
           reportedNames: Array.isArray(campaignSource.runStats.reportedNames) ? campaignSource.runStats.reportedNames.filter(v => typeof v === 'string').slice(0, 100) : [],
@@ -347,6 +349,13 @@
     }
     navigationPending = true;
     if (mode === 'campaign' && save.campaign.retryDay) { save.campaign.retryDay = 0; setSave(save); }
+    if (mode === 'campaign' && save.campaign.completed) {
+      save.campaign.clownSeen = false;
+      save.campaign.chesterCorrect = 0;
+      save.campaign.runStats = null;
+      save.campaign.retryDay = 0;
+      setSave(save);
+    }
     const game = {
       mode,
       day: mode === 'campaign' && !save.campaign.completed ? Math.max(1, save.campaign.retryDay || save.campaign.day || 1) : 1,
@@ -367,6 +376,8 @@
       errors: 0,
       reportErrors: 0,
       chesterDone: false,
+      chesterCorrect: mode === 'campaign' ? Number(save.campaign.chesterCorrect || 0) : 0,
+      clownSeen: mode === 'campaign' && Boolean(save.campaign.clownSeen),
       campaignStats: mode === 'campaign' && save.campaign.runStats ? {
         ...save.campaign.runStats,
         admittedNames: [...(save.campaign.runStats.admittedNames || [])],
