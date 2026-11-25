@@ -653,3 +653,10 @@
 @media(max-width:760px){
   .directory-main .resident-info p{font-size:13px}
 }
+
+
+.tutorial-steps{padding-left:22px;margin:12px 0;color:#3e3425;font-size:12px;line-height:1.8}
+.tutorial-steps li{padding:5px 0 7px;border-bottom:1px solid rgba(105,86,55,.2)}
+.tutorial-steps li:last-child{border-bottom:0}
+.tutorial-steps b{color:#302719}
+@media(max-width:440px){.tutorial-steps{font-size:11px;line-height:1.75;padding-left:19px}}
