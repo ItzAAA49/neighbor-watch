@@ -665,3 +665,20 @@
 .directory-eye-note{margin:8px 0 0;padding:8px 9px;border-left:3px solid #8c7650;background:#f4ead6;color:#34291b;font-size:12px;line-height:1.6;font-weight:700}
 .directory-eye-note small{display:block;color:#65543a;font-size:9px;font-weight:400;margin-bottom:2px}
 .tutorial-steps{color:#342a1d}
+
+
+/* v1.6.0 — personality dossiers, personal notes and 3312 room service */
+.directory-personality,.resident-notes-panel{margin-top:13px;padding:12px 13px;border:1px solid #a99978;background:linear-gradient(145deg,#eee5cf,#ddd1b7);color:#3e3528}
+.directory-personality h3,.resident-notes-panel h3{margin:0 0 7px;font:700 11px var(--type);letter-spacing:.06em;color:#4c3e2b}
+.directory-personality>b{display:block;font:700 13px var(--type);color:#6e4933}
+.directory-personality p,.resident-notes-panel p{margin:5px 0 0;font-size:10px;line-height:1.75;color:#5e523e}
+.resident-notes-panel textarea{display:block;width:100%;min-height:82px;resize:vertical;margin-top:9px;padding:9px;border:1px solid #9c8a69;background:#f4eddd;color:#2c261e;font:11px/1.7 var(--type);border-radius:2px}
+.resident-notes-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px}
+.resident-notes-actions small{font:9px var(--mono);color:#76664c}
+.resident-notes-actions .button{min-height:34px;padding:7px 12px;font-size:10px}
+.cleanup-room-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:13px 0}
+.cleanup-room{min-height:62px;padding:9px 7px;border:1px solid #8c7959;background:linear-gradient(145deg,#eee5d0,#d7c7a7);color:#382f23;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;box-shadow:0 2px 0 rgba(45,34,22,.14)}
+.cleanup-room:hover{border-color:#76372e;transform:translateY(-1px)}
+.cleanup-room b{font:12px var(--mono);letter-spacing:.08em}
+.cleanup-room small{font-size:8px;color:#6d5a3c;text-align:center;line-height:1.5}
+@media(max-width:620px){.cleanup-room-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.resident-notes-actions{align-items:flex-start;flex-direction:column}.resident-notes-actions .button{width:100%}}
