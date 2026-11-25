@@ -39,6 +39,22 @@ jobs:
           patch -p1 -d . < /tmp/neighbor-watch-ui.patch
           node -e "const p=require('./neighbor-watch/package.json'); if(p.version !== '1.3.0') throw new Error('Expected UI package v1.3.0; got '+p.version); console.log('UI package version:',p.version)"
 
+      - name: Inspect current menu markup and styling
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '=== PUBLIC FILES ==='
+          find neighbor-watch/public -maxdepth 3 -type f | sort
+          echo '=== MENU HTML / INDEX ==='
+          for f in neighbor-watch/public/index.html neighbor-watch/public/menu.html neighbor-watch/public/css/style.css; do
+            if [ -f "$f" ]; then
+              echo "=== $f ==="
+              sed -n '1,260p' "$f"
+            fi
+          done
+          echo '=== MENU SELECTORS AND ACTIONS ==='
+          grep -RinE 'menu|title|mode|campaign|arcade|nightmare|continue|record|how-to|signin|login|signup|button' neighbor-watch/public --include='*.html' --include='*.css' --include='*.js' | head -n 220 || true
+
       - name: Install dependencies and run full test suite
         working-directory: neighbor-watch
         run: |
