@@ -116,6 +116,7 @@ function createEnv({ storage = {}, remoteSave = {}, fetchLog = [] } = {}) {
   assert.deepEqual(Array.from(normalized.posters), [0, 31], 'poster IDs are unique and bounded');
   assert.deepEqual(Array.from(normalized.achievements), ['one'], 'achievement IDs are unique strings');
   assert.equal(normalized.campaign.day, 5, 'campaign day is clamped');
+  assert.equal(normalized.campaign.retryDay, 0, 'retry day defaults safely when no failed checkpoint exists');
   assert.deepEqual(Array.from(normalized.campaign.dead), ['A'], 'dead residents are unique strings');
   assert.equal(normalized.stats.captures, -5, 'historical stats are retained as supplied');
   assert.ok(env.storage['neighbor-watch-save-v1'], 'save is written to browser storage');
@@ -125,8 +126,21 @@ function createEnv({ storage = {}, remoteSave = {}, fetchLog = [] } = {}) {
   const homePromise = remote.api.initHome();
   assert.ok(remote.launchButtons.every(button => button.disabled), 'mode buttons are locked during remote restore');
   await homePromise;
-  assert.ok(remote.launchButtons.every(button => !button.disabled), 'mode buttons unlock after restore');
+  assert.ok(remote.launchButtons.every(button => button.dataset.mode === 'nightmare' ? button.disabled : !button.disabled), 'normal modes unlock while nightmare remains locked until campaign completion');
   assert.equal(remote.api.getSave().stats.captures, 7, 'remote save is merged into local save');
+
+  // Failed campaign days remain available through the Continue button after active play is cleared.
+  const retryEnv = createEnv({
+    remoteSave: { updatedAt: 80, campaign: { day: 2, retryDay: 2, completed: false, dead: ['Roman Stilnsky'] } }
+  });
+  await retryEnv.api.initHome();
+  assert.equal(retryEnv.elements['continue-button'].disabled, false, 'failed campaign day enables Continue');
+  assert.match(retryEnv.elements['continue-note'].textContent, /2日目の再挑戦/);
+  retryEnv.api.continueGame();
+  assert.equal(retryEnv.api.active().mode, 'campaign', 'Continue launches the saved campaign checkpoint');
+  assert.equal(retryEnv.api.active().day, 2, 'Continue resumes the failed day instead of day one');
+  assert.deepEqual(Array.from(retryEnv.api.active().dead), ['Roman Stilnsky'], 'previously dead residents remain excluded on retry');
+  assert.equal(retryEnv.api.getSave().campaign.retryDay, 0, 'retry marker clears once the retry session starts');
 
   // Local writes are debounced, and pagehide flushes even before the debounce fires.
   const syncEnv = createEnv();
