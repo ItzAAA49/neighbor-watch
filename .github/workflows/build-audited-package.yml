@@ -84,8 +84,12 @@ jobs:
         run: |
           set -euo pipefail
           rm -f neighbor-watch.zip
-          zip -qr -9 neighbor-watch.zip neighbor-watch
+          zip -qr -9 neighbor-watch.zip neighbor-watch -x 'neighbor-watch/node_modules/*' 'neighbor-watch/node_modules/**'
           unzip -t neighbor-watch.zip
+          if unzip -Z1 neighbor-watch.zip | grep -q '^neighbor-watch/node_modules/'; then
+            echo "node_modules must not be included in the deploy archive" >&2
+            exit 1
+          fi
           sha256sum neighbor-watch.zip
 
       - name: Publish audited package to main
