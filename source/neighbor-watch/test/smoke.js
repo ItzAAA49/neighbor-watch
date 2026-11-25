@@ -31,6 +31,10 @@ assert.equal(data.normal.length, 20, 'normal roster contains 20 residents');
 assert.equal(data.nightmare.length, 20, 'nightmare roster contains 20 residents');
 assert.equal(data.posterNames.length, 32, 'poster collection contains 32 entries');
 assert.equal(data.quiz.length, 5, 'Chester has five quiz answers');
+assert.equal(new Set(data.normal.map(person => person.expiry)).size, 20, 'resident ID expiration dates are fixed and distinct');
+assert.ok(data.normal.every(person => person.reason), 'every resident has an authored return reason');
+assert.equal(data.normal.find(person => person.name === 'Nacha Mikaelys').id, '789653665418', 'Nacha has the ID number given in the correction prompt');
+assert.ok(data.normal.find(person => person.name === 'Mclooy Rudboys').tags.includes('smoking'), 'Mclooy keeps his cigarette feature');
 assert.match(playHtml, /id="pause-overlay" hidden/, 'pause overlay starts hidden');
 assert.match(stylesheet, /\[hidden\]\s*\{\s*display:\s*none\s*!important\s*;?\s*\}/, 'the global hidden rule overrides component display');
 assert.match(playHtml, /class="crt-bolt bolt-tl"/, 'the CRT frame has physical corner fasteners');
@@ -290,13 +294,27 @@ async function runGameTests() {
   assert.equal(campaign.active.visitors.length, 6, 'campaign day one has six visitors');
   assert.ok(campaign.active.todayList.length >= 4 && campaign.active.todayList.length <= 6, 'today list has a valid day-one size');
   assert.equal(campaign.active.startedAt, 0, 'the briefing does not consume inspection time');
+  const scheduledNames = new Set(campaign.active.visitors.filter(visitor => !visitor.vip).map(visitor => visitor.residentName));
+  assert.ok(campaign.active.todayList.every(item => scheduledNames.has(item.name)), 'today list contains only people actually scheduled to arrive');
+  assert.ok(campaign.active.todayList.length >= 4 && campaign.active.todayList.length <= 6, 'day-one schedule contains four to six real visitors');
+  assert.ok(!campaign.active.todayList.some(item => item.name === '42'), '42 is never listed as a resident');
+  assert.ok(campaign.active.visitors.filter(visitor => visitor.vip).every(visitor => !visitor.listed), 'special visitors are not on the ordinary schedule');
   assert.equal(campaign.doc.getElementById('modal-backdrop').hidden, false, 'campaign briefing is displayed');
   campaign.doc.getElementById('pause-button').click();
   assert.equal(campaign.active.paused, false, 'a pre-shift modal cannot be paused before the clock starts');
   campaign.doc.getElementById('briefing-start').click();
   assert.equal(campaign.active.briefingSeenDay, 1, 'briefing state is persisted before the quiz');
   campaign.doc.getElementById('chester-skip').click();
-  assert.ok(campaign.active.startedAt > 0, 'clock starts after the pre-shift events');
+  assert.ok(campaign.active.startedAt > 0, 'clock stores elapsed-play start without a countdown');
+  assert.match(campaign.doc.getElementById('time-label').textContent, /時間制限なし/);
+  campaign.doc.getElementById('emergency-button').click();
+  assert.equal(campaign.doc.getElementById('folder-button').disabled, false, 'resident folder remains enabled during emergency shutter');
+  campaign.doc.getElementById('folder-button').click();
+  assert.equal(campaign.doc.getElementById('modal-backdrop').hidden, false, 'resident folder opens during emergency shutter');
+  assert.ok(campaign.doc.getElementById('resident-search'), 'resident directory exposes a search input');
+  campaign.doc.getElementById('modal-close').click();
+  campaign.doc.getElementById('emergency-button').click();
+  assert.equal(campaign.active.emergency, undefined, 'emergency cancel does not write a stuck emergency state');
 
   const first = campaign.active.visitors[0];
   setCorrectChecklist(campaign, first);
@@ -309,6 +327,7 @@ async function runGameTests() {
       key.click();
     }
     campaign.doc.getElementById('dial-call').click();
+    campaign.doc.getElementById('confirm-ddd-report').click();
   } else {
     campaign.doc.getElementById('admit-button').click();
   }
@@ -334,6 +353,7 @@ async function runGameTests() {
       fullArcade.doc.getElementById('emergency-button').click();
       for (const digit of '3312') fullArcade.doc.querySelectorAll('button').find(node => node.dataset.digit === digit).click();
       fullArcade.doc.getElementById('dial-call').click();
+      fullArcade.doc.getElementById('confirm-ddd-report').click();
     }
     await new Promise(resolve => setImmediate(resolve));
   }
@@ -429,6 +449,7 @@ async function runGameTests() {
     nightmareFalseAlarm.doc.getElementById('emergency-button').click();
     for (const digit of '3312') nightmareFalseAlarm.doc.querySelectorAll('button').find(node => node.dataset.digit === digit).click();
     nightmareFalseAlarm.doc.getElementById('dial-call').click();
+    nightmareFalseAlarm.doc.getElementById('confirm-ddd-report').click();
     await new Promise(resolve => setImmediate(resolve));
     if (falseAlarm === 1) {
       assert.equal(nightmareFalseAlarm.active.visitorIndex, 1, 'first false report advances to the next visitor');
@@ -459,6 +480,29 @@ async function runGameTests() {
   const admissionResult = JSON.parse(nightmareAdmission.storage[nightmareAdmission.Neighbor.RESULT]);
   assert.equal(admissionResult.admitted, 1, 'fatal doppel admission is recorded');
 
+  // A fatal campaign admission ends the current day, records F/0, and saves that exact day for retry.
+  const fatalCampaignVisitor = asVisitor(data.normal.find(person => person.name === 'Roman Stilnsky'), {
+    truth: false, appearanceIssue: false, idIssue: true, formIssue: false,
+    defects: ['id'], idData: { ...data.normal.find(person => person.name === 'Roman Stilnsky'), expiry: '01/54' }
+  });
+  const fatalCampaign = await createGameHarness('campaign', {
+    mode: 'campaign', day: 2, dead: ['Lois Stilnsky'], seed: 121, visitors: [fatalCampaignVisitor], visitorIndex: 0,
+    todayList: [], checklist: {}, actions: [], phoneLog: [], startedAt: Date.now(),
+    timeLimit: 120000, briefingSeenDay: 2, chesterDone: true, clownSeen: true, paused: false, finished: false,
+    score: 275, captures: 1, kills: 0, admitted: 0, minorMistakes: 0, errors: 0, reportErrors: 0,
+    campaignStats: { admittedNames: [], reportedNames: [], visitorCount: 1, doppelVisitors: 1, admittedVisitors: 0, admittedDoppels: 0, capturedDoppels: 0, rejectedResidents: 0, humanKilled: 0, seenNames: [] }
+  });
+  setCorrectChecklist(fatalCampaign, fatalCampaign.active.visitors[0]);
+  fatalCampaign.doc.getElementById('admit-button').click();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(fatalCampaign.location.href, '/result', 'fatal admission ends the campaign day');
+  const fatalResult = JSON.parse(fatalCampaign.storage[fatalCampaign.Neighbor.RESULT]);
+  assert.equal(fatalResult.rank, 'F', 'doppelganger admission is rank F');
+  assert.equal(fatalResult.score, 0, 'fatal admission sets the score to zero');
+  assert.equal(fatalResult.retryDay, 2, 'the failed day is recorded as the retry checkpoint');
+  assert.equal(fatalCampaign.save.campaign.day, 2, 'campaign progress stays on the failed day');
+  assert.equal(fatalCampaign.save.campaign.retryDay, 2, 'same-day retry marker is persisted');
+  assert.equal(fatalCampaign.active, null, 'fatal shift state is closed before retry');
   // A nightmare VIP is safe to admit even though its appearance is not human.
   const vip42 = asVisitor(nightRoster[4], {
     truth: false, vip: '42', appearanceIssue: true, idIssue: true, formIssue: true,
