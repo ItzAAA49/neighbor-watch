@@ -131,7 +131,7 @@ function createEnv({ storage = {}, remoteSave = {}, fetchLog = [] } = {}) {
 
   // Failed campaign days remain available through the Continue button after active play is cleared.
   const retryEnv = createEnv({
-    remoteSave: { updatedAt: 80, campaign: { day: 2, retryDay: 2, completed: false, dead: ['Roman Stilnsky'] } }
+    remoteSave: { updatedAt: 80, campaign: { day: 2, retryDay: 2, completed: false, dead: ['Roman Stilnsky'], chesterCorrect: 3, clownSeen: true, runStats: { admittedNames: ['Mia Stone'], reportedNames: ['Lois Stilnsky'], visitorCount: 14, doppelVisitors: 5, admittedVisitors: 7, admittedDoppels: 1, capturedDoppels: 4, rejectedResidents: 2, humanKilled: 1, seenNames: ['Roman Stilnsky','Mia Stone'] } } }
   });
   await retryEnv.api.initHome();
   assert.equal(retryEnv.elements['continue-button'].disabled, false, 'failed campaign day enables Continue');
@@ -140,6 +140,9 @@ function createEnv({ storage = {}, remoteSave = {}, fetchLog = [] } = {}) {
   assert.equal(retryEnv.api.active().mode, 'campaign', 'Continue launches the saved campaign checkpoint');
   assert.equal(retryEnv.api.active().day, 2, 'Continue resumes the failed day instead of day one');
   assert.deepEqual(Array.from(retryEnv.api.active().dead), ['Roman Stilnsky'], 'previously dead residents remain excluded on retry');
+  assert.equal(retryEnv.api.active().chesterCorrect, 3, 'Chester correct answers survive a failed-day retry');
+  assert.equal(retryEnv.api.active().clownSeen, true, 'the clown encounter stays recorded across a retry');
+  assert.equal(retryEnv.api.active().campaignStats.doppelVisitors, 5, 'campaign-wide visitor statistics survive the retry');
   assert.equal(retryEnv.api.getSave().campaign.retryDay, 0, 'retry marker clears once the retry session starts');
 
   // A terminal failed-day result offers the same-day retry control and does not advance the campaign.
