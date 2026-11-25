@@ -140,7 +140,7 @@ function buildMenu() {
   const finalCss = fs.readFileSync(cssPath, 'utf8');
   if (!finalHtml.includes('class="home-aside"') ||
       !finalHtml.includes('class="menu-section-heading"') ||
-      !finalCss.includes('Main menu readability — version 1.4.0')) {
+      !finalCss.includes('Main menu readability pass — version 1.4.0')) {
     throw new Error('Menu readability pass did not complete');
   }
 
