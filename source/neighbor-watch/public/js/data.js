@@ -18,7 +18,7 @@ window.NW_DATA = {
     {name:'Dr. W. Afton',id:'250489656214',room:'F03-01',phone:'1425',expiry:'12/57',reason:'研究室から帰宅しました。',job:'物理学者',roommate:'婚約者 Mia Stone',features:'太い眉、眼鏡、短髪、丸い鼻、四角い頭',tags:['squareFace','bigBrow','glasses','shortHair','roundNose']},
     {name:'Francis Mosses',id:'235569418995',room:'F03-02',phone:'4122',expiry:'07/56',reason:'配達から帰宅しました。',job:'牛乳配達員',roommate:'一人暮らし。Anastachaの実の父',features:'長い鼻、細いあご、疲れた目、短髪、帽子着用',tags:['longNose','narrowJaw','tiredEyes','shortHair','hat']},
     {name:'Steven Rudboys',id:'565845455965',room:'F03-03',phone:'4242',expiry:'09/57',reason:'フライトから帰宅しました。',job:'パイロット',roommate:'父 Mclooy',features:'大きな鼻、眼鏡、短髪、小さな頭',tags:['bigNose','glasses','shortHair','smallHead']},
-    {name:'Mclooy Rudboys',id:'964516184611',room:'F03-03',phone:'4242',expiry:'01/56',reason:'散歩から帰宅しました。',job:'退職者',roommate:'息子 Steven',features:'口ひげ、大きな鼻、ゴーティー、喫煙、常に帽子着用',tags:['bigNose','mustache','goatee','hat']},
+    {name:'Mclooy Rudboys',id:'964516184611',room:'F03-03',phone:'4242',expiry:'01/56',reason:'散歩から帰宅しました。',job:'退職者',roommate:'息子 Steven',features:'口ひげ、大きな鼻、ゴーティー、喫煙、常に帽子着用',tags:['bigNose','mustache','goatee','hat','smoking']},
     {name:'Alf Cappuccin',id:'120548096347',room:'F03-04',phone:'4258',expiry:'03/57',reason:'法律事務所から帰宅しました。',job:'弁護士',roommate:'妻 Rafttellyn',features:'大きな鼻、目立つ口ひげ、モノクル、帽子着用、丸顔',tags:['roundFace','bigNose','mustache','monocle','hat']},
     {name:'Rafttellyn Cappuccin',id:'568554596329',room:'F03-04',phone:'4258',expiry:'11/57',reason:'買い物から帰宅しました。',job:'主婦（無職）',roommate:'夫 Alf',features:'長い顔、大きな鼻、ストレートヘア、ヘアバンド',tags:['longFace','bigNose','straightHair','headband']}
   ],
