@@ -20,7 +20,7 @@ function writeJson(file, value) {
 
 function buildMenu() {
   const packageData = readJson(packagePath);
-  if (packageData.version === '1.4.0') {
+  if (['1.4.0', '1.5.0'].includes(packageData.version)) {
     console.log('Menu already updated: v1.4.0');
     return;
   }
