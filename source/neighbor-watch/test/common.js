@@ -44,7 +44,7 @@ function response(status, body) {
 
 function createEnv({ storage = {}, remoteSave = {}, fetchLog = [] } = {}) {
   const ids = [
-    'continue-button','continue-note','nightmare-lock','auth-status','logout-button',
+    'continue-button','continue-note','nightmare-lock','auth-status','logout-button','retry-day-button','result-misadmitted','result-minor-mistakes',
     'result-title','result-rank','result-message','result-captures','result-kills','result-admitted','result-score',
     'result-details','result-actions','details-toggle','campaign-ending','next-day-button','poster-grid','record-history',
     'record-days','record-captures','record-mistakes','record-rank','achievement-grid','toast'
@@ -141,6 +141,25 @@ function createEnv({ storage = {}, remoteSave = {}, fetchLog = [] } = {}) {
   assert.equal(retryEnv.api.active().day, 2, 'Continue resumes the failed day instead of day one');
   assert.deepEqual(Array.from(retryEnv.api.active().dead), ['Roman Stilnsky'], 'previously dead residents remain excluded on retry');
   assert.equal(retryEnv.api.getSave().campaign.retryDay, 0, 'retry marker clears once the retry session starts');
+
+  // A terminal failed-day result offers the same-day retry control and does not advance the campaign.
+  const failedSave = {
+    updatedAt: 90,
+    campaign: { day: 2, retryDay: 2, unlockedNightmare: false, completed: false, dead: ['Roman Stilnsky'] }
+  };
+  const failedStorage = {
+    'neighbor-watch-save-v1': JSON.stringify(failedSave),
+    'neighbor-watch-result-v1': JSON.stringify({ id: 'failed-day-2', mode: 'campaign', day: 2, retryDay: 2, rank: 'F', score: 0, details: [] })
+  };
+  const failedResult = createEnv({ storage: failedStorage, remoteSave: failedSave });
+  await failedResult.api.initResult();
+  assert.equal(failedResult.elements['retry-day-button'].hidden, false, 'failed result exposes same-day retry');
+  assert.equal(failedResult.elements['next-day-button'].hidden, true, 'failed result does not show advance');
+  failedResult.elements['retry-day-button'].click();
+  assert.equal(failedResult.api.active().mode, 'campaign', 'retry starts the campaign again');
+  assert.equal(failedResult.api.active().day, 2, 'retry remains on day two');
+  assert.equal(failedResult.location.href, '/play?mode=campaign');
+  assert.equal(failedResult.api.getSave().campaign.retryDay, 0, 'retry checkpoint is cleared after retry begins');
 
   // Local writes are debounced, and pagehide flushes even before the debounce fires.
   const syncEnv = createEnv();
