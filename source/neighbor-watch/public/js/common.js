@@ -262,7 +262,7 @@
     if (continueNote) continueNote.textContent = activeGame ? `${activeGame.day || 1}日目の勤務が保存されています` : retryDay ? `${retryDay}日目の再挑戦が保存されています` : '進行中の勤務記録はありません';
     const nightmareLock = document.getElementById('nightmare-lock');
     if (nightmareLock) nightmareLock.textContent = save.campaign.unlockedNightmare ? '解放済み' : 'キャンペーンクリアで解放';
-    const nightmareButton = document.querySelector('[data-mode="nightmare"]');
+    const nightmareButton = [...document.querySelectorAll('[data-mode]')].find(button => button.dataset?.mode === 'nightmare');
     if (nightmareButton) nightmareButton.disabled = !save.campaign.unlockedNightmare;
     const username = readStorage(USER);
     if (username) setStatus(`${username} としてログイン中`);
