@@ -370,6 +370,7 @@ async function runGameTests() {
   });
   assert.equal(cleanupGame.doc.getElementById('admit-button').disabled, false, 'normal campaign decisions are available before checklist completion');
   cleanupGame.doc.getElementById('admit-button').click();
+  await new Promise(resolve => setImmediate(resolve));
   assert.equal(cleanupGame.active.visitorIndex, 1, 'the Campaign continues after a Doppel admission');
   assert.equal(cleanupGame.active.invadedApartments[0].room, cleanupRoster[0].room, 'the invaded room is recorded');
   for (const digit of '3312') cleanupGame.doc.querySelectorAll('button').find(button => button.dataset.digit === digit).click();
