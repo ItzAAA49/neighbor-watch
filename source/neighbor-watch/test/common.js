@@ -152,7 +152,7 @@ function createEnv({ storage = {}, remoteSave = {}, fetchLog = [] } = {}) {
   };
   const failedStorage = {
     'neighbor-watch-save-v1': JSON.stringify(failedSave),
-    'neighbor-watch-result-v1': JSON.stringify({ id: 'failed-day-2', mode: 'campaign', day: 2, retryDay: 2, rank: 'F', score: 0, details: [] })
+    'neighbor-watch-result-v1': JSON.stringify({ id: 'failed-day-2', mode: 'campaign', day: 2, retryDay: 2, retrySnapshot: { day: 2, dead: ['Roman Stilnsky'], chesterCorrect: 3, clownSeen: true, campaignStats: { admittedNames: ['Mia Stone'], reportedNames: ['Lois Stilnsky'], visitorCount: 14, doppelVisitors: 5, admittedVisitors: 7, admittedDoppels: 1, capturedDoppels: 4, rejectedResidents: 2, humanKilled: 1, cleanedApartments: 0, seenNames: ['Roman Stilnsky','Mia Stone'] } }, rank: 'F', score: 0, details: [] })
   };
   const failedResult = createEnv({ storage: failedStorage, remoteSave: failedSave });
   await failedResult.api.initResult();
@@ -161,6 +161,7 @@ function createEnv({ storage = {}, remoteSave = {}, fetchLog = [] } = {}) {
   failedResult.elements['retry-day-button'].click();
   assert.equal(failedResult.api.active().mode, 'campaign', 'retry starts the campaign again');
   assert.equal(failedResult.api.active().day, 2, 'retry remains on day two');
+  assert.equal(failedResult.api.active().campaignStats.visitorCount, 14, 'retry restores cumulative Campaign statistics from before the selected day');
   assert.equal(failedResult.location.href, '/play?mode=campaign');
   assert.equal(failedResult.api.getSave().campaign.retryDay, 0, 'retry checkpoint is cleared after retry begins');
 
@@ -180,14 +181,15 @@ function createEnv({ storage = {}, remoteSave = {}, fetchLog = [] } = {}) {
   const mergeStorage = {};
   const mergeEnv = createEnv({
     storage: mergeStorage,
-    remoteSave: { updatedAt: 10, records: [{ id: 'remote' }], posters: [1], stats: { captures: 3 } }
+    remoteSave: { updatedAt: 10, records: [{ id: 'remote' }], posters: [1], residentNotes: { Lois: 'remote note' }, stats: { captures: 3 } }
   });
-  mergeEnv.api.setSave({ updatedAt: 20, records: [{ id: 'local' }], posters: [2], stats: { captures: 8 } });
+  mergeEnv.api.setSave({ updatedAt: 20, records: [{ id: 'local' }], posters: [2], residentNotes: { Roman: 'local note' }, stats: { captures: 8 } });
   const localBeforeRestore = mergeEnv.api.getSave();
   await mergeEnv.api.restoreRemote();
   const merged = mergeEnv.api.getSave();
   assert.deepEqual(Array.from(merged.records, record => record.id).sort(), ['local','remote'], 'record history from both devices is merged');
   assert.deepEqual(Array.from(merged.posters).sort(), [1,2], 'poster collection is merged');
+  assert.deepEqual(merged.residentNotes, { Roman: 'local note', Lois: 'remote note' }, 'personal notes from both devices are merged');
   assert.equal(merged.stats.captures, 8, 'the best aggregate stat is retained');
   assert.ok(merged.updatedAt >= localBeforeRestore.updatedAt, 'merged timestamp remains current');
   assert.ok(mergeEnv.timers.size > 0, 'a newer local save is scheduled for remote upload');
