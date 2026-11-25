@@ -122,7 +122,7 @@
       const documentTarget=impostors[1]||impostors[0];
       if(documentTarget){documentTarget.defects=[...new Set([...(documentTarget.defects||[]),'id'])];documentTarget.idIssue=true;documentTarget.idData.expiry='01/54';}
       let phoneTarget=impostors.find(v=>phoneNames.has(v.person.name))||list.find(v=>!v.vip&&phoneNames.has(v.person.name));
-      if(phoneTarget){if(phoneTarget.truth){phoneTarget.truth=false;g.campaignStats.doppelVisitors=(g.campaignStats.doppelVisitors||0)+1;}phoneTarget.redHanded=true;phoneTarget.appearanceIssue=true;phoneTarget.defects=[...new Set([...(phoneTarget.defects||[]),'appearance'])];}
+      if(phoneTarget){if(phoneTarget.truth){phoneTarget.truth=false;g.campaignStats.doppelVisitors=(g.campaignStats.doppelVisitors||0)+1;}phoneTarget.redHanded=true;phoneTarget.appearanceIssue=true;phoneTarget.defects=[...new Set([...(phoneTarget.defects||[]),'appearance'])];phoneTarget.faceTags=[...new Set([...(phoneTarget.faceTags||[]),'extraEyes'])];}
     }
     g.visitors=list;g.visitorIndex=0;g.checklist={};g.actions=[];g.currentEvent=null;store();
     const candidateNames=list.filter(v=>!v.vip).map(v=>v.residentName);
