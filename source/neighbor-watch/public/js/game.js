@@ -170,23 +170,60 @@
   function openFolder(){const pool=people().slice().sort((a,b)=>String(a.room||'').localeCompare(String(b.room||''))||String(a.name||'').localeCompare(String(b.name||'')));if(!pool.length)return;residentPage=((residentPage%pool.length)+pool.length)%pool.length;renderFolder();}
   function renderFolder(){
     const pool=people().slice().sort((a,b)=>String(a.room||'').localeCompare(String(b.room||''))||String(a.name||'').localeCompare(String(b.name||'')));
-    const p=pool[residentPage];
+    residentPage=Math.max(0,Math.min(residentPage,pool.length-1));const p=pool[residentPage];
     const indexHtml=pool.map((person,index)=>'<button type="button" class="resident-index-item" data-page="'+index+'"><b>'+String(index+1).padStart(2,'0')+'</b><span>'+esc(person.name)+'</span><small>'+esc(person.room)+'</small></button>').join('');
-    const indexHtmlSafe=indexHtml||'<p class="modal-note">登録住人はいません。</p>';
     const visitorId=current?.idData||{};const visitorForm=current?.formData||{};
-    const appearanceNote=p.name==='Nacha Mikaelys'?'<p class="directory-eye-note"><small>目の色（写真では判別不可）</small>右目：青 ／ 左目：緑</p>':'';
+    const eye=p?.name==='Nacha Mikaelys'?'<p class="directory-eye-note"><small>目の色（写真では判別不可）</small>右目：青 ／ 左目：緑</p>':'';
+    const personality=NW_DATA.personalities?.[p?.personalityKey||p?.name];
+    const personalityHtml=personality?'<section class="directory-personality"><h3>性格・普段の様子</h3><b>'+esc(personality.label)+'</b><p>'+esc(personality.summary)+'</p></section>':'';
+    const save=Neighbor.getSave();const note=typeof save.residentNotes?.[p?.name]==='string'?save.residentNotes[p.name]:'';
+    const notesHtml=p?'<section class="resident-notes-panel"><h3>個人メモ / PERSONAL NOTES</h3><p>住人について気づいたことを自分用に保存できます。</p><textarea id="resident-note" maxlength="500" rows="4" placeholder="話し方・家族関係・前回の来訪で気づいたこと">'+esc(note)+'</textarea><div class="resident-notes-actions"><small id="resident-note-count">'+note.length+' / 500</small><button type="button" class="button button-dark" id="resident-note-save">メモを保存</button></div></section>':'';
     const comparison=current?'<section class="directory-documents"><h3>来訪者の書類 — 現在の窓口と比較</h3><div class="directory-doc-grid"><article><b>ID CARD</b><p><small>氏名</small>'+esc(current.idMissing?'未提出':visitorId.name)+'</p><p><small>ID番号</small>'+esc(visitorId.id)+'</p><p><small>有効期限</small>'+esc(visitorId.expiry||'記載なし')+'</p><p><small>印章</small>'+esc(visitorId.stamp===false?'不一致':'確認')+'</p></article><article><b>RESIDENCE APPLICATION</b><p><small>氏名</small>'+esc(current.formMissing?'未提出':visitorForm.name)+'</p><p><small>部屋番号</small>'+esc(visitorForm.room)+'</p><p><small>職業</small>'+esc(visitorForm.job)+'</p><p><small>帰宅理由</small>'+esc(visitorForm.reason||'記載なし')+'</p></article></div></section>':'<section class="directory-documents"><h3>来訪者の書類</h3><p class="modal-note">来訪者が窓口に到着すると、ここに書類が並びます。</p></section>';
-    showModal('<h2 class="modal-title">住人名簿 / RESIDENT DIRECTORY</h2><div class="directory-layout"><aside class="directory-index"><label for="resident-search">住人を検索</label><input id="resident-search" type="search" autocomplete="off" placeholder="名前・部屋番号を入力"><div class="directory-index-list" id="resident-index">'+indexHtmlSafe+'</div></aside><div class="directory-main"><div class="resident-profile"><div class="resident-photo">'+NW_FACE.portrait(p,{night:isNight()})+'</div><div class="resident-info"><h3>'+esc(p.name)+'</h3><p><small>ID NUMBER</small>'+esc(p.id)+'</p><p><small>ROOM / TEL</small>'+esc(p.room)+' / '+esc(p.phone)+'</p><p><small>OCCUPATION</small>'+esc(p.job)+'</p><p><small>HOUSEHOLD</small>'+esc(p.roommate)+'</p><p><small>APPEARANCE</small>'+esc(p.features)+'</p>'+appearanceNote+'</div></div>'+comparison+'<div class="resident-nav"><button id="resident-prev">◂ 前の住人</button><span class="mono">'+(residentPage+1)+' / '+pool.length+'</span><button id="resident-next">次の住人 ▸</button></div></div></div><p class="modal-note">この名簿は唯一の100%正しい情報源です。部屋順に並んでいます。外見は服装ではなく顔の特徴で照合します。</p>');
+    showModal('<h2 class="modal-title">住人名簿 / RESIDENT DIRECTORY</h2><div class="directory-layout"><aside class="directory-index"><label for="resident-search">住人を検索</label><input id="resident-search" type="search" autocomplete="off" placeholder="名前・部屋番号を入力"><div class="directory-index-list" id="resident-index">'+indexHtml+'</div></aside><div class="directory-main"><div class="resident-profile"><div class="resident-photo">'+NW_FACE.portrait(p,{night:isNight()})+'</div><div class="resident-info"><h3>'+esc(p.name)+'</h3><p><small>ID NUMBER</small>'+esc(p.id)+'</p><p><small>ROOM / TEL</small>'+esc(p.room)+' / '+esc(p.phone)+'</p><p><small>OCCUPATION</small>'+esc(p.job)+'</p><p><small>HOUSEHOLD</small>'+esc(p.roommate)+'</p><p><small>APPEARANCE</small>'+esc(p.features)+'</p>'+eye+'</div></div>'+personalityHtml+comparison+notesHtml+'<div class="resident-nav"><button id="resident-prev">◂ 前の住人</button><span class="mono">'+(pool.length?residentPage+1:0)+' / '+pool.length+'</span><button id="resident-next">次の住人 ▸</button></div></div></div><p class="modal-note">住人の基本記録です。外見・書類・話し方・個人メモを照合してください。</p>');
     $('resident-prev').onclick=()=>{residentPage=(residentPage-1+pool.length)%pool.length;renderFolder();};
     $('resident-next').onclick=()=>{residentPage=(residentPage+1)%pool.length;renderFolder();};
     $('resident-index').querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{residentPage=Number(button.dataset.page)||0;renderFolder();}));
     $('resident-search').addEventListener('input',()=>{const query=$('resident-search').value.trim().toLocaleLowerCase();$('resident-index').querySelectorAll('button').forEach(button=>{button.hidden=!!query&&!button.textContent.toLocaleLowerCase().includes(query);});});
+    if($('resident-note')){
+      $('resident-note').addEventListener('input',()=>{$('resident-note-count').textContent=$('resident-note').value.length+' / 500';});
+      $('resident-note-save').onclick=()=>{const latest=Neighbor.getSave();latest.residentNotes=latest.residentNotes||{};const value=$('resident-note').value.slice(0,500).trim();if(value)latest.residentNotes[p.name]=value;else delete latest.residentNotes[p.name];Neighbor.setSave(latest);notify('住人ファイルの個人メモを保存しました。','success');};
+    }
   }
-  function askQuestions(){if(!current)return;showModal(`<h2 class="modal-title">来訪者に質問する</h2><p class="modal-note">不自然な点を選び、説明を求めてください。</p><div class="question-list"><button data-q="face">顔や外見について質問する</button><button data-q="papers">書類について質問する</button><button data-q="list">今日の予定について質問する</button><button data-q="reason">帰宅理由について質問する</button></div>`);document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>questionAnswer(b.dataset.q));}
-  function questionAnswer(type){let answer='特に問題はありません。いつも通りです。';if(current.truth){answer=type==='list'&&!current.listed?'急に予定が変わったんです。電話で確認しても構いません。':'何か問題がありますか？私はここの住人です。';}else if(current.redHanded){answer=type==='face'&&current.appearanceIssue?'ああ、顔のことですか。新しい治療を受けたんです。':'そんな質問をする必要がありますか？早く中へ入れてください。';if(type==='face'){answer+=' ……何を見ているんです？';}}
-    if(current.vip==='42')answer='42';if(current.vip==='Peach')answer='……';$('visitor-line').textContent=answer;closeModal();notify('返答を記録しました。');if(!current.truth&&current.redHanded&&type==='face'&&current.appearanceIssue){showModal(`<h2 class="modal-title">不自然な反応</h2><p class="modal-note">質問への反応が急変しました。来訪者の正体に疑いがあります。</p><div class="modal-actions"><button class="button" id="reveal-close">窓口へ戻る</button></div>`);$('reveal-close').onclick=closeModal;}
+  function askQuestions(){
+    if(!current)return;
+    showModal('<h2 class="modal-title">来訪者に質問する</h2><p class="modal-note">住人名簿の性格や普段の話し方とも照合してください。</p><div class="question-list"><button data-q="face">顔や外見について質問する</button><button data-q="papers">書類について質問する</button><button data-q="list">今日の予定について質問する</button><button data-q="reason">帰宅理由について質問する</button><button data-q="personality">性格・普段の様子について質問する</button></div>');
+    document.querySelectorAll('[data-q]').forEach(button=>button.onclick=()=>questionAnswer(button.dataset.q));
   }
-  function ringPhone(){if(phone.length!==4){notify('4桁の番号を入力してください。','wrong');return;}if(phone==='3312'){if(!emergency){notify('先に緊急ボタンを押してください。','wrong');return;}if(!current){notify('通報対象の来訪者がいません。','wrong');return;}confirmReport();return;}if(phone==='6666'){if(g.mode==='campaign'||g.mode==='arcade'){notify('不明な番号です。回線が切れました。','wrong');return;}notify('回線の向こうで短い笑い声がします。','alert');return;}const resident=people().find(p=>p.phone===phone);if(!resident){notify('ツー……応答がありません。','wrong');return;}let related=current?.person?.room===resident.room;let response;if(current&&related){if(current.truth){response=resident.roommate==='一人暮らし'?'呼び出し音が3回。応答はなく、ツー音に変わりました。':'同居人です。本人はまだ帰宅していないと言っています。';}else{response=resident.roommate==='一人暮らし'?'電話口から本人の声がします。「今日は誰も帰ってきていないはずです」':'同居人が応答しました。「本人は家にいます。来客の予定はありません」';}}else response='部屋の電話が鳴っています。窓口の人物とは関係がないようです。';
+  function questionAnswer(type){
+    const profile=NW_DATA.personalities?.[current?.voiceKey||current?.personalityKey];const answers=profile?.answers||{};
+    let answer=answers[type]||answers.face||'特に問題はありません。いつも通りです。';
+    if(!current.truth&&current.personalityMismatch&&type==='personality')answer=(answers.personality||answer)+' ……その質問をする理由は何ですか？';
+    if(!current.truth&&current.redHanded&&type==='face'&&current.appearanceIssue)answer='ああ、顔のことですか。新しい治療を受けたんです。そんなに気になりますか？';
+    if(current.vip==='42')answer='42';if(current.vip==='Peach')answer='……';
+    $('visitor-line').textContent=answer;closeModal();notify('返答を記録しました。');
+    if(!current.truth&&current.redHanded&&type==='face'&&current.appearanceIssue){showModal('<h2 class="modal-title">不自然な反応</h2><p class="modal-note">質問への反応が急変しました。来訪者の正体に疑いがあります。</p><div class="modal-actions"><button class="button" id="reveal-close">窓口へ戻る</button></div>');$('reveal-close').onclick=closeModal;}
+  }
+  function showCleanupPicker(){
+    const rooms=[...new Set(people().map(person=>person.room).filter(Boolean))].sort();
+    const rows=rooms.map(room=>{const pending=(g.invadedApartments||[]).filter(entry=>entry.room===room&&!entry.cleared).length;return '<button type="button" class="cleanup-room" data-clean-room="'+esc(room)+'"><b>'+esc(room)+'</b><small>'+(pending?('未処理：'+pending+'件'):'確認依頼')+'</small></button>';}).join('');
+    showModal('<h2 class="modal-title">3312 / D.D.D. 清掃依頼</h2><p class="modal-note">確認する部屋を選んでください。入室許可・拒否・通報とは別に依頼できます。</p><div class="cleanup-room-grid">'+rows+'</div><div class="modal-actions"><button class="button button-dark" id="cleanup-close">閉じる</button></div>');
+    $('cleanup-close').onclick=closeModal;document.querySelectorAll('[data-clean-room]').forEach(button=>{button.onclick=()=>requestCleanup(button.dataset.cleanRoom);});
+  }
+  function requestCleanup(room){
+    if(typeof room!=='string'||!people().some(person=>person.room===room))return;
+    const pending=(g.invadedApartments||[]).filter(entry=>entry.room===room&&!entry.cleared);let response;
+    if(pending.length){pending.forEach(entry=>{entry.cleared=true;entry.clearedAt=Date.now();});if(isCampaign())g.campaignStats.cleanedApartments=(Number(g.campaignStats.cleanedApartments)||0)+pending.length;response=room+'号室の確認が完了。D.D.D.が清掃記録を更新しました。';}
+    else response=room+'号室を確認しました。未処理の異常はありません。';
+    g.phoneLog=Array.isArray(g.phoneLog)?g.phoneLog:[];g.phoneLog.push({number:'3312',room,response});store();closeModal();notify(response,'success');
+  }
+  function ringPhone(){
+    if(phone.length!==4||!/^[0-9]{4}$/.test(phone)){notify('4桁の番号を入力してください。','wrong');return;}
+    if(phone==='3312'){if(emergency&&current){confirmReport();return;}showCleanupPicker();return;}
+    if(phone==='6666'){if(g.mode==='campaign'||g.mode==='arcade'){notify('不明な番号です。回線が切れました。','wrong');return;}notify('回線の向こうで短い笑い声がします。','alert');return;}
+    const resident=people().find(person=>person.phone===phone);if(!resident){notify('ツー……応答がありません。','wrong');return;}
+    const related=current?.person?.room===resident.room;let response;
+    if(current&&related){if(current.truth)response=resident.roommate==='一人暮らし'?'呼び出し音が3回。応答はなく、ツー音に変わりました。':'同居人です。本人はまだ帰宅していないと言っています。';else response=resident.roommate==='一人暮らし'?'電話口から本人の声がします。「今日は誰も帰ってきていないはずです」':'同居人が応答しました。「本人は家にいます。来客の予定はありません」';}
+    else response='部屋の電話が鳴っています。窓口の人物とは関係がないようです。';
     $('visitor-line').textContent='電話確認：'+response;g.phoneLog=g.phoneLog||[];g.phoneLog.push({number:phone,response});store();sound('dial');
   }
   function setPhone(value){phone=value.slice(0,4);$('phone-number').textContent=phone.padEnd(4,'-');updateChecklistUI();sound('dial');}
