@@ -217,7 +217,7 @@
     const rooms=[...new Set(people().map(person=>person.room).filter(Boolean))].sort();
     const rows=rooms.map(room=>{const pending=(g.invadedApartments||[]).filter(entry=>entry.room===room&&!entry.cleared).length;return '<button type="button" class="cleanup-room" data-clean-room="'+esc(room)+'"><b>'+esc(room)+'</b><small>'+(pending?('未処理：'+pending+'件'):'確認依頼')+'</small></button>';}).join('');
     showModal('<h2 class="modal-title">3312 / D.D.D. 清掃依頼</h2><p class="modal-note">確認する部屋を選んでください。入室許可・拒否・通報とは別に依頼できます。</p><div class="cleanup-room-grid">'+rows+'</div><div class="modal-actions"><button class="button button-dark" id="cleanup-close">閉じる</button></div>');
-    $('cleanup-close').onclick=closeModal;document.querySelectorAll('[data-clean-room]').forEach(button=>{button.onclick=()=>requestCleanup(button.dataset.cleanRoom);});
+    $('cleanup-close').onclick=closeModal;$('modal-content').querySelectorAll('button').forEach(button=>{if(button.dataset.cleanRoom)button.onclick=()=>requestCleanup(button.dataset.cleanRoom);});
   }
   function requestCleanup(room){
     if(typeof room!=='string'||!people().some(person=>person.room===room))return;
