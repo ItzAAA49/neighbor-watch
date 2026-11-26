@@ -733,7 +733,7 @@
 .booth-scene>.left-wall>.wall-heading{grid-column:1;grid-row:2;align-self:end;margin:0 0 5px}
 .booth-scene .today-board{
   grid-column:1;grid-row:3/5;position:relative;align-self:start;justify-self:stretch;
-  width:100%;height:auto;min-height:185px;max-height:255px;overflow:auto;
+  width:100%;height:auto;min-height:165px;max-height:200px;overflow:auto;
   display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:3px 7px;
   padding:13px 8px 8px;border:4px solid #4b3e42;border-radius:1px;
   background:repeating-linear-gradient(0deg,transparent 0 22px,rgba(109,85,67,.065) 23px 24px),linear-gradient(145deg,#f5ead8,#ded0bb);
@@ -904,7 +904,7 @@
 .booth-scene .folder-tab{top:5px;right:7px;z-index:2;color:#5b472f;font:6px var(--mono)}
 .booth-scene .folder-button b{position:absolute;left:7px;bottom:6px;z-index:2;margin:0;color:#49382d;font:8px var(--mono);letter-spacing:.06em}
 .booth-scene .folder-button small,.booth-scene .folder-open{display:none}
-.booth-scene>.right-wall>.desk-items{grid-column:3;grid-row:6;display:none}
+.booth-scene>.right-wall>.desk-items{position:absolute;right:20%;bottom:2.3%;z-index:8;display:flex;min-height:20px;pointer-events:auto}
 /* The working telephone is a foreground desk object rather than a panel inside the wall. */
 .booth-scene>.left-wall>.phone{
   position:absolute;left:3.5%;bottom:1.7%;z-index:9;
