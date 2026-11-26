@@ -62,7 +62,7 @@ assert.match(stylesheet, /\.booth-scene>\.right-wall>\.checklist/, 'checklist is
 assert.match(stylesheet, /\.booth-scene>\.right-wall>\.folder-button/, 'resident data folder is placed at the bottom right');
 assert.match(stylesheet, /\.booth-scene>\.right-wall>\.desk-items\{position:absolute;right:20%;bottom:2\.3%;z-index:8;display:flex/, 'event desk badges remain visible on the desk');
 
-assert.match(stylesheet, /\.today-photo svg\{filter:grayscale\(1\)/, 'today roster portraits use monochrome treatment');
+assert.match(stylesheet, /\.booth-scene \.today-photo svg\{width:100%;height:100%;display:block;filter:grayscale\(1\)/, 'today roster portraits use monochrome treatment');
 assert.match(stylesheet, /\.window-glass:before/, 'CRT scanline treatment is present');
 assert.match(stylesheet, /grid-template-areas:"left center right"/, 'desk regions keep left-center-right reading order');
 
