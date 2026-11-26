@@ -52,6 +52,17 @@ assert.match(stylesheet, /grid-template-columns:18\.4% minmax\(0,63\.2%\) 18\.4%
 assert.match(stylesheet, /@media\(max-width:980px\)/, 'tablet and mobile layout fallback exists');
 assert.match(stylesheet, /@media\(max-width:560px\)/, 'small phone layout fallback exists');
 assert.match(stylesheet, /v1.6.2 — reference comparison pass: separate wall-mounted objects from desk objects/, 'inspection booth art direction is versioned');
+assert.match(stylesheet, /v1\.7\.0 — complete D\.D\.D\. visual language pass/, 'global visual language pass is versioned');
+assert.match(stylesheet, /--type:'Yomogi','Shippori Mincho',sans-serif/, 'handwritten Japanese type style is configured');
+assert.match(stylesheet, /\.home-panel:before/, 'main menu is styled as a taped personnel document');
+assert.match(stylesheet, /\.records-shell:before/, 'records page shares the paper-file system');
+assert.match(stylesheet, /\.result-rank\s*\{[\s\S]*?border:5px double/, 'result rank has a stamped report treatment');
+assert.match(stylesheet, /\.booth-scene>\.left-wall>\.phone:before/, 'telephone includes a sculpted handset');
+assert.match(stylesheet, /\.calendar-grid i\.past:after/, 'calendar marks elapsed days');
+assert.match(read('public/js/game.js'), /n\.classList\.toggle\('past',date>0&&date<today\)/, 'calendar marks days before the current shift date');
+assert.match(stylesheet, /\.booth-scene>\.decision-panel\{[\s\S]*?opacity:1;pointer-events:auto/, 'entry controls remain visible before checklist completion');
+assert.match(stylesheet, /\.modal-close\s*\{[\s\S]*?position:absolute/, 'paper windows keep a close X in the upper corner');
+
 
 assert.match(stylesheet, /--nw-wall:#613b50/, 'muted burgundy wall palette is present');
 assert.match(stylesheet, /\.booth-scene>\.left-wall,\.booth-scene>\.window-section,\.booth-scene>\.right-wall\{display:contents\}/, 'desktop layout separates individual wall-mounted items');
