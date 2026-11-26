@@ -732,7 +732,7 @@
 /* Left wall: taped daily visitor sheet, with the alarm controls below it. */
 .booth-scene>.left-wall>.wall-heading{grid-column:1;grid-row:2;align-self:end;margin:0 0 5px}
 .booth-scene .today-board{
-  grid-column:1;grid-row:3/5;align-self:start;justify-self:stretch;
+  grid-column:1;grid-row:3/5;position:relative;align-self:start;justify-self:stretch;
   width:100%;height:auto;min-height:185px;max-height:255px;overflow:auto;
   display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:3px 7px;
   padding:13px 8px 8px;border:4px solid #4b3e42;border-radius:1px;
@@ -760,9 +760,9 @@
 .booth-scene .today-details b{display:block;font:700 7px/1.25 var(--mono);overflow-wrap:anywhere;color:#29232b}
 .booth-scene .today-details small{display:block;margin-top:2px;color:#6b594d;font:6px var(--mono)}
 .booth-scene .alarm-unit{
-  grid-column:1;grid-row:5;align-self:center;justify-self:center;position:relative;
-  display:flex;align-items:center;justify-content:center;gap:9px;width:94%;min-height:78px;
-  padding:9px 8px;border:2px solid #353039;border-radius:2px;
+  position:absolute;left:2.2%;top:61%;z-index:6;
+  display:flex;align-items:center;justify-content:center;gap:7px;width:17.6%;height:60px;min-height:60px;
+  padding:7px 5px;border:2px solid #353039;border-radius:2px;
   background:linear-gradient(145deg,#52404a,#302832);
   box-shadow:inset 0 0 0 2px #95818a,0 4px 8px rgba(0,0,0,.34);z-index:3
 }
@@ -778,7 +778,7 @@
 }
 .booth-scene .alarm-lamp.active{background:radial-gradient(circle at 35% 27%,#fff0ce,#ff534a 40%,#8d202e);box-shadow:0 0 14px #f34b50,0 0 25px rgba(244,48,66,.72)}
 .booth-scene .emergency-button{
-  position:relative;width:55px;height:55px;min-width:55px;padding:5px;border:4px solid #34252b;border-radius:50%;
+  position:relative;width:48px;height:48px;min-width:48px;padding:5px;border:4px solid #34252b;border-radius:50%;
   background:radial-gradient(circle at 35% 28%,#ff9c8d,#d44b4b 40%,#8e2f39 72%,#391e2b);
   color:#fff0e4;font:700 7px var(--mono);line-height:1.1;
   box-shadow:inset 0 0 0 2px rgba(255,224,210,.36),0 3px 0 #201a21,0 5px 8px rgba(0,0,0,.42)
@@ -790,7 +790,7 @@
 }
 .booth-scene .alarm-label{min-width:0;max-width:72px;color:#e5d1c8;font:7px/1.35 var(--mono)}
 /* Central security window and paper hatch. */
-.booth-scene>.window-frame{
+.booth-scene>.window-section>.window-frame{
   grid-column:2;grid-row:1/6;align-self:stretch;justify-self:stretch;
   position:relative;display:flex;flex-direction:column;min-width:0;min-height:0;width:100%;height:100%;
   padding:10px 10px 0;border:12px solid #45434d;border-radius:3px;
@@ -908,7 +908,7 @@
 /* The working telephone is a foreground desk object rather than a panel inside the wall. */
 .booth-scene>.left-wall>.phone{
   position:absolute;left:3.5%;bottom:1.7%;z-index:9;
-  width:clamp(218px,22vw,278px);height:auto;min-height:0;margin:0;
+  width:clamp(210px,21vw,260px);height:auto;min-height:0;margin:0;
   padding:8px 9px 7px;border:5px solid #242228;border-radius:9px 9px 18px 18px;
   background:radial-gradient(ellipse at 50% 15%,#57545c 0%,#29282f 42%,#15161b 78%);
   box-shadow:inset 0 0 0 2px #85808a,inset 0 -8px 12px rgba(0,0,0,.65),0 8px 13px rgba(0,0,0,.44);
@@ -917,7 +917,7 @@
 .booth-scene .phone-label{margin:0 0 3px;color:#d6c4b9;font:6px var(--mono);letter-spacing:.1em}
 .booth-scene .phone-number{margin:3px 14px 4px;padding:3px;border:2px inset #777078;background:#1b1b20;color:#efe0d2;font:16px var(--mono);letter-spacing:.2em;box-shadow:inset 0 0 8px #090a0e}
 .booth-scene .phone-face{
-  width:116px;height:116px;margin:2px auto 0;border:5px solid #242229;border-radius:50%;
+  width:84px;height:84px;margin:2px auto 0;border:5px solid #242229;border-radius:50%;
   background:radial-gradient(circle,#d7d0ca 0 40%,#69656d 41% 46%,#25252b 47% 65%,#0e1015 66% 72%,#57545b 73%);
   box-shadow:inset 0 0 0 2px #a6a0a0,0 3px 7px rgba(0,0,0,.45)
 }
