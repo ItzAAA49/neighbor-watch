@@ -51,8 +51,16 @@ for (const selector of ['.booth-scene{', '.window-frame{', '.today-board{', '.ph
 assert.match(stylesheet, /grid-template-columns:18\.4% minmax\(0,63\.2%\) 18\.4%/, 'desktop booth keeps the monitor as the dominant center area');
 assert.match(stylesheet, /@media\(max-width:980px\)/, 'tablet and mobile layout fallback exists');
 assert.match(stylesheet, /@media\(max-width:560px\)/, 'small phone layout fallback exists');
-assert.match(stylesheet, /v1\.6\.1 — D\.D\.D\. inspection booth art direction/, 'inspection booth art direction is versioned');
-assert.match(stylesheet, /--nw-wall:#613b50/, 'burgundy wall palette is present');
+assert.match(stylesheet, /v1.6.2 — reference-based wall and desk separation/, 'inspection booth art direction is versioned');
+
+assert.match(stylesheet, /--nw-wall:#613b50/, 'muted burgundy wall palette is present');
+assert.match(stylesheet, /\.left-wall,\.window-section,\.right-wall\{display:contents\}/, 'desktop layout separates individual wall-mounted items');
+assert.match(stylesheet, /\.booth-scene>\.left-wall>\.phone\{position:absolute;left:3\.5%;bottom:1\.7%/, 'telephone is a foreground desk object');
+assert.match(stylesheet, /\.booth-scene>\.decision-panel\{\s*position:absolute;z-index:14;left:auto;right:1\.1%/, 'decision controls are compact at the right desk edge');
+assert.match(stylesheet, /\.booth-scene>\.right-wall>\.calendar/, 'calendar is positioned at the top of the right wall');
+assert.match(stylesheet, /\.booth-scene>\.right-wall>\.checklist/, 'checklist is positioned below the calendar');
+assert.match(stylesheet, /\.booth-scene>\.right-wall>\.folder-button/, 'resident data folder is placed at the bottom right');
+
 assert.match(stylesheet, /\.today-photo svg\{filter:grayscale\(1\)/, 'today roster portraits use monochrome treatment');
 assert.match(stylesheet, /\.window-glass:before/, 'CRT scanline treatment is present');
 assert.match(stylesheet, /grid-template-areas:"left center right"/, 'desk regions keep left-center-right reading order');
