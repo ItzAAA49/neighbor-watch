@@ -54,8 +54,8 @@ assert.match(stylesheet, /@media\(max-width:560px\)/, 'small phone layout fallba
 assert.match(stylesheet, /v1.6.2 — reference-based wall and desk separation/, 'inspection booth art direction is versioned');
 
 assert.match(stylesheet, /--nw-wall:#613b50/, 'muted burgundy wall palette is present');
-assert.match(stylesheet, /\.left-wall,\.window-section,\.right-wall\{display:contents\}/, 'desktop layout separates individual wall-mounted items');
-assert.match(stylesheet, /\.booth-scene>\.left-wall>\.phone\{position:absolute;left:3\.5%;bottom:1\.7%/, 'telephone is a foreground desk object');
+assert.match(stylesheet, /\.booth-scene>\.left-wall,\.booth-scene>\.window-section,\.booth-scene>\.right-wall\{display:contents\}/, 'desktop layout separates individual wall-mounted items');
+assert.match(stylesheet, /\.booth-scene>\.left-wall>\.phone\{\s*position:absolute;left:3\.5%;bottom:1\.7%/, 'telephone is a foreground desk object');
 assert.match(stylesheet, /\.booth-scene>\.decision-panel\{\s*position:absolute;z-index:14;left:auto;right:1\.1%/, 'decision controls are compact at the right desk edge');
 assert.match(stylesheet, /\.booth-scene>\.right-wall>\.calendar/, 'calendar is positioned at the top of the right wall');
 assert.match(stylesheet, /\.booth-scene>\.right-wall>\.checklist/, 'checklist is positioned below the calendar');
