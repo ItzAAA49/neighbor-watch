@@ -60,6 +60,7 @@ assert.match(stylesheet, /\.booth-scene>\.decision-panel\{\s*position:absolute;z
 assert.match(stylesheet, /\.booth-scene>\.right-wall>\.calendar/, 'calendar is positioned at the top of the right wall');
 assert.match(stylesheet, /\.booth-scene>\.right-wall>\.checklist/, 'checklist is positioned below the calendar');
 assert.match(stylesheet, /\.booth-scene>\.right-wall>\.folder-button/, 'resident data folder is placed at the bottom right');
+assert.match(stylesheet, /\.booth-scene>\.right-wall>\.desk-items\{position:absolute;right:20%;bottom:2\.3%;z-index:8;display:flex/, 'event desk badges remain visible on the desk');
 
 assert.match(stylesheet, /\.today-photo svg\{filter:grayscale\(1\)/, 'today roster portraits use monochrome treatment');
 assert.match(stylesheet, /\.window-glass:before/, 'CRT scanline treatment is present');
