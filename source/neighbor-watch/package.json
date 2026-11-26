@@ -1,6 +1,6 @@
 {
   "name": "neighbor-watch",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "private": true,
   "description": "A Japanese, original-art inspection horror game with validated state, save synchronization, and server-backed account APIs.",
   "main": "server.js",
