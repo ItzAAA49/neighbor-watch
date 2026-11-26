@@ -38,7 +38,7 @@ jobs:
           rm -rf neighbor-watch
           cp -a source/neighbor-watch neighbor-watch
           node scripts/rebuild-readable-menu.js neighbor-watch
-          node -e "const p=require('./neighbor-watch/package.json'); if(p.version !== '1.6.2') throw new Error('Unexpected package version '+p.version); console.log('Verified package:',p.version)"
+          node -e "const p=require('./neighbor-watch/package.json'); if(p.version !== '1.7.0') throw new Error('Unexpected package version '+p.version); console.log('Verified package:',p.version)"
 
       - name: Install dependencies and run all tests
         working-directory: neighbor-watch
