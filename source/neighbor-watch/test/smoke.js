@@ -51,7 +51,7 @@ for (const selector of ['.booth-scene{', '.window-frame{', '.today-board{', '.ph
 assert.match(stylesheet, /grid-template-columns:18\.4% minmax\(0,63\.2%\) 18\.4%/, 'desktop booth keeps the monitor as the dominant center area');
 assert.match(stylesheet, /@media\(max-width:980px\)/, 'tablet and mobile layout fallback exists');
 assert.match(stylesheet, /@media\(max-width:560px\)/, 'small phone layout fallback exists');
-assert.match(stylesheet, /v1.6.2 — reference-based wall and desk separation/, 'inspection booth art direction is versioned');
+assert.match(stylesheet, /v1.6.2 — reference comparison pass: separate wall-mounted objects from desk objects/, 'inspection booth art direction is versioned');
 
 assert.match(stylesheet, /--nw-wall:#613b50/, 'muted burgundy wall palette is present');
 assert.match(stylesheet, /\.booth-scene>\.left-wall,\.booth-scene>\.window-section,\.booth-scene>\.right-wall\{display:contents\}/, 'desktop layout separates individual wall-mounted items');
