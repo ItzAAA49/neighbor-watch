@@ -51,6 +51,12 @@ for (const selector of ['.booth-scene{', '.window-frame{', '.today-board{', '.ph
 assert.match(stylesheet, /grid-template-columns:18\.4% minmax\(0,63\.2%\) 18\.4%/, 'desktop booth keeps the monitor as the dominant center area');
 assert.match(stylesheet, /@media\(max-width:980px\)/, 'tablet and mobile layout fallback exists');
 assert.match(stylesheet, /@media\(max-width:560px\)/, 'small phone layout fallback exists');
+assert.match(stylesheet, /v1\.6\.1 — D\.D\.D\. inspection booth art direction/, 'inspection booth art direction is versioned');
+assert.match(stylesheet, /--nw-wall:#613b50/, 'burgundy wall palette is present');
+assert.match(stylesheet, /\.today-photo svg\{filter:grayscale\(1\)/, 'today roster portraits use monochrome treatment');
+assert.match(stylesheet, /\.window-glass:before/, 'CRT scanline treatment is present');
+assert.match(stylesheet, /grid-template-areas:"left center right"/, 'desk regions keep left-center-right reading order');
+
 for (const [label, roster] of [['normal', data.normal], ['nightmare', data.nightmare]]) {
   assert.equal(new Set(roster.map(p => p.name)).size, roster.length, `${label} names are unique`);
   assert.equal(new Set(roster.map(p => p.id)).size, roster.length, `${label} IDs are unique`);
