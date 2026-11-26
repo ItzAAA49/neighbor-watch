@@ -1,1 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="8" fill="#2a2621"/><path d="M15 12h34v7H22v10h23v7H22v11h27v7H15z" fill="#c4b28f"/><path d="M32 5 37 12H27z" fill="#9a3830"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<rect width="64" height="64" rx="6" fill="#382b3a"/>
+<rect x="4" y="4" width="56" height="56" rx="4" fill="none" stroke="#c4a56e" stroke-width="1.5"/>
+<circle cx="32" cy="29" r="21" fill="#6d3543" stroke="#d5bd8c" stroke-width="2"/>
+<circle cx="32" cy="29" r="16" fill="none" stroke="#d5bd8c" stroke-width="1"/>
+<path d="M32 12 39 22 32 18 25 22Z" fill="#e2d1aa"/>
+<path d="M21 41 32 23 43 41 32 37Z" fill="#e0d2b1" stroke="#302832" stroke-width="1"/>
+<path d="M26 36h12v3H26z" fill="#6f3441"/>
+<text x="32" y="52" text-anchor="middle" font-family="monospace" font-size="6" letter-spacing=".8" fill="#eddfc4">D.D.D.</text>
+</svg>
