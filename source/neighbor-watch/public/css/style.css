@@ -2486,3 +2486,17 @@ input::placeholder,textarea::placeholder{color:#9b8c7c}
 @media(prefers-reduced-motion:reduce){
   .booth-scene *, .booth-scene *:before,.booth-scene *:after{animation:none!important;transition:none!important}
 }
+
+
+/* v1.9.1 — hide the empty placeholder once a visitor is in the window */
+.booth-scene .visitor-empty[hidden]{display:none!important}
+.booth-scene #visitor-display[hidden]{display:none!important}
+.booth-scene #visitor-display{padding:2% 0 6%!important}
+.booth-scene .visitor-face{
+  width:min(52%,310px)!important;height:80%!important
+}
+@media(max-width:760px){
+  .booth-scene #visitor-display{padding:2% 0 7%!important}
+  .booth-scene .visitor-face{width:min(40%,230px)!important;height:73%!important}
+  .booth-scene .visitor-caption{font-size:5px!important;padding:2px 5px!important}
+}

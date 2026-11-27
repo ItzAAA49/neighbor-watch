@@ -152,6 +152,14 @@ jobs:
             assert.ok(Math.abs(initial.sceneAspect - initial.expectedAspect) < 0.002,
               'scene aspect ratio differs from original screenshot: ' + initial.sceneAspect);
             assert.ok(initial.image.src.includes('/assets/office-original.webp'), 'the exact supplied original image must be the only room background');
+            const emptyOverlay = await page.locator('#visitor-empty').evaluate(node => ({
+              hidden: node.hidden,
+              display: getComputedStyle(node).display,
+              width: node.getBoundingClientRect().width,
+              height: node.getBoundingClientRect().height
+            }));
+            assert.equal(emptyOverlay.hidden, true, 'empty screen should be hidden during visitor appearance');
+            assert.equal(emptyOverlay.display, 'none', 'empty placeholder must not appear behind a visitor');
             assert.equal(initial.image.naturalWidth, 1177, 'wrong original image width');
             assert.equal(initial.image.naturalHeight, 624, 'wrong original image height');
             assert.ok(Math.abs(initial.scene.width / initial.scene.height - 1177 / 624) < 0.001,
@@ -280,6 +288,10 @@ jobs:
               scene: (() => { const r=document.getElementById('booth-scene').getBoundingClientRect();return {x:r.x,width:r.width,height:r.height}; })()
             }));
             assert.ok(mobileLayout.mobileControlsVisible, 'mobile keypad and quick actions must be visible');
+            const mobileEmptyOverlay = await mobile.locator('#visitor-empty').evaluate(node => ({
+              hidden: node.hidden, display: getComputedStyle(node).display
+            }));
+            assert.equal(mobileEmptyOverlay.display, 'none', 'mobile empty placeholder must not overlap visitor');
             assert.equal(mobileLayout.phoneKeyCount, 10, 'mobile keypad must have ten digit buttons');
             assert.ok(mobileLayout.documentWidth <= mobileLayout.viewport.width, 'mobile page has horizontal overflow: ' + JSON.stringify(mobileLayout));
             assert.ok(Math.abs(mobileLayout.scene.width / mobileLayout.scene.height - 1177 / 624) < 0.003, 'mobile scene is not using original aspect ratio');

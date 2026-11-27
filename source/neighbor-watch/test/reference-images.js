@@ -116,3 +116,7 @@ assert.match(css, /\.booth-scene \.alarm-unit::before/);
 assert.match(css, /\.booth-scene \.emergency-button::after/);
 assert.match(css, /\.play-header #pause-button/);
 console.log('Exact original background, aspect ratio, original control positions and mobile controls checks passed.');
+
+
+assert.match(css, /\.visitor-empty\[hidden\]\{display:none!important\}/);
+assert.match(css, /\.visitor-face\{width:min\(40%,230px\)!important;height:73%!important\}/);
