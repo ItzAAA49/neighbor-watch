@@ -128,3 +128,6 @@ assert.match(css, /min-height:0!important;max-height:none!important/);
 assert.match(css, /width:58%!important;height:auto!important;aspect-ratio:260 \/ 290!important/);
 assert.match(css, /nth-child\(n\+7\)\{display:none!important\}/);
 assert.match(css, /left:9\.2%!important;top:67\.4%!important;width:6\.6%!important;height:13\.8%!important/);
+
+assert.match(css, /background:rgba\(230,221,205,.97\)!important/);
+assert.match(css, /background:#d8d0c3!important/);
