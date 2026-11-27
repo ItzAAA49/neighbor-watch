@@ -2578,3 +2578,12 @@ input::placeholder,textarea::placeholder{color:#9b8c7c}
   }
   .booth-scene .visitor-face{max-height:88%!important}
 }
+
+
+/* v1.9.5 — size the mobile portrait by its natural SVG aspect ratio */
+@media(max-width:760px){
+  .booth-scene .visitor-face{
+    width:58%!important;height:auto!important;aspect-ratio:260 / 290!important;
+    max-height:none!important;min-height:0!important;flex:0 0 auto!important
+  }
+}

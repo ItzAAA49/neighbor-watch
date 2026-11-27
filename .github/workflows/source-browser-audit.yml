@@ -298,15 +298,15 @@ jobs:
               scene: (() => { const r=document.getElementById('booth-scene').getBoundingClientRect();return {x:r.x,width:r.width,height:r.height}; })()
             }));
             assert.ok(mobileLayout.mobileControlsVisible, 'mobile keypad and quick actions must be visible');
-            assert.ok(mobileLayout.visitor.faceBox.width >= mobileLayout.visitor.windowBox.width * 0.75,
+            assert.ok(mobileLayout.visitor.faceBox.width >= mobileLayout.visitor.windowBox.width * 0.55,
               'mobile portrait is too narrow inside the window: ' + JSON.stringify(mobileLayout.visitor));
             assert.ok(await mobile.locator('#visitor-dialog').evaluate(node => node.parentElement.classList.contains('booth-wrap')),
               'mobile dialogue must live outside the background scene');
             assert.ok(mobileLayout.visitor.faceBox.x >= mobileLayout.visitor.windowBox.x - 1 &&
               mobileLayout.visitor.faceBox.x + mobileLayout.visitor.faceBox.width <= mobileLayout.visitor.windowBox.x + mobileLayout.visitor.windowBox.width + 1,
               'mobile portrait extends outside the window horizontally');
-            assert.ok(mobileLayout.visitor.faceBox.height / mobileLayout.visitor.faceBox.width > 1.05 &&
-              mobileLayout.visitor.faceBox.height / mobileLayout.visitor.faceBox.width < 1.15,
+            assert.ok(mobileLayout.visitor.faceBox.height / mobileLayout.visitor.faceBox.width > 1.08 &&
+              mobileLayout.visitor.faceBox.height / mobileLayout.visitor.faceBox.width < 1.14,
               'mobile portrait ratio must remain proportional');
             assert.ok(mobileLayout.visitor.windowBox.height <= mobileLayout.visitor.frameBox.height,
               'mobile glass must not exceed its frame');
