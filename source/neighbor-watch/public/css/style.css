@@ -2284,16 +2284,16 @@ input::placeholder,textarea::placeholder{color:#9b8c7c}
   background:rgba(255,255,255,.005)!important;color:transparent!important;box-shadow:none!important;
   font-size:0!important;transform:translate(-50%,-50%)!important;cursor:pointer!important;pointer-events:auto!important
 }
-.booth-scene .phone-hole-ring button:nth-child(1){left:86%!important;top:31%!important}
-.booth-scene .phone-hole-ring button:nth-child(2){left:69%!important;top:14%!important}
-.booth-scene .phone-hole-ring button:nth-child(3){left:47%!important;top:9%!important}
-.booth-scene .phone-hole-ring button:nth-child(4){left:25%!important;top:22%!important}
-.booth-scene .phone-hole-ring button:nth-child(5){left:14%!important;top:43%!important}
-.booth-scene .phone-hole-ring button:nth-child(6){left:22%!important;top:66%!important}
-.booth-scene .phone-hole-ring button:nth-child(7){left:43%!important;top:87%!important}
-.booth-scene .phone-hole-ring button:nth-child(8){left:65%!important;top:86%!important}
-.booth-scene .phone-hole-ring button:nth-child(9){left:84%!important;top:66%!important}
-.booth-scene .phone-hole-ring button.zero{left:85%!important;top:43%!important}
+.booth-scene .phone-hole-ring button:nth-child(1){left:71.7%!important;top:38.7%!important}
+.booth-scene .phone-hole-ring button:nth-child(2){left:57.3%!important;top:21.4%!important}
+.booth-scene .phone-hole-ring button:nth-child(3){left:37.1%!important;top:12.4%!important}
+.booth-scene .phone-hole-ring button:nth-child(4){left:17.0%!important;top:28.0%!important}
+.booth-scene .phone-hole-ring button:nth-child(5){left:7.3%!important;top:49.5%!important}
+.booth-scene .phone-hole-ring button:nth-child(6){left:11.2%!important;top:72.2%!important}
+.booth-scene .phone-hole-ring button:nth-child(7){left:25.6%!important;top:91.7%!important}
+.booth-scene .phone-hole-ring button:nth-child(8){left:48.1%!important;top:92.9%!important}
+.booth-scene .phone-hole-ring button:nth-child(9){left:65.2%!important;top:80.9%!important}
+.booth-scene .phone-hole-ring button.zero{left:77%!important;top:62%!important}
 .booth-scene .phone-center{
   position:absolute!important;left:50%!important;top:50%!important;width:33%!important;height:32%!important;
   min-width:0!important;min-height:0!important;transform:translate(-50%,-50%)!important;
@@ -2587,3 +2587,6 @@ input::placeholder,textarea::placeholder{color:#9b8c7c}
     max-height:none!important;min-height:0!important;flex:0 0 auto!important
   }
 }
+
+
+/* v1.9.6 — dial hit targets calibrated against original 1177×624 artwork */

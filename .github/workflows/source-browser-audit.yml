@@ -187,6 +187,29 @@ jobs:
               return result;
             }
 
+            // The original image coordinates define where each rotary number is printed.
+            const dialCoordinates = [
+              ['1',303,562], ['2',288,546], ['3',267,538],
+              ['4',246,552], ['5',236,572], ['6',240,593],
+              ['7',255,611], ['8',278,612], ['9',296,601],
+              ['0',311,583]
+            ];
+            const dialCalibration = await page.evaluate(expected => {
+              const scene = document.getElementById('booth-scene').getBoundingClientRect();
+              const results = {};
+              for (const [digit, x, y] of expected) {
+                const button = document.querySelector('#phone-dial button[data-digit="' + digit + '"]');
+                const r = button.getBoundingClientRect();
+                const actualX = ((r.left + r.width / 2 - scene.left) / scene.width) * 1177;
+                const actualY = ((r.top + r.height / 2 - scene.top) / scene.height) * 624;
+                results[digit] = { target: [x,y], actual: [actualX,actualY],
+                  error: Math.hypot(actualX-x, actualY-y) };
+              }
+              return results;
+            }, dialCoordinates);
+            for (const [digit, result] of Object.entries(dialCalibration)) {
+              assert.ok(result.error <= 12, 'phone digit ' + digit + ' does not line up with printed dial hole: ' + JSON.stringify(result));
+            }
             const hits = {};
             for (const [selector, name] of [
               ["#today-list","Today's list"],
@@ -261,7 +284,7 @@ jobs:
             assert.ok(Object.values(decisionSummary).every(value => value === false), 'decision controls are not all enabled');
 
             fs.writeFileSync('visual-audit/hitbox-results.json', JSON.stringify({
-              hits, decisionSummary, consoleErrors: errors
+              hits, dialCalibration, decisionSummary, consoleErrors: errors
             }, null, 2));
             await page.screenshot({ path: 'visual-audit/desktop-after-interactions.png', fullPage: true });
 
