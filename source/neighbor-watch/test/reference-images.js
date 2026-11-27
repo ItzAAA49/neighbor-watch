@@ -73,19 +73,28 @@ for (const [name, x, y] of crops) {
 }
 assert.equal(new Set(renderedCrops).size, crops.length, 'the seven supplied portraits are all visually distinct');
 assert.equal(roster.length, 20, 'the standard roster still contains all 20 residents');
+const allNormalPortraits = roster.map(person => face.portrait(person, { night: false, referenceTags: person.tags }));
+assert.equal(new Set(allNormalPortraits).size, 20, 'every normal character must have an individually distinct portrait');
+const allNightmarePortraits = context.window.NW_DATA.nightmare.map(person =>
+  face.portrait(person, { night: true, referenceTags: person.tags }));
+assert.equal(new Set(allNightmarePortraits).size, 20, 'every nightmare character must have an individually distinct portrait');
 assert.equal(context.window.NW_DATA.nightmare.length, 20, 'the nightmare roster still contains all 20 characters');
 
-assert.match(html, /class="reference-scene-image" src="\/assets\/office-reference\.webp"/);
+assert.match(html, /class="reference-scene-image" src="\/assets\/office-original\.webp"/);
 assert.match(html, /width="1177" height="624"/);
 assert.match(html, /id="mobile-controls"/);
+assert.match(html, /data-game-action="folder"/);
+assert.ok(html.indexOf('id="mobile-controls"') > html.indexOf('id="booth-scene"'), 'mobile controls must sit outside the image scene');
+assert.ok(html.indexOf('id="decision-panel"') > html.indexOf('id="mobile-controls"'), 'decision panel must sit below the image');
+assert.doesNotMatch(html, /office-reference\\.webp/);
 assert.match(html, /data-phone-digit="1"/);
 assert.match(html, /id="visitor-face" class="visitor-face" role="button" tabindex="0"/);
 assert.match(html, /\/js\/motion\.js/);
-assert.match(css, /v1\.8\.2 — remove duplicate furniture and align every live hitbox/);
+assert.match(css, /v1\.9\.0 — exact 1177×624 user source screenshot/);
 assert.match(css, /pointer-events:none!important/);
-assert.match(css, /left:42\.0%!important;top:71\.8%!important/);
-assert.match(css, /left:58\.8%!important;top:80\.0%!important/);
-assert.match(css, /left:70\.1%!important;top:71\.6%!important/);
+assert.match(css, /left:38\.1%!important;top:88\.0%!important/);
+assert.match(css, /left:84\.3%!important;top:33\.2%!important/);
+assert.match(css, /width:min\\(calc\\(100% - 16px\\),1177px\\)/);
 assert.match(css, /source-image-curtain\{display:none!important/);
 assert.doesNotMatch(motion, /source-image-curtain|visitor-arrival\.jpg/,
   'the old full-screen visitor screenshot must never cover the interactive scene');
@@ -99,8 +108,8 @@ console.log('Original office, character atlas, character-specific portraits, hit
 // Live scene geometry must preserve the source screenshot's exact aspect ratio.
 // Legacy pseudo-elements are disabled because the supplied image already contains
 // the grille, warning switch, desk and all wall furniture.
-assert.match(css, /v1\.8\.3 — fit the original screenshot exactly/);
-assert.match(css, /aspect-ratio:2559 \/ 1423!important/);
+assert.match(css, /v1\.9\.0 — exact 1177×624 user source screenshot/);
+assert.match(css, /aspect-ratio:1177 \/ 624!important/);
 assert.match(css, /max-height:none!important/);
 assert.match(css, /\.booth-scene::before,\.booth-scene::after/);
 assert.match(css, /\.booth-scene \.alarm-unit::before/);
