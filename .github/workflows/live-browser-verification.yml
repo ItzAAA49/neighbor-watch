@@ -263,6 +263,18 @@ jobs:
           });
           NODE
 
+      - name: Include original reference assets for visual comparison
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p visual-audit/reference
+          git fetch origin main --depth=1
+          for asset in office-reference.webp office-reference.png OIF-386398556.jpg visitor-arrival.jpg albertsky-entry-request.jpg; do
+            git show "origin/main:source/neighbor-watch/public/assets/$asset" > "visual-audit/reference/$asset"
+          done
+          cp source/neighbor-watch/public/css/style.css visual-audit/reference/live-style.css
+          cp source/neighbor-watch/public/play.html visual-audit/reference/live-play.html
       - name: Upload browser evidence
         if: always()
         uses: actions/upload-artifact@v4
