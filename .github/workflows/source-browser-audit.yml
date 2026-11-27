@@ -282,6 +282,14 @@ jobs:
             const mobileLayout = await mobile.evaluate(() => ({
               mobileControlsVisible: getComputedStyle(document.getElementById('mobile-controls')).display !== 'none',
               phoneKeyCount: document.querySelectorAll('#mobile-controls [data-phone-digit]').length,
+              visitor: {
+                name: document.getElementById('visitor-name')?.textContent,
+                visible: !document.getElementById('visitor-display')?.hidden,
+                faceHtml: document.getElementById('visitor-face')?.innerHTML,
+                faceBox: (() => { const r=document.getElementById('visitor-face').getBoundingClientRect(); return {x:r.x,y:r.y,width:r.width,height:r.height}; })(),
+                windowBox: (() => { const r=document.getElementById('visitor-window').getBoundingClientRect(); return {x:r.x,y:r.y,width:r.width,height:r.height}; })(),
+                imageSrc: document.querySelector('#visitor-face image')?.getAttribute('href')
+              },
               viewport: { width: innerWidth, height: innerHeight },
               documentWidth: document.documentElement.scrollWidth,
               boothWrap: (() => { const r=document.querySelector('.booth-wrap').getBoundingClientRect();return {x:r.x,width:r.width,scrollWidth:document.querySelector('.booth-wrap').scrollWidth}; })(),
