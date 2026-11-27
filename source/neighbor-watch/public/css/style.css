@@ -2622,3 +2622,14 @@ input::placeholder,textarea::placeholder{color:#9b8c7c}
 .booth-scene .today-photo svg{filter:grayscale(.88) contrast(1.05)!important}
 .booth-scene .today-details b{font-size:clamp(4px,.52vw,6.5px)!important}
 .booth-scene .today-details small{font-size:clamp(3px,.4vw,5.2px)!important}
+
+
+/* v1.9.9 — show the live dialed number on the mobile keypad */
+@media(max-width:760px){
+  .mobile-phone-display{
+    width:100%!important;min-height:38px!important;margin:0 0 7px!important;padding:7px 10px!important;
+    border:2px inset #857a70!important;border-radius:3px!important;background:#15151a!important;
+    color:#f4e4d8!important;text-align:center!important;font:16px var(--mono)!important;
+    letter-spacing:.28em!important;box-shadow:inset 0 2px 7px rgba(0,0,0,.6)!important
+  }
+}

@@ -365,6 +365,18 @@ jobs:
             const mobileBefore = await mobile.locator('#phone-number').textContent();
             await mobile.locator('#mobile-controls [data-phone-digit="1"]').click();
             assert.notEqual(await mobile.locator('#phone-number').textContent(), mobileBefore, 'mobile keypad did not update live phone');
+
+            assert.equal(await mobile.locator('#mobile-phone-display').textContent(), '1---',
+              'mobile number display must reflect first digit');
+            await mobile.locator('#mobile-controls [data-phone-clear]').click();
+            assert.equal(await mobile.locator('#mobile-phone-display').textContent(), '----',
+              'mobile clear must reset number display');
+            await mobile.locator('#mobile-controls [data-phone-digit="1"]').click();
+            await mobile.locator('#mobile-controls [data-phone-digit="2"]').click();
+            await mobile.locator('#mobile-controls [data-phone-digit="3"]').click();
+            await mobile.locator('#mobile-controls [data-phone-digit="4"]').click();
+            assert.equal(await mobile.locator('#mobile-phone-display').textContent(), '1234',
+              'mobile number display must reflect all four digits');
             const beforeMobileCall = await mobile.locator('#visitor-line').textContent();
             await mobile.locator('#mobile-controls [data-phone-call]').click();
             await mobile.waitForFunction(previous => document.getElementById('visitor-line').textContent !== previous ||

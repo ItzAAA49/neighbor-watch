@@ -162,6 +162,14 @@
 
 
     // Large, accessible mobile controls proxy to the same original game handlers.
+    const mobilePhoneDisplay = $('mobile-phone-display');
+    const desktopPhoneDisplay = $('phone-number');
+    if (mobilePhoneDisplay && desktopPhoneDisplay) {
+      const syncMobilePhone = () => { mobilePhoneDisplay.textContent = desktopPhoneDisplay.textContent || '----'; };
+      syncMobilePhone();
+      const phoneDisplayObserver = new MutationObserver(syncMobilePhone);
+      phoneDisplayObserver.observe(desktopPhoneDisplay, { childList: true, characterData: true, subtree: true });
+    }
     const mobileControls = $('mobile-controls');
     if (mobileControls) {
       mobileControls.addEventListener('click', event => {

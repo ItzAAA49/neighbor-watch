@@ -85,6 +85,8 @@ assert.match(html, /width="1177" height="624"/);
 assert.match(html, /id="mobile-controls"/);
 assert.ok(html.indexOf('id="visitor-dialog"') > html.indexOf('id="booth-scene"'), 'speech UI must be outside the original image');
 assert.match(html, /data-game-action="folder"/);
+assert.match(html, /id="mobile-phone-display"/);
+assert.match(motion, /syncMobilePhone/);
 assert.ok(html.indexOf('id="mobile-controls"') > html.indexOf('id="booth-scene"'), 'mobile controls must sit outside the image scene');
 assert.ok(html.indexOf('id="decision-panel"') > html.indexOf('id="mobile-controls"'), 'decision panel must sit below the image');
 assert.doesNotMatch(html, /office-reference[.]webp/);
