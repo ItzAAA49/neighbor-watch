@@ -123,3 +123,5 @@ assert.match(css, /\.visitor-empty\[hidden\]\{display:none!important\}/);
 assert.match(css, /\.visitor-face\{width:min\(40%,230px\)!important;height:73%!important\}/);
 
 assert.match(css, /aspect-ratio:260 \/ 290!important/);
+
+assert.match(css, /min-height:0!important;max-height:none!important/);

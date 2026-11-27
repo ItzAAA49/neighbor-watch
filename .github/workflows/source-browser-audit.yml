@@ -288,6 +288,7 @@ jobs:
                 faceHtml: document.getElementById('visitor-face')?.innerHTML,
                 faceBox: (() => { const r=document.getElementById('visitor-face').getBoundingClientRect(); return {x:r.x,y:r.y,width:r.width,height:r.height}; })(),
                 windowBox: (() => { const r=document.getElementById('visitor-window').getBoundingClientRect(); return {x:r.x,y:r.y,width:r.width,height:r.height}; })(),
+                frameBox: (() => { const r=document.getElementById('window-frame').getBoundingClientRect(); return {x:r.x,y:r.y,width:r.width,height:r.height}; })(),
                 imageSrc: document.querySelector('#visitor-face image')?.getAttribute('href'),
               faceAspect: (() => { const r=document.getElementById('visitor-face').getBoundingClientRect(); return r.width/r.height; })()
               },
@@ -307,6 +308,12 @@ jobs:
             assert.ok(mobileLayout.visitor.faceBox.height / mobileLayout.visitor.faceBox.width > 1.05 &&
               mobileLayout.visitor.faceBox.height / mobileLayout.visitor.faceBox.width < 1.15,
               'mobile portrait ratio must remain proportional');
+            assert.ok(mobileLayout.visitor.windowBox.height <= mobileLayout.visitor.frameBox.height,
+              'mobile glass must not exceed its frame');
+            assert.ok(mobileLayout.visitor.frameBox.height <= mobileLayout.scene.height * 0.84,
+              'mobile frame must fit the original scene height');
+            assert.ok(mobileLayout.visitor.faceBox.y >= mobileLayout.visitor.windowBox.y - 1,
+              'mobile portrait must not start above the glass');
             assert.ok(mobileLayout.visitor.faceBox.y + mobileLayout.visitor.faceBox.height <=
               mobileLayout.visitor.windowBox.y + mobileLayout.visitor.windowBox.height + 1,
               'mobile portrait extends below the window');

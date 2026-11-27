@@ -2560,3 +2560,21 @@ input::placeholder,textarea::placeholder{color:#9b8c7c}
   .booth-wrap>.visitor-dialog .dialog-actions{gap:6px!important}
   .booth-wrap>.visitor-dialog .text-button{font-size:6px!important}
 }
+
+
+/* v1.9.4 — remove legacy minimum-height constraints from the original window */
+.booth-scene>.window-section>.window-frame{
+  height:83%!important;min-height:0!important;max-height:none!important
+}
+.booth-scene .window-glass{
+  height:85%!important;min-height:0!important;max-height:none!important
+}
+@media(max-width:760px){
+  .booth-scene>.window-section>.window-frame{
+    height:83%!important;min-height:0!important;max-height:none!important
+  }
+  .booth-scene .window-glass{
+    height:85%!important;min-height:0!important;max-height:none!important
+  }
+  .booth-scene .visitor-face{max-height:88%!important}
+}
