@@ -133,3 +133,5 @@ assert.match(css, /left:9\.2%!important;top:67\.4%!important;width:6\.6%!importa
 
 assert.match(css, /background:rgba\(230,221,205,.97\)!important/);
 assert.match(css, /background:#d8d0c3!important/);
+
+// Final UI acceptance suite: exact source image, one visual layer, calibrated controls, mobile keypad and independent portraits.

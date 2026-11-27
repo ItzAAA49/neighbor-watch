@@ -6,6 +6,7 @@ on:
       - audit/rebuild-scene-original
     paths:
       - '.github/workflows/source-browser-audit.yml'
+      - '.github/workflows/live-public-browser-audit.yml'
       - 'source/neighbor-watch/public/**'
       - 'source/neighbor-watch/test/**'
       - 'source/neighbor-watch/prepare-assets.js'
