@@ -44,7 +44,7 @@ jobs:
             const context = await browser.newContext({
               viewport: { width: 1600, height: 1000 },
               deviceScaleFactor: 1,
-              reducedMotion: 'reduce'
+              reducedMotion: 'no-preference'
             });
             const page = await context.newPage();
             const errors = [];
@@ -109,6 +109,8 @@ jobs:
                 title: document.title,
                 url: location.href,
                 scene: rect(scene),
+                sceneAspect: scene.getBoundingClientRect().width / scene.getBoundingClientRect().height,
+                expectedAspect: 2559 / 1423,
                 image: {
                   src: img.currentSrc,
                   naturalWidth: img.naturalWidth,
@@ -127,6 +129,8 @@ jobs:
                 fontReady: document.fonts.status
               };
             });
+            assert.ok(Math.abs(initial.sceneAspect - initial.expectedAspect) < 0.002,
+              'scene aspect ratio differs from original screenshot: ' + initial.sceneAspect);
             fs.writeFileSync('visual-audit/desktop-layout.json', JSON.stringify(initial, null, 2));
             await page.screenshot({ path: 'visual-audit/desktop-initial.png', fullPage: true });
 
@@ -155,6 +159,8 @@ jobs:
               ["#today-list","Today's list"],
               ['#emergency-button','Emergency button'],
               ['#phone-dial button[data-digit="1"]','Phone digit 1'],
+              ['.phone-center','Phone call center'],
+              ['#pause-button','Pause hotspot'],
               ['#visitor-face','Visitor face'],
               ['#id-document','ID document'],
               ['#form-document','Application document'],
@@ -189,7 +195,25 @@ jobs:
             await page.locator('#phone-dial button[data-digit="2"]').click();
             await page.locator('#phone-dial button[data-digit="3"]').click();
             await page.locator('#phone-dial button[data-digit="4"]').click();
-            await page.locator('#dial-call').click();
+            const beforeCall = await page.evaluate(() => ({
+              line: document.getElementById('visitor-line').textContent,
+              toast: document.getElementById('toast').textContent,
+              number: document.getElementById('phone-number').textContent
+            }));
+            assert.equal(beforeCall.number.trim(), '1234', 'phone dial digits did not appear in the display');
+            await page.locator('.phone-center').click();
+            await page.waitForFunction(previous => {
+              const line = document.getElementById('visitor-line')?.textContent || '';
+              const toast = document.getElementById('toast')?.textContent || '';
+              return line !== previous.line || toast !== previous.toast;
+            }, beforeCall, { timeout: 3000 });
+            const afterCall = await page.evaluate(() => ({
+              line: document.getElementById('visitor-line').textContent,
+              toast: document.getElementById('toast').textContent
+            }));
+            assert.ok(afterCall.line !== beforeCall.line || afterCall.toast !== beforeCall.toast,
+              'visible phone-center click did not perform a call action');
+
             await page.locator('#emergency-button').click();
             assert.ok(await page.locator('#emergency-button').evaluate(n => n.classList.contains('pressed')), 'emergency button click did not toggle on');
             await page.locator('#emergency-button').click();
@@ -209,7 +233,7 @@ jobs:
             await page.screenshot({ path: 'visual-audit/desktop-after-interactions.png', fullPage: true });
 
             // Also capture phone-size overflow and hitbox scale as a separate responsive check.
-            const mobileContext = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, reducedMotion: 'reduce' });
+            const mobileContext = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, reducedMotion: 'no-preference' });
             const mobile = await mobileContext.newPage();
             await mobile.addInitScript(() => { localStorage.clear(); sessionStorage.clear(); });
             await mobile.route('**/api/guest/**', async route => {
