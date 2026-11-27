@@ -91,3 +91,16 @@ assert.match(motion, /visitor-arriving/);
 assert.match(motion, /isTypingLine|typingActive/);
 assert.match(motion, /syncEmergencyAnimation/);
 console.log('Original office, character atlas, character-specific portraits, hitboxes and motion hooks passed.');
+
+
+// Live scene geometry must preserve the source screenshot's exact aspect ratio.
+// Legacy pseudo-elements are disabled because the supplied image already contains
+// the grille, warning switch, desk and all wall furniture.
+assert.match(css, /v1\.8\.3 — fit the original screenshot exactly/);
+assert.match(css, /aspect-ratio:2559 \/ 1423!important/);
+assert.match(css, /max-height:none!important/);
+assert.match(css, /\.booth-scene::before,\.booth-scene::after/);
+assert.match(css, /\.booth-scene \.alarm-unit::before/);
+assert.match(css, /\.booth-scene \.emergency-button::after/);
+assert.match(css, /\.play-header #pause-button/);
+console.log('Original-ratio display and old-furniture suppression checks passed.');

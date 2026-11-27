@@ -2104,3 +2104,56 @@ input::placeholder,textarea::placeholder{color:#9b8c7c}
 @media(prefers-reduced-motion:reduce){
   .booth-scene *, .booth-scene *:before,.booth-scene *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 }
+
+
+/* v1.8.3 — fit the original screenshot exactly and remove legacy pseudo-furniture */
+.play-header{
+  position:absolute!important;top:0!important;left:0!important;right:0!important;
+  width:100%!important;height:0!important;min-height:0!important;margin:0!important;padding:0!important;
+  overflow:visible!important;transform:none!important;
+  border:0!important;background:transparent!important;box-shadow:none!important;
+  pointer-events:none!important;z-index:50!important
+}
+.play-header .brand,.play-header .shift-meta{display:none!important}
+.play-header #pause-button{
+  position:absolute!important;left:0!important;right:auto!important;top:0!important;
+  width:15.8vw!important;max-width:260px!important;min-width:70px!important;
+  height:clamp(24px,3.25vw,56px)!important;min-height:0!important;
+  margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
+  background:transparent!important;color:transparent!important;box-shadow:none!important;
+  opacity:0!important;pointer-events:auto!important;cursor:pointer!important;z-index:51!important
+}
+.booth-wrap{
+  width:min(100%,1650px)!important;max-width:1650px!important;
+  height:auto!important;min-height:0!important;margin:0 auto!important;padding:0!important;
+  overflow-x:auto!important;overflow-y:visible!important
+}
+.booth-scene{
+  box-sizing:border-box!important;position:relative!important;
+  width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;
+  aspect-ratio:2559 / 1423!important;
+  margin:0 auto!important;padding:0!important;border:0!important;border-radius:0!important;
+  overflow:hidden!important;isolation:isolate!important;background:transparent!important;box-shadow:none!important;
+  grid-template-columns:none!important;grid-template-rows:none!important;gap:0!important
+}
+.booth-scene>.reference-scene-image{
+  position:absolute!important;inset:0!important;z-index:0!important;
+  display:block!important;width:100%!important;height:100%!important;max-width:none!important;
+  object-fit:fill!important;object-position:center!important;
+  pointer-events:none!important;user-select:none!important
+}
+/* These pseudo-elements belong to the old drawn-room mockup, not the supplied screenshot. */
+.booth-scene::before,.booth-scene::after,
+.booth-scene>.left-wall::before,.booth-scene>.left-wall::after,
+.booth-scene>.right-wall::before,.booth-scene>.right-wall::after,
+.booth-scene .alarm-unit::before,.booth-scene .alarm-unit::after,
+.booth-scene .emergency-button::after{
+  display:none!important;content:none!important
+}
+.booth-scene>.left-wall,.booth-scene>.window-section,.booth-scene>.right-wall{display:contents!important}
+@media(max-width:760px){
+  .play-header{position:absolute!important;top:0!important;height:0!important}
+  .booth-wrap{width:100%!important;max-width:none!important;overflow-x:auto!important;overflow-y:visible!important;padding:0!important}
+  .booth-scene{width:900px!important;max-width:none!important;height:auto!important;min-height:0!important;max-height:none!important;aspect-ratio:2559 / 1423!important}
+  .play-body{overflow-x:hidden!important;overflow-y:auto!important}
+}
