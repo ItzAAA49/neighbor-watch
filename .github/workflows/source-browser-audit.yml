@@ -288,7 +288,8 @@ jobs:
                 faceHtml: document.getElementById('visitor-face')?.innerHTML,
                 faceBox: (() => { const r=document.getElementById('visitor-face').getBoundingClientRect(); return {x:r.x,y:r.y,width:r.width,height:r.height}; })(),
                 windowBox: (() => { const r=document.getElementById('visitor-window').getBoundingClientRect(); return {x:r.x,y:r.y,width:r.width,height:r.height}; })(),
-                imageSrc: document.querySelector('#visitor-face image')?.getAttribute('href')
+                imageSrc: document.querySelector('#visitor-face image')?.getAttribute('href'),
+              faceAspect: (() => { const r=document.getElementById('visitor-face').getBoundingClientRect(); return r.width/r.height; })()
               },
               viewport: { width: innerWidth, height: innerHeight },
               documentWidth: document.documentElement.scrollWidth,
@@ -296,6 +297,14 @@ jobs:
               scene: (() => { const r=document.getElementById('booth-scene').getBoundingClientRect();return {x:r.x,width:r.width,height:r.height}; })()
             }));
             assert.ok(mobileLayout.mobileControlsVisible, 'mobile keypad and quick actions must be visible');
+            assert.ok(mobileLayout.visitor.faceBox.width >= mobileLayout.visitor.windowBox.width * 0.55,
+              'mobile portrait is too narrow inside the window: ' + JSON.stringify(mobileLayout.visitor));
+            assert.ok(mobileLayout.visitor.faceBox.x >= mobileLayout.visitor.windowBox.x - 1 &&
+              mobileLayout.visitor.faceBox.x + mobileLayout.visitor.faceBox.width <= mobileLayout.visitor.windowBox.x + mobileLayout.visitor.windowBox.width + 1,
+              'mobile portrait extends outside the window horizontally');
+            assert.ok(mobileLayout.visitor.faceBox.y + mobileLayout.visitor.faceBox.height <=
+              mobileLayout.visitor.windowBox.y + mobileLayout.visitor.windowBox.height + 1,
+              'mobile portrait extends below the window');
             const mobileEmptyOverlay = await mobile.locator('#visitor-empty').evaluate(node => ({
               hidden: node.hidden, display: getComputedStyle(node).display
             }));

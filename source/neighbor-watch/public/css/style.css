@@ -2500,3 +2500,20 @@ input::placeholder,textarea::placeholder{color:#9b8c7c}
   .booth-scene .visitor-face{width:min(40%,230px)!important;height:73%!important}
   .booth-scene .visitor-caption{font-size:5px!important;padding:2px 5px!important}
 }
+
+
+/* v1.9.2 — keep visitor portraits proportional and within the mobile glass */
+.booth-scene #visitor-display{position:absolute!important;inset:0!important;padding:0!important}
+.booth-scene .visitor-face{
+  position:absolute!important;left:50%!important;bottom:5%!important;transform:translateX(-50%)!important;
+  width:52%!important;height:auto!important;aspect-ratio:260 / 290!important;max-height:88%!important;
+  flex:0 0 auto!important;margin:0!important
+}
+.booth-scene .visitor-face svg{width:100%!important;height:100%!important}
+@media(max-width:760px){
+  .booth-scene .visitor-face{
+    left:50%!important;bottom:5%!important;transform:translateX(-50%)!important;
+    width:60%!important;height:auto!important;aspect-ratio:260 / 290!important;max-height:80%!important
+  }
+  .booth-scene .visitor-dialog{z-index:10!important}
+}
