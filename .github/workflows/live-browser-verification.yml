@@ -152,7 +152,7 @@ jobs:
 
             const hits = {};
             for (const [selector, name] of [
-              ['#today-list','Today's list'],
+              ["#today-list","Today's list"],
               ['#emergency-button','Emergency button'],
               ['#phone-dial button[data-digit="1"]','Phone digit 1'],
               ['#visitor-face','Visitor face'],
@@ -172,7 +172,7 @@ jobs:
             await page.locator('#folder-button').click();
             await page.waitForFunction(() => !document.getElementById('modal-backdrop').hidden);
             await page.locator('#modal-close').click();
-            await page.locator('#visitor-face').click({ force: true });
+            await page.locator('#visitor-face').click();
             await page.waitForFunction(() => !document.getElementById('modal-backdrop').hidden);
             await page.locator('#modal-close').click();
             await page.locator('#id-document').click();
@@ -180,7 +180,8 @@ jobs:
             await page.locator('#modal-close').click();
             await page.locator('#form-document').click();
             await page.waitForFunction(() => !document.getElementById('modal-backdrop').hidden);
-            await page.locator('#modal-close').click();
+            if (await page.locator('.source-document-close').count()) await page.locator('.source-document-close').click();
+            else await page.locator('#modal-close').click();
 
             await page.locator('#checklist-items button[data-key="appearance"][data-val="yes"]').click();
             assert.ok(await page.locator('#checklist-items button[data-key="appearance"][data-val="yes"]').evaluate(n => n.classList.contains('selected')), 'checklist click did not update selected state');
@@ -208,7 +209,13 @@ jobs:
             await page.screenshot({ path: 'visual-audit/desktop-after-interactions.png', fullPage: true });
 
             // Also capture phone-size overflow and hitbox scale as a separate responsive check.
-            const mobile = await context.newPage({ viewport: { width: 390, height: 844 } });
+            const mobileContext = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, reducedMotion: 'reduce' });
+            const mobile = await mobileContext.newPage();
+            await mobile.addInitScript(() => { localStorage.clear(); sessionStorage.clear(); });
+            await mobile.route('**/api/guest/**', async route => {
+              if (route.request().method() === 'GET') await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ save: {} }) });
+              else await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true }) });
+            });
             await mobile.goto(target + '/play?mode=arcade&visualAudit=mobile', { waitUntil: 'networkidle', timeout: 90000 });
             await mobile.waitForFunction(() => {
               const img = document.querySelector('.reference-scene-image');
