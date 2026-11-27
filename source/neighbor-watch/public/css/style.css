@@ -1428,7 +1428,7 @@ input::placeholder,textarea::placeholder{color:#9b8c7c}
 .booth-scene{
   position:relative!important;display:block!important;isolation:isolate;
   width:100%!important;height:auto!important;min-height:0!important;
-  aspect-ratio:1650 / 928!important;padding:0!important;overflow:hidden!important;
+  aspect-ratio:2559 / 1423!important;padding:0!important;overflow:hidden!important;
   border:0!important;border-radius:0!important;background:transparent!important;
   box-shadow:none!important;grid-template-columns:none!important;gap:0!important
 }
@@ -1712,7 +1712,7 @@ input::placeholder,textarea::placeholder{color:#9b8c7c}
 }
 
 
-/* v1.8.1 — coordinate live controls to the exact 1650×928 user-provided scene */
+/* v1.8.1 — coordinate live controls to the exact 2559×1423 user-provided scene */
 .booth-wrap{width:min(100%,1650px)!important;max-width:1650px!important}
 .booth-scene{aspect-ratio:1650 / 928!important}
 .booth-scene>.reference-scene-image{object-fit:fill!important}

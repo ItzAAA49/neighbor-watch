@@ -19,9 +19,10 @@ function readAsset(name, minimumBytes) {
 const office = readAsset('office-reference.webp', 100000);
 assert.equal(office.subarray(0, 4).toString('ascii'), 'RIFF');
 assert.equal(office.subarray(8, 12).toString('ascii'), 'WEBP');
-assert.equal(office.subarray(12, 16).toString('ascii'), 'VP8X');
-assert.equal(office.readUIntLE(24, 3) + 1, 1650, 'office image width changed');
-assert.equal(office.readUIntLE(27, 3) + 1, 928, 'office image height changed');
+assert.equal(office.subarray(12, 16).toString('ascii'), 'VP8 ');
+assert.deepEqual(Array.from(office.subarray(23, 26)), [0x9d, 0x01, 0x2a], 'invalid WebP VP8 frame header');
+assert.equal(office.readUInt16LE(26) & 0x3fff, 2559, 'office image width changed');
+assert.equal(office.readUInt16LE(28) & 0x3fff, 1423, 'office image height changed');
 
 const visitor = readAsset('visitor-arrival.jpg', 20000);
 assert.equal(visitor.subarray(0, 2).toString('hex'), 'ffd8');
@@ -36,9 +37,9 @@ assert.equal(crypto.createHash('sha256').update(application).digest('hex'),
   'application image is not the original uploaded screenshot');
 
 assert.match(html, /class="reference-scene-image" src="\/assets\/office-reference\.webp"/);
-assert.match(html, /width="1650" height="928"/);
+assert.match(html, /width="2559" height="1423"/);
 assert.match(html, /\/js\/motion\.js/);
-assert.match(css, /v1\.8\.1 — coordinate live controls to the exact 1650×928 user-provided scene/);
+assert.match(css, /v1\.8\.1 — coordinate live controls to the exact 2559×1423 user-provided scene/);
 assert.match(motion, /visitor-arrival\.jpg/);
 assert.match(motion, /albertsky-entry-request\.jpg/);
 assert.match(motion, /isTypingLine/);
