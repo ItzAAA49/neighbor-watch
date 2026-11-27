@@ -6,8 +6,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "check": "node --check server.js && node --check public/js/data.js && node --check public/js/face.js && node --check public/js/common.js && node --check public/js/game.js",
-    "test": "npm run check && node test/smoke.js && node test/common.js && node test/server.js"
+    "check": "node --check server.js && node --check public/js/data.js && node --check public/js/face.js && node --check public/js/common.js && node --check public/js/game.js && node --check public/js/motion.js",
+    "test": "npm run check && node test/smoke.js && node test/common.js && node test/server.js && node test/reference-images.js"
   },
   "engines": {
     "node": ">=20"

@@ -1418,3 +1418,400 @@ input::placeholder,textarea::placeholder{color:#9b8c7c}
 @media(prefers-reduced-motion:reduce){
  .mode-card,.button,.home-links a,.playing-card,.decision-panel,.decision-panel.ready{transition:none!important;transform:none!important}
 }
+
+
+/* v1.8.0 — use the user's exact reference screenshots as the inspection-room art */
+.booth-wrap{
+  width:min(100%,1650px)!important;max-width:1650px!important;
+  padding:0!important;margin:0 auto!important;overflow-x:auto!important
+}
+.booth-scene{
+  position:relative!important;display:block!important;isolation:isolate;
+  width:100%!important;height:auto!important;min-height:0!important;
+  aspect-ratio:1650 / 928!important;padding:0!important;overflow:hidden!important;
+  border:0!important;border-radius:0!important;background:transparent!important;
+  box-shadow:none!important;grid-template-columns:none!important;gap:0!important
+}
+.booth-scene:before{display:none!important}
+.booth-scene>.reference-scene-image{
+  position:absolute!important;inset:0!important;z-index:0!important;
+  display:block!important;width:100%!important;height:100%!important;
+  max-width:none!important;object-fit:fill!important;object-position:center!important;
+  pointer-events:none!important;user-select:none!important
+}
+.booth-scene>.left-wall,.booth-scene>.window-section,.booth-scene>.right-wall{display:contents!important}
+.booth-scene .wall-heading,.booth-scene .window-top,.booth-scene .window-sill,
+.booth-scene .crt-bolt,.booth-scene .hatch-title,.booth-scene .alarm-label,
+.booth-scene .phone-label,.booth-scene .phone-number,.booth-scene .phone-actions,
+.booth-scene .phone-hint,.booth-scene .phone-center small,.booth-scene .dial-pointer,
+.booth-scene .desk-items{display:none!important}
+.booth-scene>.left-wall>.today-board{
+  position:absolute!important;left:2.65%!important;top:18.2%!important;
+  width:13.3%!important;height:32.2%!important;min-height:0!important;
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-auto-rows:1fr!important;gap:2px 3px!important;align-content:stretch!important;
+  padding:4px!important;overflow:hidden!important;border:0!important;
+  background:rgba(230,220,202,.16)!important;box-shadow:none!important;z-index:3!important
+}
+.booth-scene .today-item{
+  min-width:0!important;min-height:0!important;display:flex!important;
+  align-items:center!important;gap:2px!important;padding:2px!important;
+  overflow:hidden!important;border:1px solid rgba(55,48,52,.36)!important;
+  background:rgba(244,235,219,.78)!important;color:#29252a!important;
+  font:5px/1.1 var(--mono)!important
+}
+.booth-scene .today-photo{
+  flex:0 0 25%!important;width:25%!important;height:100%!important;
+  max-height:34px!important;overflow:hidden!important;border:1px solid #6c6260!important;
+  background:#d4c9b9!important
+}
+.booth-scene .today-photo svg{width:100%!important;height:100%!important;display:block!important}
+.booth-scene .today-details{min-width:0!important;overflow:hidden!important}
+.booth-scene .today-details b{display:block!important;font:5px/1.15 var(--mono)!important;overflow-wrap:anywhere!important}
+.booth-scene .today-details small{display:block!important;margin-top:2px!important;font:4px/1.1 var(--mono)!important}
+.booth-scene>.left-wall>.alarm-unit{
+  position:absolute!important;left:0!important;top:52.7%!important;width:18.2%!important;height:28.2%!important;
+  display:block!important;margin:0!important;padding:0!important;border:0!important;
+  background:transparent!important;box-shadow:none!important;z-index:5!important
+}
+.booth-scene .alarm-lamp{
+  position:absolute!important;left:31%!important;top:2%!important;width:30%!important;height:35%!important;
+  margin:0!important;border:0!important;border-radius:50%!important;
+  background:rgba(202,56,54,.08)!important;box-shadow:none!important
+}
+.booth-scene .alarm-lamp.active{background:rgba(255,53,50,.38)!important;box-shadow:0 0 16px 7px rgba(245,43,47,.6)!important;animation:nw-warning-pulse .55s ease-in-out infinite alternate}
+.booth-scene .emergency-button{
+  position:absolute!important;left:58%!important;top:51%!important;width:37%!important;height:47%!important;
+  min-width:0!important;margin:0!important;padding:0!important;border:0!important;border-radius:5px!important;
+  background:rgba(210,70,72,.05)!important;color:transparent!important;font-size:0!important;
+  box-shadow:none!important;cursor:pointer!important
+}
+.booth-scene .emergency-button small{display:none!important}
+.booth-scene .emergency-button.pressed{background:rgba(255,45,48,.28)!important;box-shadow:0 0 15px 5px rgba(255,42,45,.55)!important}
+.booth-scene>.left-wall>.phone{
+  position:absolute!important;left:7.4%!important;top:76.5%!important;width:28.2%!important;height:23.5%!important;
+  margin:0!important;padding:0!important;border:0!important;background:transparent!important;
+  box-shadow:none!important;z-index:6!important
+}
+.booth-scene .phone-face{
+  position:absolute!important;left:49%!important;top:53%!important;width:37%!important;height:46%!important;
+  max-width:none!important;max-height:none!important;margin:0!important;padding:0!important;
+  border:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important
+}
+.booth-scene .phone-hole-ring{
+  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+  margin:0!important;border:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important
+}
+.booth-scene .phone-hole-ring button{
+  position:absolute!important;width:19%!important;height:19%!important;min-width:0!important;min-height:0!important;
+  margin:0!important;padding:0!important;border:0!important;border-radius:50%!important;
+  background:rgba(255,255,255,.01)!important;color:transparent!important;box-shadow:none!important;
+  font-size:0!important;transform:translate(-50%,-50%)!important
+}
+.booth-scene .phone-hole-ring button:nth-child(1){left:50%!important;top:4%!important}
+.booth-scene .phone-hole-ring button:nth-child(2){left:76%!important;top:13%!important}
+.booth-scene .phone-hole-ring button:nth-child(3){left:91%!important;top:38%!important}
+.booth-scene .phone-hole-ring button:nth-child(4){left:91%!important;top:66%!important}
+.booth-scene .phone-hole-ring button:nth-child(5){left:73%!important;top:88%!important}
+.booth-scene .phone-hole-ring button:nth-child(6){left:45%!important;top:96%!important}
+.booth-scene .phone-hole-ring button:nth-child(7){left:19%!important;top:82%!important}
+.booth-scene .phone-hole-ring button:nth-child(8){left:5%!important;top:56%!important}
+.booth-scene .phone-hole-ring button:nth-child(9){left:12%!important;top:27%!important}
+.booth-scene .phone-hole-ring button.zero{left:28%!important;top:7%!important}
+.booth-scene .phone-center{
+  position:absolute!important;left:50%!important;top:50%!important;width:34%!important;height:34%!important;
+  min-width:0!important;transform:translate(-50%,-50%)!important;border:0!important;border-radius:50%!important;
+  background:rgba(255,255,255,.01)!important;color:transparent!important;cursor:pointer!important;font-size:0!important
+}
+.booth-scene .phone-center:after{content:"";position:absolute;inset:0;border-radius:50%}
+.booth-scene>.window-section>.window-frame{
+  position:absolute!important;left:17.45%!important;top:0!important;width:64.15%!important;height:88.1%!important;
+  margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
+  background:transparent!important;box-shadow:none!important;z-index:2!important
+}
+.booth-scene .window-glass{
+  position:absolute!important;left:9.2%!important;top:6.6%!important;width:81.5%!important;height:82.7%!important;
+  margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
+  overflow:hidden!important;display:flex!important;align-items:flex-end!important;justify-content:center!important;
+  background:linear-gradient(180deg,#74818b 0%,#78566d 25%,#7b566e 72%,#5c465c 100%)!important;
+  box-shadow:inset 0 0 38px rgba(20,14,23,.28)!important
+}
+.booth-scene .window-glass:before{
+  content:""!important;position:absolute!important;inset:0!important;z-index:4!important;pointer-events:none!important;
+  opacity:.2!important;background:repeating-linear-gradient(0deg,rgba(23,19,29,.25) 0 1px,transparent 1px 4px)!important;
+  animation:nw-crt-scan 7s linear infinite
+}
+.booth-scene .window-glass:after{
+  content:""!important;position:absolute!important;inset:0!important;z-index:5!important;pointer-events:none!important;
+  background:linear-gradient(116deg,rgba(255,255,255,.13),transparent 23%,transparent 78%,rgba(15,11,20,.15))!important
+}
+.booth-scene .window-reflection{z-index:6!important;left:7%!important;opacity:.6!important}
+.booth-scene .visitor-empty{z-index:2!important;color:#f3e6dc!important;text-shadow:0 1px 3px rgba(0,0,0,.7)!important}
+.booth-scene .visitor-empty b{font-size:clamp(10px,1.25vw,17px)!important}
+.booth-scene #visitor-display{
+  position:absolute!important;inset:0!important;z-index:3!important;
+  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-end!important;
+  padding:0!important;background:transparent!important
+}
+.booth-scene #visitor-display[hidden]{display:none!important}
+.booth-scene .visitor-face{
+  flex:1 1 auto!important;width:76%!important;height:100%!important;max-width:76%!important;max-height:100%!important;
+  min-height:0!important;margin:0 auto!important;display:flex!important;align-items:flex-end!important;justify-content:center!important
+}
+.booth-scene .visitor-face svg{
+  display:block!important;width:100%!important;height:100%!important;max-height:100%!important;
+  object-fit:contain!important;filter:drop-shadow(0 7px 5px rgba(20,12,21,.35))!important
+}
+.booth-scene .visitor-caption{
+  position:absolute!important;left:50%!important;bottom:2%!important;transform:translateX(-50%)!important;
+  display:flex!important;max-width:84%!important;margin:0!important;padding:4px 9px!important;
+  background:rgba(26,22,31,.82)!important;color:#f3e7dc!important;border:1px solid rgba(235,217,204,.3)!important;
+  font-size:clamp(7px,.8vw,10px)!important;white-space:nowrap!important
+}
+.booth-scene .visitor-caption span{color:#d7c0b7!important;font-size:clamp(6px,.65vw,8px)!important}
+.booth-scene>.window-section>.visitor-dialog{
+  position:absolute!important;left:26%!important;top:69.1%!important;width:49.5%!important;height:7.7%!important;
+  min-height:0!important;margin:0!important;padding:5px 9px!important;overflow:hidden!important;
+  border:1px solid rgba(17,15,22,.86)!important;border-radius:0!important;
+  background:rgba(25,22,30,.84)!important;box-shadow:none!important;z-index:9!important
+}
+.booth-scene .visitor-dialog p{margin:0!important;color:#f2e5dc!important;font:clamp(7px,.85vw,11px)/1.4 var(--type)!important}
+.booth-scene .visitor-dialog .dialog-actions{display:flex!important;gap:8px!important;justify-content:flex-end!important;margin-top:1px!important}
+.booth-scene .visitor-dialog .text-button{padding:1px!important;font-size:clamp(6px,.6vw,8px)!important;color:#ead4c9!important}
+.booth-scene .dialog-mark{display:none!important}
+.booth-scene>.window-section>.hatch-area{
+  position:absolute!important;left:37.6%!important;top:87.6%!important;width:24%!important;height:11.4%!important;
+  min-height:0!important;margin:0!important;padding:2px 4px!important;border:0!important;
+  background:transparent!important;box-shadow:none!important;z-index:10!important
+}
+.booth-scene .hatch-slot{display:flex!important;align-items:stretch!important;justify-content:center!important;gap:5px!important;width:100%!important;height:100%!important;padding:0!important}
+.booth-scene .document-card{
+  position:relative!important;inset:auto!important;flex:1 1 0!important;width:50%!important;max-width:none!important;min-width:0!important;
+  min-height:0!important;margin:0!important;padding:3px 4px!important;overflow:hidden!important;
+  border:1px solid rgba(82,64,56,.6)!important;border-radius:0!important;
+  background:rgba(243,231,208,.86)!important;color:#372d2c!important;
+  box-shadow:0 2px 4px rgba(0,0,0,.28)!important;font-size:clamp(5px,.5vw,7px)!important
+}
+.booth-scene .document-card:before{display:none!important}
+.booth-scene .document-card .doc-stamp{display:none!important}
+.booth-scene .document-card small{font-size:clamp(4px,.4vw,6px)!important}
+.booth-scene .document-card b{display:block!important;font-size:clamp(6px,.7vw,9px)!important}
+.booth-scene .document-card span:not(.doc-stamp){font-size:clamp(5px,.5vw,7px)!important}
+.booth-scene .document-card i{font-size:clamp(4px,.4vw,6px)!important}
+.booth-scene .hatch-rail{display:none!important}
+.booth-scene>.right-wall>.calendar{
+  position:absolute!important;left:82.8%!important;top:2.2%!important;width:16.7%!important;height:27%!important;
+  min-height:0!important;margin:0!important;padding:4px!important;overflow:hidden!important;
+  border:0!important;border-radius:0!important;background:rgba(243,231,215,.05)!important;box-shadow:none!important;z-index:3!important
+}
+.booth-scene .calendar-head{display:flex!important;justify-content:space-between!important;padding:1px 3px!important;
+  border:0!important;background:rgba(255,242,224,.7)!important;color:#b24749!important;font-size:clamp(6px,.9vw,11px)!important}
+.booth-scene .calendar-head b{font-size:clamp(6px,.8vw,10px)!important;color:#6d3c40!important}
+.booth-scene .calendar-grid{display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:1px!important;margin:2px 0 0!important}
+.booth-scene .calendar-grid span,.booth-scene .calendar-grid i{
+  min-width:0!important;min-height:0!important;padding:2px 0!important;text-align:center!important;
+  background:rgba(239,226,211,.68)!important;color:#503d41!important;font-size:clamp(4px,.5vw,7px)!important
+}
+.booth-scene .calendar-grid i.active{background:#aa4547!important;color:#fff!important}
+.booth-scene>.right-wall>.checklist{
+  position:absolute!important;left:83.6%!important;top:32.6%!important;width:15.2%!important;height:29%!important;
+  min-height:0!important;margin:0!important;padding:6px 6px!important;overflow:hidden!important;
+  border:0!important;border-radius:0!important;background:rgba(241,230,214,.08)!important;box-shadow:none!important;z-index:4!important
+}
+.booth-scene .checklist .wall-heading{display:block!important;margin:0 0 2px!important;padding:0 0 2px!important;
+  border-bottom:1px solid rgba(99,77,66,.4)!important;color:#3a2d30!important;font-size:clamp(6px,.8vw,10px)!important}
+.booth-scene .check-hint{display:none!important}
+.booth-scene .check-row{
+  display:grid!important;grid-template-columns:minmax(0,1fr) 18px 18px!important;gap:2px!important;
+  min-height:18px!important;padding:2px 0!important;border-bottom:1px solid rgba(113,92,75,.2)!important;
+  color:#3d3030!important;font-size:clamp(5px,.55vw,7px)!important
+}
+.booth-scene .check-row button{
+  min-height:14px!important;padding:1px!important;border:1px solid rgba(121,102,89,.5)!important;
+  border-radius:0!important;background:rgba(250,244,232,.75)!important;color:#5b4842!important;
+  font-size:clamp(4px,.45vw,6px)!important
+}
+.booth-scene .check-row button.selected.yes{background:#64784c!important;color:#fff!important}
+.booth-scene .check-row button.selected.no{background:#a44847!important;color:#fff!important}
+.booth-scene .check-progress{margin-top:3px!important;font-size:clamp(4px,.5vw,6px)!important;color:#65544b!important}
+.booth-scene>.right-wall>.folder-button{
+  position:absolute!important;left:83.2%!important;top:69.2%!important;width:16.2%!important;height:23.7%!important;
+  min-height:0!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
+  background:rgba(250,236,195,.02)!important;color:transparent!important;box-shadow:none!important;z-index:5!important
+}
+.booth-scene .folder-button:after{display:none!important}
+.booth-scene .folder-button>*{color:transparent!important;opacity:0!important}
+.booth-scene>.decision-panel{
+  position:absolute!important;left:63%!important;right:1%!important;top:auto!important;bottom:1%!important;
+  width:auto!important;height:8%!important;min-height:0!important;margin:0!important;padding:2px 4px!important;
+  display:flex!important;align-items:center!important;justify-content:space-evenly!important;gap:4px!important;
+  border:0!important;border-radius:0!important;background:rgba(31,26,32,.28)!important;box-shadow:none!important;
+  opacity:1!important;pointer-events:auto!important;transform:none!important;z-index:15!important
+}
+.booth-scene .decision-copy{display:none!important}
+.booth-scene .decision-button{
+  min-width:0!important;min-height:90%!important;flex:1 1 0!important;padding:2px!important;
+  border:1px solid rgba(246,224,206,.45)!important;border-radius:50%!important;
+  font-size:clamp(5px,.6vw,8px)!important;box-shadow:0 1px 3px rgba(0,0,0,.25)!important
+}
+.booth-scene .decision-button span{font-size:clamp(8px,1vw,12px)!important}
+.booth-scene .decision-button:disabled{opacity:.38!important}
+.booth-scene .source-image-curtain{
+  position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
+  padding:2%;background:rgba(18,14,20,.87);opacity:0;pointer-events:none
+}
+.booth-scene .source-image-curtain.is-visible{opacity:1;pointer-events:auto;animation:nw-curtain-in .24s ease-out both}
+.booth-scene .source-image-curtain.is-hiding{opacity:0;transition:opacity .32s ease}
+.booth-scene .source-image-curtain img{
+  display:block;width:min(96%,900px);height:auto;aspect-ratio:474/267;object-fit:contain;
+  image-rendering:auto;box-shadow:0 12px 38px rgba(0,0,0,.35)
+}
+#modal-window.source-document-open{
+  width:min(900px,96vw)!important;max-width:900px!important;max-height:94vh!important;
+  padding:0!important;border:0!important;background:#17141c!important;box-shadow:0 20px 70px rgba(0,0,0,.7)!important
+}
+#modal-window.source-document-open #modal-close{display:none!important}
+.source-document-image{position:relative;width:100%;line-height:0}
+.source-document-image img{display:block;width:100%;height:auto;max-height:94vh;object-fit:contain}
+.source-document-image button{
+  position:absolute;left:51.2%;top:2.5%;width:7.5%;height:10%;
+  padding:0;border:0;background:transparent;cursor:pointer
+}
+.booth-scene .phone.phone-ringing{animation:nw-phone-ring .68s ease-in-out}
+.booth-scene .phone-hole-ring.is-dialing{animation:nw-dial-turn .62s ease-out}
+.booth-scene .folder-button.folder-opening{animation:nw-folder-lift .28s ease-out}
+.booth-scene .document-card.paper-landing{animation:nw-paper-land .34s cubic-bezier(.2,.7,.25,1)}
+.booth-scene .check-row.motion-stamp{position:relative}
+.booth-scene .check-row.motion-stamp:after{
+  content:'✓';position:absolute;right:1px;top:0;color:#973f40;font:700 10px var(--mono);
+  opacity:0;animation:nw-stamp .24s ease-out
+}
+.booth-scene .window-frame.alert-shutter:after{
+  content:'';position:absolute;inset:0;z-index:12;pointer-events:none;
+  background:linear-gradient(to bottom,#29252c 0 0) top/100% 0 no-repeat,
+             linear-gradient(to top,#29252c 0 0) bottom/100% 0 no-repeat;
+  transition:background-size .42s cubic-bezier(.35,.1,.6,1)
+}
+.booth-scene .window-frame.alert-shutter:after{background-size:100% 52%,100% 13%}
+.booth-scene .window-frame.alert-shutter .window-glass{filter:brightness(.55) sepia(.2) hue-rotate(315deg)}
+@keyframes nw-curtain-in{from{opacity:0}to{opacity:1}}
+@keyframes nw-visitor-enter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes nw-phone-ring{0%,100%{transform:translateX(0)}15%,45%,75%{transform:translateX(-2px) rotate(-.4deg)}30%,60%,90%{transform:translateX(2px) rotate(.4deg)}}
+@keyframes nw-dial-turn{0%{transform:rotate(0)}42%{transform:rotate(36deg)}100%{transform:rotate(0)}}
+@keyframes nw-folder-lift{0%{filter:brightness(1)}45%{filter:brightness(1.22);transform:translateY(-3px)}100%{filter:brightness(1);transform:translateY(0)}}
+@keyframes nw-paper-land{0%{opacity:.45;transform:translateY(9px) rotate(-1deg)}70%{opacity:1;transform:translateY(-1px) rotate(.35deg)}100%{transform:translateY(0) rotate(0)}}
+@keyframes nw-stamp{0%{opacity:0;transform:scale(2) rotate(-18deg)}70%{opacity:1;transform:scale(.85) rotate(5deg)}100%{opacity:.85;transform:scale(1) rotate(0)}}
+@keyframes nw-warning-pulse{from{box-shadow:0 0 7px 2px rgba(255,35,48,.4)}to{box-shadow:0 0 19px 8px rgba(255,35,48,.75)}}
+@keyframes nw-crt-scan{from{background-position:0 0}to{background-position:0 24px}}
+@media(max-width:760px){
+  .booth-wrap{overflow-x:auto!important;padding:0!important}
+  .booth-scene{width:900px!important;max-width:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .booth-scene *, .booth-scene *:before,.booth-scene *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+
+
+/* v1.8.1 — coordinate live controls to the exact 1650×928 user-provided scene */
+.booth-wrap{width:min(100%,1650px)!important;max-width:1650px!important}
+.booth-scene{aspect-ratio:1650 / 928!important}
+.booth-scene>.reference-scene-image{object-fit:fill!important}
+
+/* Visitor roster is aligned with the six printed portrait slots. */
+.booth-scene>.left-wall>.today-board{
+  left:17.9%!important;top:39.2%!important;width:7.5%!important;height:20.5%!important;
+  min-height:0!important;padding:2px!important;gap:2px!important;
+  background:transparent!important;border:0!important;box-shadow:none!important
+}
+.booth-scene .today-item{
+  min-height:0!important;min-width:0!important;padding:1px!important;gap:1px!important;
+  border:0!important;background:rgba(246,235,218,.10)!important;color:#f4e9dd!important;
+  text-shadow:0 1px 2px #201923!important;font-size:clamp(4px,.38vw,6px)!important
+}
+.booth-scene .today-photo{display:none!important}
+.booth-scene .today-details{min-width:0!important}
+.booth-scene .today-details b{font-size:clamp(4px,.38vw,6px)!important}
+.booth-scene .today-details small{display:none!important}
+
+/* The printed February calendar remains visible; only the current day marker is interactive. */
+.booth-scene>.right-wall>.calendar{
+  left:1.1%!important;top:22.5%!important;width:13.5%!important;height:21%!important;
+  padding:2px!important;background:transparent!important;border:0!important;box-shadow:none!important
+}
+.booth-scene .calendar-head,.booth-scene .calendar-grid span{display:none!important}
+.booth-scene .calendar-grid{display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:2px!important;margin:0!important}
+.booth-scene .calendar-grid i{
+  min-width:0!important;min-height:0!important;padding:2px 0!important;
+  background:transparent!important;color:transparent!important;border:0!important
+}
+.booth-scene .calendar-grid i.active{
+  background:rgba(185,54,55,.62)!important;color:transparent!important;border-radius:50%!important
+}
+
+/* Alarm light and emergency switch align with the two physical controls in the screenshot. */
+.booth-scene>.left-wall>.alarm-unit{
+  left:6%!important;top:47.5%!important;width:16%!important;height:26%!important;
+  padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important
+}
+.booth-scene .alarm-lamp{left:31%!important;top:2%!important;width:30%!important;height:35%!important}
+.booth-scene .emergency-button{left:58%!important;top:51%!important;width:37%!important;height:47%!important}
+
+/* Rotary phone touch zones sit on the original dial, not on top of the handset. */
+.booth-scene>.left-wall>.phone{
+  left:9.2%!important;top:72.5%!important;width:20.8%!important;height:27.3%!important;
+  padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important
+}
+.booth-scene .phone-face{
+  left:44%!important;top:28%!important;width:36%!important;height:47%!important;
+  background:transparent!important;border:0!important;box-shadow:none!important
+}
+
+/* Visitor area is the exact metal-framed window in the original room image. */
+.booth-scene>.window-section>.window-frame{
+  left:26.7%!important;top:0!important;width:49.6%!important;height:71.3%!important;
+  padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important
+}
+.booth-scene .window-glass{
+  left:8.9%!important;top:11.5%!important;width:80.5%!important;height:77.3%!important;
+  background:transparent!important;box-shadow:none!important
+}
+.booth-scene>.window-section>.visitor-dialog{
+  left:31.3%!important;top:58.5%!important;width:39%!important;height:6.2%!important;
+  padding:4px 7px!important;background:rgba(24,19,27,.78)!important;z-index:9!important
+}
+.booth-scene>.window-section>.hatch-area{
+  left:32.5%!important;top:73.2%!important;width:16.5%!important;height:14.8%!important;
+  padding:2px!important;background:transparent!important;z-index:10!important
+}
+
+/* Align the interactive checklist with the printed checklist sheet. */
+.booth-scene>.right-wall>.checklist{
+  left:58.8%!important;top:80%!important;width:12.2%!important;height:18%!important;
+  padding:3px!important;background:rgba(246,236,218,.16)!important;box-shadow:none!important
+}
+.booth-scene .checklist .wall-heading{display:none!important}
+.booth-scene .check-row{
+  grid-template-columns:minmax(0,1fr) 13px 13px!important;
+  min-height:17px!important;padding:1px 0!important;border-bottom:0!important;
+  color:#302b30!important;text-shadow:0 1px 1px rgba(255,255,255,.7)!important
+}
+.booth-scene .check-row button{min-height:13px!important;background:rgba(249,242,230,.82)!important}
+.booth-scene .check-progress{display:none!important}
+
+/* Resident directory interaction overlays the three-floor folder artwork. */
+.booth-scene .folder-button{
+  left:81.2%!important;top:6.7%!important;width:16.3%!important;height:62%!important;
+  background:transparent!important;border:0!important;box-shadow:none!important
+}
+
+/* Decision controls use the open desk space, away from the printed room controls. */
+.booth-scene>.decision-panel{
+  left:72.2%!important;right:1%!important;top:auto!important;bottom:1%!important;
+  width:auto!important;height:11.5%!important;padding:2px!important;
+  background:rgba(25,20,26,.48)!important;gap:4px!important
+}
+.booth-scene .decision-button{
+  border-radius:3px!important;min-height:82%!important;
+  background:rgba(48,39,44,.88)!important;color:#f6ebdf!important
+}
+.booth-scene #visitor-display.visitor-arriving{animation:nw-visitor-enter .28s ease-out both}
