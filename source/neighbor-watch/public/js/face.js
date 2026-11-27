@@ -11,7 +11,7 @@
       'Gloria Schmicht':[747,439,130,176],
       'Francis Mosses':[414,713,130,176]
     };
-    const originalTags=Array.isArray(person.tags)?person.tags:[];
+    const originalTags=Array.isArray(opts.referenceTags)?opts.referenceTags:(Array.isArray(person.tags)?person.tags:[]);
     const atlasCrop=atlasCrops[person.name];
     const tagsAreUnchanged=originalTags.length===t.size&&originalTags.every(tag=>t.has(tag));
     if(atlasCrop&&!night&&tagsAreUnchanged){

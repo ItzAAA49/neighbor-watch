@@ -67,7 +67,7 @@ for (const [name, x, y] of crops) {
   assert.ok(svg.includes('x="-'+x+'" y="-'+y+'"'), name + ' uses its own portrait position');
   renderedCrops.push(svg);
   const altered = { ...person, tags: [...person.tags, 'extraEyes'] };
-  const alteredSvg = face.portrait(altered, { night: false });
+  const alteredSvg = face.portrait(altered, { night: false, referenceTags: person.tags });
   assert.doesNotMatch(alteredSvg, /data-character-atlas=/, name + ' doppelgänger variation remains visible');
 }
 assert.equal(new Set(renderedCrops).size, crops.length, 'the seven supplied portraits are all visually distinct');
