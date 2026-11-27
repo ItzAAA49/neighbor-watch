@@ -210,6 +210,16 @@ jobs:
             for (const [digit, result] of Object.entries(dialCalibration)) {
               assert.ok(result.error <= 12, 'phone digit ' + digit + ' does not line up with printed dial hole: ' + JSON.stringify(result));
             }
+            const emergencyPosition = await page.locator('#emergency-button').evaluate(node => {
+              const scene = document.getElementById('booth-scene').getBoundingClientRect();
+              const r = node.getBoundingClientRect();
+              return {x: ((r.left+r.width/2-scene.left)/scene.width)*1177,
+                      y: ((r.top+r.height/2-scene.top)/scene.height)*624};
+            });
+            assert.ok(Math.hypot(emergencyPosition.x - 147, emergencyPosition.y - 463) <= 12,
+              'emergency hit target is not over the real red switch: ' + JSON.stringify(emergencyPosition));
+            assert.equal(await page.locator('#today-list .today-item:visible').count(), 6,
+              'only six portraits may appear in the original six-slot roster');
             const hits = {};
             for (const [selector, name] of [
               ["#today-list","Today's list"],

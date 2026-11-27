@@ -2590,3 +2590,17 @@ input::placeholder,textarea::placeholder{color:#9b8c7c}
 
 
 /* v1.9.6 — dial hit targets calibrated against original 1177×624 artwork */
+
+
+/* v1.9.7 — match the six roster portrait slots and the real emergency switch */
+.booth-scene>.left-wall>.today-board>.today-item:nth-child(n+7){display:none!important}
+.booth-scene .emergency-button{
+  left:9.2%!important;top:67.4%!important;width:6.6%!important;height:13.8%!important;
+  border-radius:3px!important
+}
+.booth-scene .alarm-lamp{
+  left:10.8%!important;top:70.9%!important;width:3.6%!important;height:6.7%!important
+}
+@media(min-width:761px){
+  .booth-scene .visitor-face{width:58%!important}
+}
