@@ -2,6 +2,22 @@
   const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function portrait(person, opts={}) {
     const t=new Set(person.tags||[]), night=!!opts.night||t.has('night');
+    const atlasCrops={
+      'Izaack Gauss':[414,164,130,176],
+      'Margarette Bubbles':[581,164,132,176],
+      'Arnold Schmicht':[747,164,130,176],
+      'Rafttellyn Cappuccin':[414,439,130,176],
+      'Mia Stone':[581,439,132,176],
+      'Gloria Schmicht':[747,439,130,176],
+      'Francis Mosses':[414,713,130,176]
+    };
+    const originalTags=Array.isArray(person.tags)?person.tags:[];
+    const atlasCrop=atlasCrops[person.name];
+    const tagsAreUnchanged=originalTags.length===t.size&&originalTags.every(tag=>t.has(tag));
+    if(atlasCrop&&!night&&tagsAreUnchanged){
+      const [x,y,w,h]=atlasCrop;
+      return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+esc(person.name)+'の元画像"><image data-character-atlas="'+esc(person.name)+'" href="/assets/that-s-not-my-neighbor-the-daily-visitor-list-2861905204.jpg" x="-'+x+'" y="-'+y+'" width="1920" height="1080" preserveAspectRatio="none"/></svg>';
+    }
     const skin=night?'#786d79':'#d8bda0', shade=night?'#514a58':'#b58e6e', hair=night?'#302b34':'#46372d', ink='#28241f', shirt=night?'#48434f':'#5e6060';
     const round=t.has('roundFace'), square=t.has('squareFace'), long=t.has('longFace'), slim=t.has('slimFace'), oval=t.has('ovalFace'), smallHead=t.has('smallHead');
     const x1=smallHead?96:(round?65:((slim||oval)?88:(long?84:78))), x2=260-x1, y1=48, y2=236-(t.has('longNeck')?12:0);

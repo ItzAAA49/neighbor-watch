@@ -1815,3 +1815,292 @@ input::placeholder,textarea::placeholder{color:#9b8c7c}
   background:rgba(48,39,44,.88)!important;color:#f6ebdf!important
 }
 .booth-scene #visitor-display.visitor-arriving{animation:nw-visitor-enter .28s ease-out both}
+
+
+/* v1.8.2 — remove duplicate furniture and align every live hitbox to the original office image */
+.booth-wrap{width:min(100%,1650px)!important;max-width:1650px!important;margin-inline:auto!important}
+.booth-scene{
+  position:relative!important;width:100%!important;height:auto!important;min-height:0!important;
+  aspect-ratio:2559 / 1423!important;padding:0!important;margin:0 auto!important;overflow:hidden!important;
+  border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
+  grid-template-columns:none!important;gap:0!important
+}
+.booth-scene:before{display:none!important}
+.booth-scene>.reference-scene-image{
+  position:absolute!important;inset:0!important;z-index:0!important;display:block!important;
+  width:100%!important;height:100%!important;max-width:none!important;object-fit:fill!important;
+  object-position:center!important;pointer-events:none!important;user-select:none!important
+}
+.booth-scene>.left-wall,.booth-scene>.window-section,.booth-scene>.right-wall{display:contents!important}
+.booth-scene .wall-heading,.booth-scene .window-top,.booth-scene .window-sill,
+.booth-scene .crt-bolt,.booth-scene .hatch-title,.booth-scene .alarm-label,
+.booth-scene .phone-label,.booth-scene .phone-number,.booth-scene .phone-actions,
+.booth-scene .phone-hint,.booth-scene .phone-center small,.booth-scene .dial-pointer,
+.booth-scene .desk-items,.booth-scene .calendar{display:none!important}
+
+/* Cover the printed placeholder silhouettes with one clean, functional visitor list. */
+.booth-scene>.left-wall>.today-board{
+  position:absolute!important;left:17.6%!important;top:39.0%!important;width:7.8%!important;height:21.0%!important;
+  min-height:0!important;margin:0!important;padding:3px!important;display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-auto-rows:1fr!important;gap:2px!important;
+  overflow:hidden!important;border:1px solid rgba(44,38,39,.8)!important;
+  background:rgba(225,216,199,.97)!important;box-shadow:0 2px 7px rgba(0,0,0,.3)!important;z-index:8!important;
+  cursor:pointer!important
+}
+.booth-scene .today-item{
+  min-width:0!important;min-height:0!important;display:flex!important;align-items:center!important;gap:2px!important;
+  padding:1px!important;overflow:hidden!important;border-bottom:1px dotted rgba(65,53,48,.35)!important;
+  background:transparent!important;color:#29252a!important;font:5px/1.1 var(--mono)!important
+}
+.booth-scene .today-photo{flex:0 0 25%!important;width:25%!important;height:100%!important;max-height:34px!important;
+  overflow:hidden!important;border:1px solid #6c6260!important;background:#d4c9b9!important}
+.booth-scene .today-photo svg{width:100%!important;height:100%!important;display:block!important}
+.booth-scene .today-details{min-width:0!important;overflow:hidden!important}
+.booth-scene .today-details b{display:block!important;font:5px/1.15 var(--mono)!important;overflow-wrap:anywhere!important}
+.booth-scene .today-details small{display:block!important;margin-top:2px!important;font:4px/1.1 var(--mono)!important}
+
+/* Left wall: red warning lamp, emergency control and rotary telephone. */
+.booth-scene>.left-wall>.alarm-unit{position:static!important;display:contents!important}
+.booth-scene .alarm-lamp{
+  position:absolute!important;left:10.9%!important;top:48.0%!important;width:5.1%!important;height:9.1%!important;
+  margin:0!important;border:0!important;border-radius:50%!important;background:rgba(202,56,54,.05)!important;
+  box-shadow:none!important;z-index:9!important;pointer-events:none!important
+}
+.booth-scene .alarm-lamp.active{background:rgba(255,53,50,.38)!important;
+  box-shadow:0 0 16px 7px rgba(245,43,47,.6)!important;animation:nw-warning-pulse .55s ease-in-out infinite alternate}
+.booth-scene .emergency-button{
+  position:absolute!important;left:13.5%!important;top:60.5%!important;width:7.7%!important;height:12.8%!important;
+  min-width:0!important;margin:0!important;padding:0!important;border:2px solid transparent!important;border-radius:5px!important;
+  background:rgba(210,70,72,.015)!important;color:transparent!important;font-size:0!important;
+  box-shadow:none!important;cursor:pointer!important;z-index:10!important
+}
+.booth-scene .emergency-button small{display:none!important}
+.booth-scene .emergency-button:hover,.booth-scene .emergency-button.pressed{
+  background:rgba(255,45,48,.15)!important;box-shadow:0 0 15px 5px rgba(255,42,45,.28)!important
+}
+.booth-scene>.left-wall>.phone{
+  position:absolute!important;left:9.3%!important;top:72.4%!important;width:21.2%!important;height:27.0%!important;
+  margin:0!important;padding:0!important;border:0!important;background:transparent!important;
+  box-shadow:none!important;z-index:9!important;pointer-events:none!important
+}
+.booth-scene .phone-face{
+  position:absolute!important;left:39.2%!important;top:28.5%!important;width:37.2%!important;height:56.5%!important;
+  max-width:none!important;max-height:none!important;margin:0!important;padding:0!important;
+  border:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important;
+  pointer-events:auto!important
+}
+.booth-scene .phone-hole-ring{
+  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+  margin:0!important;border:0!important;border-radius:50%!important;background:transparent!important;
+  box-shadow:none!important;pointer-events:auto!important
+}
+.booth-scene .phone-hole-ring button{
+  position:absolute!important;width:19%!important;height:19%!important;min-width:0!important;min-height:0!important;
+  margin:0!important;padding:0!important;border:1px solid transparent!important;border-radius:50%!important;
+  background:rgba(255,255,255,.015)!important;color:transparent!important;box-shadow:none!important;
+  font-size:0!important;transform:translate(-50%,-50%)!important;cursor:pointer!important;pointer-events:auto!important
+}
+.booth-scene .phone-hole-ring button:nth-child(1){left:50%!important;top:4%!important}
+.booth-scene .phone-hole-ring button:nth-child(2){left:76%!important;top:13%!important}
+.booth-scene .phone-hole-ring button:nth-child(3){left:91%!important;top:38%!important}
+.booth-scene .phone-hole-ring button:nth-child(4){left:91%!important;top:66%!important}
+.booth-scene .phone-hole-ring button:nth-child(5){left:73%!important;top:88%!important}
+.booth-scene .phone-hole-ring button:nth-child(6){left:45%!important;top:96%!important}
+.booth-scene .phone-hole-ring button:nth-child(7){left:19%!important;top:82%!important}
+.booth-scene .phone-hole-ring button:nth-child(8){left:5%!important;top:56%!important}
+.booth-scene .phone-hole-ring button:nth-child(9){left:12%!important;top:27%!important}
+.booth-scene .phone-hole-ring button.zero{left:28%!important;top:7%!important}
+.booth-scene .phone-hole-ring button:hover{border-color:rgba(255,255,255,.6)!important;background:rgba(255,255,255,.22)!important}
+.booth-scene .phone-center{
+  position:absolute!important;left:50%!important;top:50%!important;width:34%!important;height:34%!important;
+  min-width:0!important;transform:translate(-50%,-50%)!important;border:1px solid transparent!important;
+  border-radius:50%!important;background:rgba(255,255,255,.015)!important;color:transparent!important;
+  cursor:pointer!important;font-size:0!important;pointer-events:auto!important
+}
+.booth-scene .phone-center:hover{border-color:rgba(255,255,255,.65)!important;background:rgba(255,255,255,.2)!important}
+
+/* Center monitor: the existing screenshot supplies the metal frame and glass; only live visitor UI sits above it. */
+.booth-scene>.window-section>.window-frame{
+  position:absolute!important;left:26.8%!important;top:0!important;width:49.7%!important;height:71.4%!important;
+  margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
+  background:transparent!important;box-shadow:none!important;z-index:3!important;pointer-events:none!important
+}
+.booth-scene .window-glass{
+  position:absolute!important;left:8.3%!important;top:10.7%!important;width:83.4%!important;height:79.0%!important;
+  margin:0!important;padding:0!important;border:0!important;border-radius:0!important;overflow:hidden!important;
+  display:flex!important;align-items:flex-end!important;justify-content:center!important;
+  background:transparent!important;box-shadow:none!important;pointer-events:none!important
+}
+.booth-scene .window-glass:before{
+  content:""!important;position:absolute!important;inset:0!important;z-index:4!important;pointer-events:none!important;
+  opacity:.10!important;background:repeating-linear-gradient(0deg,rgba(23,19,29,.18) 0 1px,transparent 1px 4px)!important;
+  animation:nw-crt-scan 7s linear infinite
+}
+.booth-scene .window-glass:after{
+  content:""!important;position:absolute!important;inset:0!important;z-index:5!important;pointer-events:none!important;
+  background:linear-gradient(116deg,rgba(255,255,255,.10),transparent 23%,transparent 78%,rgba(15,11,20,.10))!important
+}
+.booth-scene .window-reflection{z-index:6!important;left:7%!important;opacity:.38!important;pointer-events:none!important}
+.booth-scene .visitor-empty{
+  position:relative!important;z-index:2!important;color:#f3e6dc!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.7)!important;pointer-events:none!important
+}
+.booth-scene .visitor-empty b{font-size:clamp(10px,1.25vw,17px)!important}
+.booth-scene #visitor-display{
+  position:absolute!important;inset:0!important;z-index:3!important;display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:flex-end!important;padding:0!important;background:transparent!important;
+  pointer-events:none!important
+}
+.booth-scene #visitor-display[hidden]{display:none!important}
+.booth-scene .visitor-face{
+  flex:1 1 auto!important;width:76%!important;height:100%!important;max-width:76%!important;max-height:100%!important;
+  min-height:0!important;margin:0 auto!important;display:flex!important;align-items:flex-end!important;
+  justify-content:center!important;pointer-events:auto!important;cursor:pointer!important;outline:none!important
+}
+.booth-scene .visitor-face svg{display:block!important;width:100%!important;height:100%!important;max-height:100%!important;
+  object-fit:contain!important;filter:drop-shadow(0 7px 5px rgba(20,12,21,.3))!important;pointer-events:none!important}
+.booth-scene #visitor-display.visitor-arriving .visitor-face{animation:nw-visitor-enter .42s cubic-bezier(.2,.75,.3,1) both}
+.booth-scene .visitor-caption{
+  position:absolute!important;left:50%!important;bottom:1%!important;transform:translateX(-50%)!important;
+  display:flex!important;max-width:84%!important;margin:0!important;padding:3px 7px!important;
+  background:rgba(26,22,31,.76)!important;color:#f3e7dc!important;
+  border:1px solid rgba(235,217,204,.24)!important;font-size:clamp(7px,.75vw,10px)!important;
+  white-space:nowrap!important;pointer-events:none!important
+}
+.booth-scene .visitor-caption span{color:#d7c0b7!important;font-size:clamp(6px,.62vw,8px)!important}
+.booth-scene>.window-section>.visitor-dialog{
+  position:absolute!important;left:31.0%!important;top:56.4%!important;width:40.7%!important;height:6.6%!important;
+  min-height:0!important;margin:0!important;padding:4px 8px!important;overflow:hidden!important;
+  border:1px solid rgba(17,15,22,.65)!important;border-radius:2px!important;
+  background:rgba(25,22,30,.74)!important;box-shadow:none!important;z-index:11!important
+}
+.booth-scene .visitor-dialog p{margin:0!important;color:#f2e5dc!important;font:clamp(7px,.78vw,11px)/1.35 var(--type)!important}
+.booth-scene .visitor-dialog .dialog-actions{display:flex!important;gap:8px!important;justify-content:flex-end!important;margin-top:1px!important}
+.booth-scene .visitor-dialog .text-button{padding:1px!important;font-size:clamp(6px,.58vw,8px)!important;color:#ead4c9!important;pointer-events:auto!important}
+.booth-scene .dialog-mark{display:none!important}
+
+/* Document hitboxes sit directly on the delivery hatch below the monitor. */
+.booth-scene>.window-section>.hatch-area{
+  position:absolute!important;left:42.0%!important;top:71.8%!important;width:18.2%!important;height:8.1%!important;
+  min-height:0!important;margin:0!important;padding:1px 3px!important;border:0!important;
+  background:transparent!important;box-shadow:none!important;z-index:12!important;pointer-events:auto!important
+}
+.booth-scene .hatch-slot{display:flex!important;align-items:stretch!important;justify-content:center!important;gap:4px!important;
+  width:100%!important;height:100%!important;padding:0!important}
+.booth-scene .document-card{
+  position:relative!important;inset:auto!important;flex:1 1 0!important;width:50%!important;max-width:none!important;
+  min-width:0!important;min-height:0!important;margin:0!important;padding:3px!important;overflow:hidden!important;
+  border:1px solid rgba(82,64,56,.65)!important;border-radius:1px!important;
+  background:rgba(243,231,208,.90)!important;color:#372d2c!important;
+  box-shadow:0 2px 4px rgba(0,0,0,.24)!important;font-size:clamp(5px,.48vw,7px)!important;cursor:pointer!important
+}
+.booth-scene .document-card:before{display:none!important}
+.booth-scene .document-card .doc-stamp{display:none!important}
+.booth-scene .document-card small{font-size:clamp(4px,.38vw,6px)!important}
+.booth-scene .document-card b{display:block!important;font-size:clamp(6px,.68vw,9px)!important}
+.booth-scene .document-card span:not(.doc-stamp){font-size:clamp(5px,.48vw,7px)!important}
+.booth-scene .document-card i{font-size:clamp(4px,.38vw,6px)!important}
+.booth-scene .document-card:hover:not(:disabled){filter:brightness(1.08)!important;outline:2px solid rgba(255,235,190,.8)!important}
+.booth-scene .hatch-rail{display:none!important}
+
+/* The printed list on the desk receives live YES/NO hit targets; no second desk/calendar artwork. */
+.booth-scene>.right-wall>.checklist{
+  position:absolute!important;left:58.8%!important;top:80.0%!important;width:13.2%!important;height:19.0%!important;
+  min-height:0!important;margin:0!important;padding:4px 5px!important;overflow:hidden!important;
+  border:0!important;border-radius:0!important;background:rgba(238,229,213,.91)!important;box-shadow:none!important;
+  z-index:13!important
+}
+.booth-scene .checklist .wall-heading,.booth-scene .check-hint{display:none!important}
+.booth-scene .check-row{
+  display:grid!important;grid-template-columns:minmax(0,1fr) 16px 16px!important;gap:2px!important;
+  min-height:18px!important;padding:2px 0!important;border-bottom:1px solid rgba(113,92,75,.22)!important;
+  color:#3d3030!important;font-size:clamp(5px,.54vw,7px)!important
+}
+.booth-scene .check-row button{
+  min-width:0!important;min-height:14px!important;padding:1px!important;border:1px solid rgba(121,102,89,.5)!important;
+  border-radius:1px!important;background:rgba(250,244,232,.88)!important;color:#5b4842!important;
+  font-size:clamp(4px,.43vw,6px)!important;cursor:pointer!important;touch-action:manipulation!important
+}
+.booth-scene .check-row button.selected.yes{background:#64784c!important;color:#fff!important}
+.booth-scene .check-row button.selected.no{background:#a44847!important;color:#fff!important}
+.booth-scene .check-progress{margin-top:2px!important;font-size:clamp(4px,.46vw,6px)!important;color:#65544b!important}
+.booth-scene .check-progress .progress-track{height:3px!important}
+
+/* Folder click region exactly covers the three visible floor folders at the right. */
+.booth-scene>.right-wall>.folder-button{
+  position:absolute!important;left:80.8%!important;top:6.0%!important;width:17.0%!important;height:63.0%!important;
+  min-height:0!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
+  background:rgba(250,236,195,.005)!important;color:transparent!important;box-shadow:none!important;
+  cursor:pointer!important;z-index:8!important
+}
+.booth-scene .folder-button:after{display:none!important}
+.booth-scene .folder-button>*{color:transparent!important;opacity:0!important}
+.booth-scene .folder-button:hover{outline:2px solid rgba(246,217,158,.42)!important;background:rgba(250,236,195,.06)!important}
+.booth-scene .folder-button:active{filter:brightness(1.08)!important}
+
+/* Two lock buttons map to admit/reject; report is a smaller third target on the panel itself. */
+.booth-scene>.decision-panel{
+  position:absolute!important;left:70.1%!important;top:71.6%!important;right:auto!important;bottom:auto!important;
+  width:16.2%!important;height:15.1%!important;min-height:0!important;margin:0!important;padding:0!important;
+  display:block!important;border:0!important;border-radius:0!important;background:transparent!important;
+  box-shadow:none!important;opacity:1!important;pointer-events:none!important;z-index:16!important
+}
+.booth-scene .decision-copy{display:none!important}
+.booth-scene .decision-button{
+  position:absolute!important;top:22%!important;width:39%!important;height:57%!important;min-width:0!important;
+  min-height:0!important;margin:0!important;padding:0!important;border:2px solid transparent!important;
+  border-radius:50%!important;background:rgba(255,255,255,.012)!important;color:transparent!important;
+  box-shadow:none!important;font-size:0!important;cursor:pointer!important;pointer-events:auto!important;
+  display:block!important
+}
+.booth-scene .decision-button.admit{left:7%!important}
+.booth-scene .decision-button.reject{left:55%!important}
+.booth-scene .decision-button.report{
+  left:27%!important;top:80%!important;width:46%!important;height:18%!important;border-radius:2px!important
+}
+.booth-scene .decision-button span{display:none!important}
+.booth-scene .decision-button:hover:not(:disabled){border-color:rgba(255,245,220,.72)!important;
+  background:rgba(255,255,255,.12)!important;box-shadow:0 0 10px rgba(255,255,255,.18)!important}
+.booth-scene .decision-button:active:not(:disabled){filter:brightness(1.25)!important}
+.booth-scene .decision-button:disabled{opacity:.25!important;cursor:not-allowed!important}
+
+/* Never display a full-room screenshot on top of the live game. */
+.booth-scene .source-image-curtain{display:none!important;pointer-events:none!important}
+#modal-window.source-document-open{
+  width:min(900px,96vw)!important;max-width:900px!important;max-height:94vh!important;
+  padding:0!important;border:0!important;background:#17141c!important;box-shadow:0 20px 70px rgba(0,0,0,.7)!important
+}
+#modal-window.source-document-open #modal-close{display:none!important}
+.source-document-image{position:relative;width:100%;line-height:0}
+.source-document-image img{display:block;width:100%;height:auto;max-height:94vh;object-fit:contain}
+.source-document-image .source-document-close{
+  position:absolute;right:8px;top:8px;width:38px;height:38px;padding:0;border:1px solid rgba(255,255,255,.45);
+  border-radius:50%;background:rgba(20,18,21,.75);color:#fff;font:28px/1 sans-serif;cursor:pointer
+}
+.booth-scene .phone.phone-ringing{animation:nw-phone-ring .68s ease-in-out}
+.booth-scene .phone-hole-ring.is-dialing{animation:nw-dial-turn .62s ease-out}
+.booth-scene .folder-button.folder-opening{animation:nw-folder-lift .28s ease-out}
+.booth-scene .document-card.paper-landing{animation:nw-paper-land .34s cubic-bezier(.2,.7,.25,1)}
+.booth-scene .check-row.motion-stamp{position:relative}
+.booth-scene .check-row.motion-stamp:after{
+  content:'✓';position:absolute;right:1px;top:0;color:#973f40;font:700 10px var(--mono);
+  opacity:0;animation:nw-stamp .24s ease-out
+}
+.booth-scene .window-frame.alert-shutter:after{
+  content:'';position:absolute;inset:0;z-index:12;pointer-events:none;
+  background:linear-gradient(to bottom,#29252c 0 0) top/100% 0 no-repeat,
+             linear-gradient(to top,#29252c 0 0) bottom/100% 0 no-repeat;
+  transition:background-size .42s cubic-bezier(.35,.1,.6,1)
+}
+.booth-scene .window-frame.alert-shutter:after{background-size:100% 52%,100% 13%}
+.booth-scene .window-frame.alert-shutter .window-glass{filter:brightness(.55) sepia(.2) hue-rotate(315deg)}
+.booth-scene :is(button,[role="button"]):focus-visible{
+  outline:2px solid rgba(255,232,174,.95)!important;outline-offset:2px!important
+}
+@media(max-width:760px){
+  .booth-wrap{overflow-x:auto!important;padding:0!important}
+  .booth-scene{width:900px!important;max-width:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .booth-scene *, .booth-scene *:before,.booth-scene *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}

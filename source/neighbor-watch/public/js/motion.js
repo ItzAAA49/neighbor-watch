@@ -1,30 +1,19 @@
 (() => {
   'use strict';
+
   const start = () => {
     const scene = document.getElementById('booth-scene');
     if (!scene || scene.dataset.referenceMotion === 'ready') return;
     scene.dataset.referenceMotion = 'ready';
-    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     const $ = id => document.getElementById(id);
     const display = $('visitor-display');
     const line = $('visitor-line');
     let firstArrivalShown = false;
     let typingToken = 0;
     let typingTimer = 0;
-    let isTypingLine = false;
-
-    // The uploaded visitor screenshot is displayed as-is for the arrival beat.
-    const curtain = document.createElement('div');
-    curtain.className = 'source-image-curtain';
-    curtain.setAttribute('aria-label', '送付された来訪者の画像');
-    curtain.innerHTML = '<img src="/assets/visitor-arrival.jpg" alt="来訪者の元画像">';
-    scene.appendChild(curtain);
-    const hideCurtain = () => {
-      curtain.classList.add('is-hiding');
-      curtain.classList.remove('is-visible');
-      window.setTimeout(() => curtain.remove(), 360);
-    };
-    curtain.addEventListener('click', hideCurtain);
+    let typingActive = false;
 
     const phone = $('phone');
     const dial = $('phone-dial');
@@ -53,12 +42,7 @@
         display.classList.add('visitor-arriving');
       }
       ringPhone();
-      if (!firstArrivalShown) {
-        firstArrivalShown = true;
-        curtain.classList.add('is-visible');
-        if (reduced) curtain.style.animation = 'none';
-        window.setTimeout(hideCurtain, 1500);
-      }
+      firstArrivalShown = true;
     }
 
     if (display) {
@@ -74,9 +58,13 @@
       window.clearTimeout(typingTimer);
       if (!line) return;
       const text = String(value || '');
-      if (reduced || text.length < 2) { isTypingLine = false; line.textContent = text; return; }
+      if (reduced || text.length < 2) {
+        typingActive = false;
+        line.textContent = text;
+        return;
+      }
       const chars = Array.from(text);
-      isTypingLine = true;
+      typingActive = true;
       line.textContent = '';
       let index = 0;
       const tick = () => {
@@ -84,13 +72,15 @@
         index = Math.min(chars.length, index + 1);
         line.textContent = chars.slice(0, index).join('');
         if (index < chars.length) typingTimer = window.setTimeout(tick, 22);
-        else isTypingLine = false;
+        else typingActive = false;
       };
       tick();
     }
+
     if (line) {
+      line.dataset.motionText = line.textContent || '';
       const observer = new MutationObserver(() => {
-        if (isTypingLine) return;
+        if (typingActive) return;
         const value = line.textContent || '';
         if (line.dataset.motionText !== value) {
           line.dataset.motionText = value;
@@ -98,7 +88,6 @@
         }
       });
       observer.observe(line, { childList: true, characterData: true, subtree: true });
-      line.dataset.motionText = line.textContent || '';
     }
 
     if (dial) {
@@ -112,20 +101,29 @@
     }
     if (center && callButton) {
       center.setAttribute('role', 'button');
+      center.setAttribute('tabindex', '0');
       center.setAttribute('aria-label', '電話を発信');
       center.addEventListener('click', () => callButton.click());
-    }
-
-    if (emergencyButton) {
-      emergencyButton.addEventListener('click', () => {
-        if (lamp) lamp.classList.add('active');
-        if (frame) frame.classList.add('alert-shutter');
-        window.setTimeout(() => {
-          if (lamp) lamp.classList.remove('active');
-          if (frame) frame.classList.remove('alert-shutter');
-        }, 1900);
+      center.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          callButton.click();
+        }
       });
     }
+
+    // Mirror the actual game state. Do not run a timer that could undo a second click.
+    if (emergencyButton) {
+      const syncEmergencyAnimation = () => {
+        const active = emergencyButton.classList.contains('pressed');
+        if (lamp) lamp.classList.toggle('active', active);
+        if (frame) frame.classList.toggle('alert-shutter', active);
+      };
+      const observer = new MutationObserver(syncEmergencyAnimation);
+      observer.observe(emergencyButton, { attributes: true, attributeFilter: ['class'] });
+      syncEmergencyAnimation();
+    }
+
     if (folder) {
       folder.addEventListener('click', () => {
         if (reduced) return;
@@ -148,7 +146,6 @@
       });
     }
 
-    // Animate the application cards only when the game makes them available.
     ['id-document', 'form-document'].forEach(id => {
       const card = $(id);
       if (!card) return;
@@ -163,43 +160,56 @@
       observer.observe(card, { attributes: true, attributeFilter: ['disabled'] });
     });
 
-    // Use the submitted reference paperwork itself for Albertsky's application.
+    // The visitor portrait is a real, keyboard-accessible hit target.
+    const visitorFace = $('visitor-face');
+    const askButton = $('ask-button');
+    if (visitorFace && askButton) {
+      visitorFace.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          askButton.click();
+        }
+      });
+    }
+
+    // Use the original submitted form image only for Albertsky's application.
     function openReferenceApplication(event, card) {
       if (!card) return;
       const name = ($('form-doc-name')?.textContent || '').trim();
       if (name !== 'Albertsky Peachman') return;
-      event.preventDefault();
-      event.stopPropagation();
-      event.stopImmediatePropagation();
       const backdrop = $('modal-backdrop');
       const modal = $('modal-window');
       const content = $('modal-content');
       if (!backdrop || !modal || !content) return;
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
       modal.classList.add('source-document-open');
-      content.innerHTML = '<div class="source-document-image"><img src="/assets/albertsky-entry-request.jpg" alt="Albertsky Peachman Entry Request — 元画像"><button type="button" aria-label="書類を閉じる"></button></div>';
+      content.innerHTML = '<div class="source-document-image"><img src="/assets/albertsky-entry-request.jpg" alt="Albertsky Peachman Entry Request — 元画像"><button type="button" class="source-document-close" aria-label="書類を閉じる">×</button></div>';
       backdrop.hidden = false;
-      content.querySelector('button').addEventListener('click', () => {
+      content.querySelector('.source-document-close').addEventListener('click', () => {
         backdrop.hidden = true;
         modal.classList.remove('source-document-open');
         content.innerHTML = '';
       });
     }
+
     document.addEventListener('click', event => {
       const card = event.target.closest && event.target.closest('#form-document');
       if (card) openReferenceApplication(event, card);
     }, true);
+
     const backdrop = $('modal-backdrop');
-    if (backdrop) backdrop.addEventListener('click', () => {
-      const modal = $('modal-window');
-      if (modal && modal.classList.contains('source-document-open')) {
-        window.setTimeout(() => {
-          if (backdrop.hidden) {
-            modal.classList.remove('source-document-open');
-            $('modal-content').innerHTML = '';
-          }
-        }, 0);
-      }
-    });
+    if (backdrop) {
+      backdrop.addEventListener('click', event => {
+        const modal = $('modal-window');
+        if (event.target === backdrop && modal && modal.classList.contains('source-document-open')) {
+          backdrop.hidden = true;
+          modal.classList.remove('source-document-open');
+          $('modal-content').innerHTML = '';
+        }
+      });
+    }
 
     if (calendarGrid) {
       const observer = new MutationObserver(records => {
@@ -209,7 +219,9 @@
         calendarGrid.classList.add('calendar-flip');
         window.setTimeout(() => calendarGrid.classList.remove('calendar-flip'), 380);
       });
-      calendarGrid.querySelectorAll('i').forEach(day => observer.observe(day, { attributes: true, attributeFilter: ['class'] }));
+      calendarGrid.querySelectorAll('i').forEach(day =>
+        observer.observe(day, { attributes: true, attributeFilter: ['class'] })
+      );
     }
   };
 
