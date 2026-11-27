@@ -5,9 +5,9 @@
   "description": "A Japanese, original-art inspection horror game with validated state, save synchronization, and server-backed account APIs.",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "check": "node --check server.js && node --check public/js/data.js && node --check public/js/face.js && node --check public/js/common.js && node --check public/js/game.js && node --check public/js/motion.js",
-    "test": "npm run check && node test/smoke.js && node test/common.js && node test/server.js && node test/reference-images.js"
+    "start": "node prepare-assets.js && node server.js",
+    "check": "node --check prepare-assets.js && node --check server.js && node --check public/js/data.js && node --check public/js/face.js && node --check public/js/common.js && node --check public/js/game.js && node --check public/js/motion.js",
+    "test": "node prepare-assets.js && npm run check && node test/smoke.js && node test/common.js && node test/server.js && node test/reference-images.js"
   },
   "engines": {
     "node": ">=20"

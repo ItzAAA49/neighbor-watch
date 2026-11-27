@@ -4,7 +4,7 @@
 <header class="play-header"><a class="brand" href="/"><span class="brand-mark">D</span><span>D.D.D. <small>NEIGHBOR WATCH</small></span></a><div class="shift-meta"><span id="mode-label">キャンペーン</span><b id="day-label">1955年 2月 1日</b><span id="visitor-counter">来訪者 1 / 6</span><span id="time-label" class="time-label">時間制限なし</span></div><button class="button button-dark small" id="pause-button" aria-label="勤務を一時停止" title="勤務を一時停止">一時停止</button></header>
 <main class="booth-wrap">
   <div class="booth-scene" id="booth-scene">
-    <img class="reference-scene-image" src="/assets/office-reference.webp" alt="元画像の審査室" width="2559" height="1423">
+    <img class="reference-scene-image" src="/assets/office-original.webp" alt="元画像の審査室" width="1177" height="624">
     <section class="left-wall">
       <div class="wall-heading">本日の予定表 <small>TODAY'S LIST</small></div><div class="today-board" id="today-list"></div>
       <div class="alarm-unit"><div class="alarm-lamp" id="alarm-lamp"></div><button id="emergency-button" class="emergency-button" title="緊急回線を待機">D.D.D.<small>緊急回線</small></button><div class="alarm-label" id="alarm-label">緊急時のみ使用</div></div>
@@ -30,8 +30,27 @@
       <button class="folder-button" id="folder-button"><span class="folder-tab">D.D.D. RESIDENTS</span><b>住人名簿</b><small>全住人・電話番号・外見の記録</small><span class="folder-open">開く ↗</span></button>
       <div class="desk-items"><span class="desk-badge" id="chester-badge" hidden>★ CHESTER</span><span class="clown-flyer" id="clown-flyer" hidden>UNLIKELY</span><span class="desk-label">PROPERTY OF D.D.D.</span></div>
     </section>
-    <section class="decision-panel" id="decision-panel" aria-label="判定ボタン"><div class="decision-copy"><b>審査結果</b><small>確認が終わったら、いつでも判定できます</small></div><button id="admit-button" class="decision-button admit" disabled><span>✓</span>入室許可</button><button id="reject-button" class="decision-button reject" disabled><span>×</span>入室拒否</button><button id="report-button" class="decision-button report" disabled><span>!</span>D.D.D.通報</button></section>
+
   </div>
+  <div class="mobile-controls" id="mobile-controls" aria-label="スマートフォン用操作">
+    <div class="mobile-control-heading">電話</div>
+    <div class="mobile-phone-pad" aria-label="電話番号入力">
+      <button type="button" data-phone-digit="1">1</button><button type="button" data-phone-digit="2">2</button><button type="button" data-phone-digit="3">3</button>
+      <button type="button" data-phone-digit="4">4</button><button type="button" data-phone-digit="5">5</button><button type="button" data-phone-digit="6">6</button>
+      <button type="button" data-phone-digit="7">7</button><button type="button" data-phone-digit="8">8</button><button type="button" data-phone-digit="9">9</button>
+      <button type="button" data-phone-clear>消去</button><button type="button" data-phone-digit="0">0</button><button type="button" data-phone-call>発信</button>
+    </div>
+    <div class="mobile-control-heading">審査操作</div>
+    <div class="mobile-quick-actions">
+      <button type="button" data-game-action="today">名簿</button>
+      <button type="button" data-game-action="ask">質問</button>
+      <button type="button" data-game-action="id">ID</button>
+      <button type="button" data-game-action="form">申請書</button>
+      <button type="button" data-game-action="folder">住人名簿</button>
+      <button type="button" data-game-action="emergency">緊急</button>
+    </div>
+  </div>
+  <section class="decision-panel" id="decision-panel" aria-label="判定ボタン"><div class="decision-copy"><b>審査結果</b><small>確認が終わったら、いつでも判定できます</small></div><button id="admit-button" class="decision-button admit" disabled><span>✓</span>入室許可</button><button id="reject-button" class="decision-button reject" disabled><span>×</span>入室拒否</button><button id="report-button" class="decision-button report" disabled><span>!</span>D.D.D.通報</button></section>
 </main>
 <div class="toast" id="toast" role="status"></div><div id="fatal-fade" class="fatal-fade" hidden aria-hidden="true"></div>
 <div class="modal-backdrop" id="modal-backdrop" hidden><section class="modal-window" id="modal-window" role="dialog" aria-modal="true"><button class="modal-close" id="modal-close">×</button><div id="modal-content"></div></section></div>

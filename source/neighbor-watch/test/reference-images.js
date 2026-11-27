@@ -18,13 +18,14 @@ function readAsset(name, minimumBytes) {
   return bytes;
 }
 
-const office = readAsset('office-reference.webp', 100000);
+const office = readAsset('office-original.webp', 20000);
 assert.equal(office.subarray(0, 4).toString('ascii'), 'RIFF');
 assert.equal(office.subarray(8, 12).toString('ascii'), 'WEBP');
 assert.equal(office.subarray(12, 16).toString('ascii'), 'VP8 ');
 assert.deepEqual(Array.from(office.subarray(23, 26)), [0x9d, 0x01, 0x2a], 'invalid WebP VP8 frame header');
-assert.equal(office.readUInt16LE(26) & 0x3fff, 2559, 'office image width changed');
-assert.equal(office.readUInt16LE(28) & 0x3fff, 1423, 'office image height changed');
+assert.equal(office.readUInt16LE(26) & 0x3fff, 1177, 'office image width changed');
+assert.equal(office.readUInt16LE(28) & 0x3fff, 624, 'office image height changed');
+assert.equal(crypto.createHash('sha256').update(office).digest('hex'), '7adffc7dd377819b7e95207384991c1bc2b9166c01ef78403516ba719ecaf848', 'office image must be the exact supplied 1177×624 reference');
 
 const visitorOriginal = readAsset('visitor-arrival.jpg', 20000);
 assert.equal(visitorOriginal.subarray(0, 2).toString('hex'), 'ffd8');
@@ -75,7 +76,9 @@ assert.equal(roster.length, 20, 'the standard roster still contains all 20 resid
 assert.equal(context.window.NW_DATA.nightmare.length, 20, 'the nightmare roster still contains all 20 characters');
 
 assert.match(html, /class="reference-scene-image" src="\/assets\/office-reference\.webp"/);
-assert.match(html, /width="2559" height="1423"/);
+assert.match(html, /width="1177" height="624"/);
+assert.match(html, /id="mobile-controls"/);
+assert.match(html, /data-phone-digit="1"/);
 assert.match(html, /id="visitor-face" class="visitor-face" role="button" tabindex="0"/);
 assert.match(html, /\/js\/motion\.js/);
 assert.match(css, /v1\.8\.2 — remove duplicate furniture and align every live hitbox/);
@@ -103,4 +106,4 @@ assert.match(css, /\.booth-scene::before,\.booth-scene::after/);
 assert.match(css, /\.booth-scene \.alarm-unit::before/);
 assert.match(css, /\.booth-scene \.emergency-button::after/);
 assert.match(css, /\.play-header #pause-button/);
-console.log('Original-ratio display and old-furniture suppression checks passed.');
+console.log('Exact original background, aspect ratio, original control positions and mobile controls checks passed.');

@@ -160,6 +160,28 @@
       observer.observe(card, { attributes: true, attributeFilter: ['disabled'] });
     });
 
+
+    // Large, accessible mobile controls proxy to the same original game handlers.
+    const mobileControls = $('mobile-controls');
+    if (mobileControls) {
+      mobileControls.addEventListener('click', event => {
+        const digit = event.target.closest('[data-phone-digit]');
+        if (digit) {
+          const target = dial && dial.querySelector('button[data-digit="' + digit.dataset.phoneDigit + '"]');
+          if (target) target.click();
+          return;
+        }
+        if (event.target.closest('[data-phone-clear]')) { $('dial-clear')?.click(); return; }
+        if (event.target.closest('[data-phone-call]')) { center?.click(); return; }
+        const action = event.target.closest('[data-game-action]')?.dataset.gameAction;
+        const map = {
+          today: 'today-list', ask: 'ask-button', id: 'id-document',
+          form: 'form-document', folder: 'folder-button', emergency: 'emergency-button'
+        };
+        if (action && $(map[action]) && !$(map[action]).disabled) $(map[action]).click();
+      });
+    }
+
     // The visitor portrait is a real, keyboard-accessible hit target.
     const visitorFace = $('visitor-face');
     const askButton = $('ask-button');
