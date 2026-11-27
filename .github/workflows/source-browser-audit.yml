@@ -152,7 +152,10 @@ jobs:
             assert.ok(Math.abs(initial.sceneAspect - initial.expectedAspect) < 0.002,
               'scene aspect ratio differs from original screenshot: ' + initial.sceneAspect);
             assert.ok(initial.image.src.includes('/assets/office-original.webp'), 'the exact supplied original image must be the only room background');
-            assert.equal(initial.scene.width / initial.scene.height, 1177 / 624, 'scene geometry must retain the original ratio');
+            assert.equal(initial.image.naturalWidth, 1177, 'wrong original image width');
+            assert.equal(initial.image.naturalHeight, 624, 'wrong original image height');
+            assert.ok(Math.abs(initial.scene.width / initial.scene.height - 1177 / 624) < 0.001,
+              'scene geometry must retain the original ratio');
             fs.writeFileSync('visual-audit/desktop-layout.json', JSON.stringify(initial, null, 2));
             await page.screenshot({ path: 'visual-audit/desktop-initial.png', fullPage: true });
 
