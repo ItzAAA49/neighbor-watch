@@ -2517,3 +2517,46 @@ input::placeholder,textarea::placeholder{color:#9b8c7c}
   }
   .booth-scene .visitor-dialog{z-index:10!important}
 }
+
+
+/* v1.9.3 — keep speech and decisions outside the supplied room image */
+.booth-scene>.window-section>.visitor-dialog{display:none!important}
+.booth-wrap>.visitor-dialog{
+  position:relative!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;
+  transform:none!important;display:block!important;
+  width:min(calc(100% - 16px),1177px)!important;min-height:54px!important;
+  margin:0 auto!important;padding:7px 13px 6px 34px!important;overflow:visible!important;
+  border:1px solid rgba(226,210,197,.24)!important;border-top:0!important;border-radius:0!important;
+  background:linear-gradient(180deg,#2b2430,#241e29)!important;color:#f0e2d7!important;
+  box-shadow:0 5px 16px rgba(0,0,0,.26)!important;z-index:10!important
+}
+.booth-wrap>.visitor-dialog .dialog-mark{
+  display:block!important;position:absolute!important;left:11px!important;top:0!important;
+  color:#c18d85!important;font:28px var(--display)!important
+}
+.booth-wrap>.visitor-dialog p{
+  margin:0 0 4px!important;color:#f2e5dc!important;font:clamp(8px,.78vw,11px)/1.45 var(--type)!important
+}
+.booth-wrap>.visitor-dialog .dialog-actions{
+  display:flex!important;justify-content:flex-end!important;gap:10px!important;margin:0!important
+}
+.booth-wrap>.visitor-dialog .text-button{
+  padding:1px!important;color:#e4c9bb!important;font-size:clamp(6px,.58vw,8px)!important;pointer-events:auto!important
+}
+.booth-wrap>.visitor-dialog .text-button:disabled{opacity:.35!important}
+.booth-scene .visitor-face{
+  position:absolute!important;left:50%!important;bottom:5%!important;transform:translateX(-50%)!important;
+  width:52%!important;height:auto!important;aspect-ratio:260 / 290!important;max-height:88%!important;
+  flex:0 0 auto!important;margin:0!important
+}
+@media(max-width:760px){
+  .booth-scene .visitor-face{
+    left:50%!important;bottom:5%!important;transform:translateX(-50%)!important;
+    width:78%!important;height:auto!important;aspect-ratio:260 / 290!important;max-height:80%!important
+  }
+  .booth-wrap>.visitor-dialog{width:100%!important;min-height:50px!important;margin:0!important;padding:6px 8px 5px 26px!important}
+  .booth-wrap>.visitor-dialog .dialog-mark{left:7px!important;font-size:21px!important}
+  .booth-wrap>.visitor-dialog p{font-size:7px!important}
+  .booth-wrap>.visitor-dialog .dialog-actions{gap:6px!important}
+  .booth-wrap>.visitor-dialog .text-button{font-size:6px!important}
+}
