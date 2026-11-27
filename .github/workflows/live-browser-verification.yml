@@ -1,0 +1,242 @@
+name: Live browser verification
+
+on:
+  push:
+    branches:
+      - audit/live-ui-20261127
+    paths:
+      - '.github/workflows/live-browser-verification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out audit branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.1'
+
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.54.2
+          npx playwright install --with-deps chromium
+
+      - name: Inspect the actual deployed site
+        env:
+          TARGET_URL: https://neighbor-watch.onrender.com
+        run: |
+          mkdir -p visual-audit
+          node <<'NODE'
+          const { chromium } = require('playwright');
+          const fs = require('node:fs');
+          const assert = require('node:assert/strict');
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const context = await browser.newContext({
+              viewport: { width: 1600, height: 1000 },
+              deviceScaleFactor: 1,
+              reducedMotion: 'reduce'
+            });
+            const page = await context.newPage();
+            const errors = [];
+            page.on('pageerror', error => errors.push(error.message));
+            page.on('console', message => {
+              if (message.type() === 'error') errors.push('console: ' + message.text());
+            });
+
+            // Keep this audit isolated from real players' saved games.
+            await page.addInitScript(() => {
+              localStorage.clear();
+              sessionStorage.clear();
+            });
+            await page.route('**/api/guest/**', async route => {
+              if (route.request().method() === 'GET') {
+                await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ save: {} }) });
+              } else {
+                await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true }) });
+              }
+            });
+
+            const target = process.env.TARGET_URL.replace(/\/$/, '');
+            const response = await page.goto(target + '/play?mode=arcade&visualAudit=1', {
+              waitUntil: 'networkidle',
+              timeout: 90000
+            });
+            assert.ok(response && response.ok(), 'live /play returned a non-200 response');
+            await page.waitForSelector('#booth-scene .reference-scene-image');
+            await page.waitForFunction(() => {
+              const img = document.querySelector('.reference-scene-image');
+              return img && img.complete && img.naturalWidth > 0;
+            }, null, { timeout: 30000 });
+            await page.waitForFunction(() => window.NW_FACE && document.getElementById('visitor-display')?.hidden === false, null, { timeout: 30000 });
+
+            const initial = await page.evaluate(() => {
+              const scene = document.getElementById('booth-scene');
+              const img = scene.querySelector('.reference-scene-image');
+              const rect = node => {
+                if (!node) return null;
+                const r = node.getBoundingClientRect();
+                return { x: r.x, y: r.y, width: r.width, height: r.height, right: r.right, bottom: r.bottom };
+              };
+              const targets = [
+                '#today-list', '#emergency-button', '#phone', '#phone-face', '#phone-dial',
+                '#visitor-window', '#visitor-face', '#visitor-dialog', '#id-document',
+                '#form-document', '.checklist', '#checklist-items', '#folder-button',
+                '#decision-panel', '#admit-button', '#reject-button', '#report-button',
+                '#pause-button'
+              ];
+              const boxes = {};
+              for (const selector of targets) {
+                const node = document.querySelector(selector);
+                boxes[selector] = node ? {
+                  ...rect(node),
+                  disabled: 'disabled' in node ? node.disabled : false,
+                  display: getComputedStyle(node).display,
+                  pointerEvents: getComputedStyle(node).pointerEvents,
+                  zIndex: getComputedStyle(node).zIndex
+                } : null;
+              }
+              return {
+                title: document.title,
+                url: location.href,
+                scene: rect(scene),
+                image: {
+                  src: img.currentSrc,
+                  naturalWidth: img.naturalWidth,
+                  naturalHeight: img.naturalHeight,
+                  displayWidth: img.getBoundingClientRect().width,
+                  displayHeight: img.getBoundingClientRect().height,
+                  objectFit: getComputedStyle(img).objectFit
+                },
+                visitor: {
+                  name: document.getElementById('visitor-name')?.textContent,
+                  faceHtml: document.getElementById('visitor-face')?.innerHTML.slice(0, 350),
+                  visible: !document.getElementById('visitor-display')?.hidden
+                },
+                boxes,
+                screenshotViewport: { width: innerWidth, height: innerHeight },
+                fontReady: document.fonts.status
+              };
+            });
+            fs.writeFileSync('visual-audit/desktop-layout.json', JSON.stringify(initial, null, 2));
+            await page.screenshot({ path: 'visual-audit/desktop-initial.png', fullPage: true });
+
+            async function checkHit(selector, name = selector) {
+              const result = await page.locator(selector).first().evaluate(node => {
+                const r = node.getBoundingClientRect();
+                const x = r.left + r.width / 2;
+                const y = r.top + r.height / 2;
+                const hit = document.elementFromPoint(x, y);
+                return {
+                  rect: { x:r.x, y:r.y, width:r.width, height:r.height },
+                  target: node.id || node.className || node.tagName,
+                  hit: hit && (hit.id || hit.className || hit.tagName),
+                  receivesPointer: !!hit && (hit === node || node.contains(hit)),
+                  disabled: 'disabled' in node ? node.disabled : false
+                };
+              });
+              assert.ok(result.rect.width > 0 && result.rect.height > 0, name + ' has no visible hitbox');
+              assert.ok(result.receivesPointer, name + ' is covered by another element at its center: ' + JSON.stringify(result));
+              assert.equal(result.disabled, false, name + ' is unexpectedly disabled');
+              return result;
+            }
+
+            const hits = {};
+            for (const [selector, name] of [
+              ['#today-list','Today's list'],
+              ['#emergency-button','Emergency button'],
+              ['#phone-dial button[data-digit="1"]','Phone digit 1'],
+              ['#visitor-face','Visitor face'],
+              ['#id-document','ID document'],
+              ['#form-document','Application document'],
+              ['#checklist-items button[data-key="appearance"][data-val="yes"]','Checklist YES'],
+              ['#folder-button','Resident folder'],
+              ['#admit-button','Admit decision'],
+              ['#reject-button','Reject decision'],
+              ['#report-button','Report decision']
+            ]) hits[name] = await checkHit(selector, name);
+
+            // Exercise each actual handler. Every modal is opened and closed before the next test.
+            await page.locator('#today-list').click();
+            await page.waitForFunction(() => !document.getElementById('modal-backdrop').hidden);
+            await page.locator('#today-list-close').click();
+            await page.locator('#folder-button').click();
+            await page.waitForFunction(() => !document.getElementById('modal-backdrop').hidden);
+            await page.locator('#modal-close').click();
+            await page.locator('#visitor-face').click({ force: true });
+            await page.waitForFunction(() => !document.getElementById('modal-backdrop').hidden);
+            await page.locator('#modal-close').click();
+            await page.locator('#id-document').click();
+            await page.waitForFunction(() => !document.getElementById('modal-backdrop').hidden);
+            await page.locator('#modal-close').click();
+            await page.locator('#form-document').click();
+            await page.waitForFunction(() => !document.getElementById('modal-backdrop').hidden);
+            await page.locator('#modal-close').click();
+
+            await page.locator('#checklist-items button[data-key="appearance"][data-val="yes"]').click();
+            assert.ok(await page.locator('#checklist-items button[data-key="appearance"][data-val="yes"]').evaluate(n => n.classList.contains('selected')), 'checklist click did not update selected state');
+            await page.locator('#phone-dial button[data-digit="1"]').click();
+            await page.locator('#phone-dial button[data-digit="2"]').click();
+            await page.locator('#phone-dial button[data-digit="3"]').click();
+            await page.locator('#phone-dial button[data-digit="4"]').click();
+            await page.locator('#dial-call').click();
+            await page.locator('#emergency-button').click();
+            assert.ok(await page.locator('#emergency-button').evaluate(n => n.classList.contains('pressed')), 'emergency button click did not toggle on');
+            await page.locator('#emergency-button').click();
+            assert.ok(!(await page.locator('#emergency-button').evaluate(n => n.classList.contains('pressed'))), 'emergency button did not toggle off');
+
+            // Confirm the three decision buttons are all hit-testable even though their labels are visually hidden.
+            const decisionSummary = await page.evaluate(() => ({
+              admit: document.getElementById('admit-button').disabled,
+              reject: document.getElementById('reject-button').disabled,
+              report: document.getElementById('report-button').disabled
+            }));
+            assert.ok(Object.values(decisionSummary).every(value => value === false), 'decision controls are not all enabled');
+
+            fs.writeFileSync('visual-audit/hitbox-results.json', JSON.stringify({
+              hits, decisionSummary, consoleErrors: errors
+            }, null, 2));
+            await page.screenshot({ path: 'visual-audit/desktop-after-interactions.png', fullPage: true });
+
+            // Also capture phone-size overflow and hitbox scale as a separate responsive check.
+            const mobile = await context.newPage({ viewport: { width: 390, height: 844 } });
+            await mobile.goto(target + '/play?mode=arcade&visualAudit=mobile', { waitUntil: 'networkidle', timeout: 90000 });
+            await mobile.waitForFunction(() => {
+              const img = document.querySelector('.reference-scene-image');
+              return img && img.complete && img.naturalWidth > 0;
+            }, null, { timeout: 30000 });
+            await mobile.screenshot({ path: 'visual-audit/mobile-initial.png', fullPage: true });
+            const mobileLayout = await mobile.evaluate(() => ({
+              viewport: { width: innerWidth, height: innerHeight },
+              documentWidth: document.documentElement.scrollWidth,
+              boothWrap: (() => { const r=document.querySelector('.booth-wrap').getBoundingClientRect();return {x:r.x,width:r.width,scrollWidth:document.querySelector('.booth-wrap').scrollWidth}; })(),
+              scene: (() => { const r=document.getElementById('booth-scene').getBoundingClientRect();return {x:r.x,width:r.width,height:r.height}; })()
+            }));
+            fs.writeFileSync('visual-audit/mobile-layout.json', JSON.stringify(mobileLayout, null, 2));
+
+            assert.equal(errors.length, 0, 'browser console errors: ' + errors.join(' | '));
+            await browser.close();
+            console.log(JSON.stringify({ initial, hits, decisionSummary, mobileLayout }, null, 2));
+          })().catch(error => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: neighbor-watch-live-browser-audit
+          path: visual-audit/
+          if-no-files-found: warn
+          retention-days: 7
