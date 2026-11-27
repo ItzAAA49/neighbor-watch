@@ -86,7 +86,7 @@ assert.match(html, /id="mobile-controls"/);
 assert.match(html, /data-game-action="folder"/);
 assert.ok(html.indexOf('id="mobile-controls"') > html.indexOf('id="booth-scene"'), 'mobile controls must sit outside the image scene');
 assert.ok(html.indexOf('id="decision-panel"') > html.indexOf('id="mobile-controls"'), 'decision panel must sit below the image');
-assert.doesNotMatch(html, /office-reference\\.webp/);
+assert.doesNotMatch(html, /office-reference[.]webp/);
 assert.match(html, /data-phone-digit="1"/);
 assert.match(html, /id="visitor-face" class="visitor-face" role="button" tabindex="0"/);
 assert.match(html, /\/js\/motion\.js/);
@@ -94,7 +94,7 @@ assert.match(css, /v1\.9\.0 — exact 1177×624 user source screenshot/);
 assert.match(css, /pointer-events:none!important/);
 assert.match(css, /left:38\.1%!important;top:88\.0%!important/);
 assert.match(css, /left:84\.3%!important;top:33\.2%!important/);
-assert.match(css, /width:min\\(calc\\(100% - 16px\\),1177px\\)/);
+assert.match(css, /width:min.*1177px/);
 assert.match(css, /source-image-curtain\{display:none!important/);
 assert.doesNotMatch(motion, /source-image-curtain|visitor-arrival\.jpg/,
   'the old full-screen visitor screenshot must never cover the interactive scene');

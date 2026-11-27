@@ -1,0 +1,33 @@
+name: Verify original-scene rebuild
+
+on:
+  push:
+    branches:
+      - audit/rebuild-scene-original
+    paths:
+      - 'source/neighbor-watch/**'
+      - '.github/workflows/source-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.1'
+      - name: Prepare maintained source
+        run: |
+          rm -rf neighbor-watch
+          cp -a source/neighbor-watch neighbor-watch
+          node scripts/rebuild-readable-menu.js neighbor-watch
+      - name: Install dependencies and run full source tests
+        working-directory: neighbor-watch
+        run: |
+          npm install --omit=dev --no-audit --no-fund
+          npm test
