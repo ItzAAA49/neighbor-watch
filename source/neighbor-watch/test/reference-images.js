@@ -40,7 +40,7 @@ assert.equal(crypto.createHash('sha256').update(application).digest('hex'),
 
 const atlas = readAsset('that-s-not-my-neighbor-the-daily-visitor-list-2861905204.jpg', 200000);
 assert.equal(crypto.createHash('sha256').update(atlas).digest('hex'),
-  '48fecd931ec0bd91e4bd8aedb7c54e7910e4b267',
+  '75081ddba65e8cbcfbc679a232cc63b2f5f4d265d24ec1776571d6c5bee26214',
   'character atlas has changed from the supplied original');
 
 const context = { window: {} };
