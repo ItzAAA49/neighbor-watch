@@ -5,7 +5,7 @@ on:
     branches:
       - audit/rebuild-scene-original
     paths:
-      - '.github/workflows/live-browser-verification.yml'
+      - '.github/workflows/source-browser-audit.yml'
   workflow_dispatch:
 
 permissions:
@@ -93,7 +93,7 @@ jobs:
             await page.waitForSelector('#booth-scene .reference-scene-image');
             await page.waitForFunction(() => {
               const img = document.querySelector('.reference-scene-image');
-              return img && img.complete && img.naturalWidth > 0;
+              return img && img.complete && img.naturalWidth === 1177 && img.naturalHeight === 624;
             }, null, { timeout: 30000 });
             await page.waitForFunction(() => window.NW_FACE && document.getElementById('visitor-display')?.hidden === false, null, { timeout: 30000 });
 
